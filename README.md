@@ -1,8 +1,8 @@
-# Mother Tongue
+# Roots
 
-**Your mother's health story is your health history.**
+**Know your roots. Your mother's health story is your health history.**
 
-Mother Tongue is a tree-themed app that helps women understand the reproductive health they inherit. A mother tells her life and health story to a patient interviewer in her own language (Tamil, Hindi or English) and chooses what her daughter sees. The daughter's own cycle data, labs and family history then come together into insights and a plan.
+Roots is a tree-themed app that helps women understand the reproductive health they inherit. A mother tells her life and health story to a patient interviewer in her own language (Tamil, Hindi or English) and chooses what her daughter sees. The daughter's own cycle data, labs and family history then come together into insights and a plan.
 
 Built for the Code with Claude: Women in AI Hackathon (women's health track).
 
@@ -45,4 +45,4 @@ The app ships with a fictional family (Kavya, 31; her mother Lakshmi, 58; and he
 - Family history and breast cancer — [Cancer Research UK](https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes)
 - Daughters of women with preeclampsia — [BMJ study, via ScienceDaily](https://www.sciencedaily.com/releases/2005/09/050918131619.htm)
 
-Mother Tongue shows patterns, not diagnoses. It is a hackathon prototype, not a medical device.
+Roots shows patterns, not diagnoses. It is a hackathon prototype, not a medical device.

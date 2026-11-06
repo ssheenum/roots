@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Mother Tongue</title>
+<title>Roots</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -370,7 +370,7 @@ function vInsights(){
 
 /* ============ Root ============ */
 function inviteText(){return `${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in ${S.me.lang}, skip anything, and you choose what I see. — ${S.me.name}`}
-const inviteLink=()=>`mothertongue.app/i/${S.invite.code}`;
+const inviteLink=()=>`getroots.app/i/${S.invite.code}`;
 function vRoot(){
   if(S.iv.started&&!S.iv.done)return vInterview();
   if(S.iv.started&&S.iv.done)return vReview();
@@ -446,7 +446,7 @@ function vFamily(){
     <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview.</p></section>`}
 
 /* ============ Settings ============ */
-function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.prev||"insights"}" aria-label="Back">${IC.back}</a><div style="flex:1"><p class="kicker">Mother Tongue</p><h1>Settings</h1></div></div>
+function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.prev||"insights"}" aria-label="Back">${IC.back}</a><div style="flex:1"><p class="kicker">Roots</p><h1>Settings</h1></div></div>
   <form class="sheet" id="setForm" novalidate>
    <div class="set"><label for="sName"><b>Your name</b></label><input type="text" id="sName" value="${esc(S.me.name)}"></div>
    <div class="set"><label for="sCall"><b>You call your mother</b></label><input type="text" id="sCall" value="${esc(S.me.call)}"></div>
@@ -457,7 +457,7 @@ function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.pre
    <div class="set"><span><b>Your data</b><br><span class="small muted">Stays in this browser in the prototype</span></span><button class="btn sm ghost" type="button" data-act="reset">Reset sample data</button></div>
    <div class="set"><span><b>${esc(A())}'s privacy</b><br><span class="small muted">She approves every note. Private notes never reach you.</span></span></div>
   </section>
-  <p class="small muted">Mother Tongue shows patterns, not diagnoses. Talk to your doctor before acting on anything here.</p>`}
+  <p class="small muted">Roots shows patterns, not diagnoses. Talk to your doctor before acting on anything here.</p>`}
 
 /* ============ engines ============ */
 const qFrom=(ch,qi)=>{const q=CH[ch].qs[Math.min(qi,CH[ch].qs.length-1)];return {text:q.ta,en:q.en}};
@@ -480,7 +480,7 @@ async function answer(text){const iv=S.iv,ch=iv.ch,d=CH[ch].demo[Math.min(iv.qi,
     BUSY=false}else{local();next()}
   if(!iv.done)iv.log.push({w:"q",t:iv.cur.text});save();render()}
 function ivPrompt(text){const c=CH[S.iv.ch],n=CH[S.iv.ch+1];
-  return `You are the interviewer in Mother Tongue. ${S.me.mother}, a mother, tells her life and health story so her daughter ${S.me.name} can understand her own health. Speak only in simple, warm ${S.me.lang}. Never diagnose, judge, or ask about abuse or violence.
+  return `You are the interviewer in Roots. ${S.me.mother}, a mother, tells her life and health story so her daughter ${S.me.name} can understand her own health. Speak only in simple, warm ${S.me.lang}. Never diagnose, judge, or ask about abuse or violence.
 Chapter "${c.title}". Goal: ${c.goal}
 ${n?`Next chapter opening question: "${n.qs[0].en}"`:"This is the last chapter."}
 Recent conversation:
@@ -494,7 +494,7 @@ async function ask(q){
   S.chat.push({r:"me",t:q});S.chat.push({r:"ai",t:"…"});save();render();
   const box=[...document.querySelectorAll("#chat .msg.ai")].pop();if(box)box.innerHTML=`<span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span>`;
   if(!SAMPLE){S.chat[S.chat.length-1].t="Open this app in Claude to ask questions. Your family data stays on this page.";save();render();return}
-  try{const turns=[{role:"user",content:`You answer questions inside Mother Tongue, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
+  try{const turns=[{role:"user",content:`You answer questions inside Roots, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
     const r=await SAMPLE(turns,{modelTier:"quick",cache:false,onText:({text})=>{if(box)box.textContent=text}});S.chat[S.chat.length-1].t=r.text}
   catch(e){S.chat[S.chat.length-1].t=e?.text||"I couldn't answer right now. Try again in a moment."}
   save();render()}
