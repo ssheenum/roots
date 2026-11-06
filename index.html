@@ -134,6 +134,29 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:60
 .thinking i:nth-child(2){animation-delay:.15s}.thinking i:nth-child(3){animation-delay:.3s}
 @keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.thinking i{animation:none;opacity:.7}}
+.track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.track div{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;opacity:.6}
+.track div.on{opacity:1}
+.track i{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:700;background:rgba(255,255,255,.15);flex:none}
+.track .on i{background:var(--lime);color:var(--lime-ink)}
+.mtile{border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:2px;text-decoration:none;border:0;text-align:left;cursor:pointer;min-height:118px;font:inherit}
+.mtile .ico{width:38px;height:38px;border-radius:12px;background:rgba(255,255,255,.75);display:grid;place-items:center;margin-bottom:8px}
+.mtile b{font-size:16px;font-weight:600;line-height:1.2}
+.mtile .s{font-size:12px;opacity:.85}
+.persona{border:2px solid transparent;border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;font:inherit}
+.persona[aria-pressed="true"]{border-color:var(--ink)}
+.persona b{font-size:17px;font-weight:600}
+.persona .s{font-size:12px;opacity:.85}
+.persona .say{font-size:13px;line-height:1.35;margin-top:6px}
+.pav{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:17px;flex:none;margin-bottom:6px}
+.pv-lime{background:var(--lime);color:var(--lime-ink)} .pv-euca{background:var(--forest);color:var(--on-forest)} .pv-pista{background:var(--white);color:var(--pista-ink)} .pv-moss{background:var(--moss-ink);color:var(--on-forest)}
+.prog{display:flex;align-items:center;gap:4px}
+.prog i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.prog i.done{background:var(--moss)} .prog i.on{background:var(--forest)}
+.prog span{flex:none;font-size:12px;color:var(--ink-2);margin-left:6px;white-space:nowrap}
+.ivchat{padding:0}
+.ivchat .msg{font-size:17px;line-height:1.45}
+.msg small{display:block;font-size:13px;opacity:.75;margin-top:6px;font-family:var(--font)}
 /* tree */
 .tree{position:relative;border-radius:32px;overflow:hidden;background:linear-gradient(var(--app) 0 33%,var(--soil) 33% 100%);margin-inline:-6px}
 .tree svg{display:block;width:100%;height:auto}
@@ -229,7 +252,7 @@ let uid=0;const nid=()=>"i"+Date.now().toString(36)+(uid++);
 function mkFact(f,ch,quote){const s=!!f.sensitive;return {id:nid(),ch,label:f.label,value:f.value,key:f.key||null,num:typeof f.num==="number"?f.num:null,rel:f.rel||"self",chip:f.chip||null,story:!!f.story,sensitive:s,quote:f.quote||quote||"",share:s?"private":"share"}}
 function demoFacts(){const o=[];CH.forEach((c,ci)=>c.demo.forEach(d=>d.f.forEach(f=>o.push(mkFact(f,ci,d.a)))));return o}
 const DEF=()=>({me:{name:"Kavya",age:31,call:"Amma",mother:"Lakshmi",lang:"Tamil"},
- iv:{started:false,done:true,submitted:true,sharedOn:"Oct 12",ch:0,qi:0,turns:0,cur:null,log:[]},
+ iv:{started:false,done:true,submitted:true,sharedOn:"Oct 12",persona:"niece",showEn:true,ch:0,qi:0,turns:0,cur:null,log:[]},
  invite:{sent:true,code:"K7Q2-AMMA"},
  facts:demoFacts(),
  cycles:MONTHS.map((m,i)=>({m,len:[28,29,27,29,28,30,29,33,30,34,32,35][i],heavy:[2,2,2,3,2,2,3,3,4,3,4,4][i],days:[5,5,5,5,5,5,6,6,6,6,7,7][i]})),
@@ -369,43 +392,64 @@ function vInsights(){
     <p class="small muted">Orange is outside your lab's range.</p></section>`}
 
 /* ============ Root ============ */
+const PERSONAS={
+ niece:{n:"Meera",d:"A warm niece",tone:"lime",style:"Meera, a warm, cheerful niece in her twenties who loves hearing her stories",hi:{ta:"வணக்கம் அம்மா! நான் மீரா. உங்க கதையைக் கேட்க ரொம்ப ஆசையா இருக்கேன்.",en:"Hello Amma! I'm Meera. I'd love to hear your story."}},
+ nurse:{n:"Selvi",d:"A calm nurse",tone:"euca",style:"Selvi, a calm, experienced nurse in her forties who is gentle, unhurried and never clinical",hi:{ta:"வணக்கம் அம்மா. நான் செல்வி, ஒரு நர்ஸ். மெதுவா, உங்க வேகத்துல பேசலாம்.",en:"Hello Amma. I'm Selvi, a nurse. We'll go slowly, at your pace."}},
+ friend:{n:"Valli",d:"A friend her age",tone:"pista",style:"Valli, a friendly woman her own age who grew up in the same times and talks as an equal",hi:{ta:"வணக்கம்! நான் வள்ளி. நம்ம காலத்துக் கதைகளைக் கொஞ்சம் பேசலாமா?",en:"Hello! I'm Valli. Shall we talk about the old days?"}},
+ daughter:{n:null,d:"Her daughter's voice",tone:"moss",style:"her daughter, speaking lovingly and gently",hi:{ta:"அம்மா, நான்தான். உங்க கதையை எனக்குச் சொல்லுங்களேன்.",en:"Amma, it's me. Will you tell me your story?"}}};
+const pname=k=>PERSONAS[k].n||`${S.me.name}'s words`;
+const pinit=k=>(PERSONAS[k].n||S.me.name)[0];
+const useTa=()=>S.me.lang==="Tamil";
 function inviteText(){return `${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in ${S.me.lang}, skip anything, and you choose what I see. — ${S.me.name}`}
 const inviteLink=()=>`getroots.app/i/${S.invite.code}`;
+const sub=(back,kicker,title)=>`<div class="top"><a class="round" href="#${back}" aria-label="Back">${IC.back}</a><div style="flex:1;min-width:0"><p class="kicker">${kicker}</p><h1 style="font-size:32px;line-height:1.05">${title}</h1></div></div>`;
 function vRoot(){
-  if(S.iv.started&&!S.iv.done)return vInterview();
-  if(S.iv.started&&S.iv.done)return vReview();
-  const notes=shared().length,scans=S.scans.length;
+  const iv=S.iv,notes=shared().length,priv=S.facts.filter(f=>f.share==="private").length;
+  const steps=[["Invited",S.invite.sent],["Talking",iv.started||iv.submitted],["Shared",iv.submitted]];
   return hdr("Root","Gather your family's story")+`
-   <div class="hero"><div class="big">${String(notes+S.family.length+scans).padStart(2,"0")}<small>ROOTS</small></div>
-    <div class="side"><div><b>${notes} from ${esc(A())}</b><span>Her interview, ${esc(S.iv.sharedOn||"not yet")}</span></div><div><b>${scans+S.family.length} added by you</b><span>Scans and notes</span></div></div></div>
    <section class="card t-forest">
-    <div class="head"><div><span class="small" style="opacity:.8">1 · Interview</span><h3>Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:48px;height:48px;border-radius:16px" aria-hidden="true">${IC.mic}</span></div>
+    <div class="head"><div><span class="small" style="opacity:.8">Start here</span><h3 style="font-size:30px">Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:52px;height:52px;border-radius:18px" aria-hidden="true">${IC.mic}</span></div>
+    <div class="track">${steps.map(([l,on],i)=>`<div class="${on?"on":""}"><i>${on?IC.check:i+1}</i><span>${l}</span></div>`).join("")}</div>
     <div class="bubble">${esc(inviteText())}</div>
     <div class="linkbox"><code>${esc(inviteLink())}</code><button class="btn sm lime" type="button" data-act="copyinvite">${IC.copy}Copy invite</button></div>
-    <div class="row"><button class="btn sm light" type="button" data-act="newiv">Preview her interview</button><span class="small" style="opacity:.8">${S.iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(S.iv.sharedOn)}`:"Waiting for her"}</span></div>
+    <a class="btn lime" href="#interview">${IC.mic}${iv.started&&!iv.done?"Continue her interview":"Open her interview"}</a>
+    <p class="small" style="opacity:.85">${iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(iv.sharedOn)} and kept ${priv} private. She talked with ${esc(pname(iv.persona||"niece"))}.`:`She picks who she talks to and speaks in ${esc(S.me.lang)}. She approves every note.`}</p>
    </section>
-   <section class="card t-pista">
-    <div class="head"><div><span class="small">2 · Scan</span><h3>Scan a report or old document</h3></div><span class="mic" style="width:48px;height:48px;border-radius:16px;background:var(--white)" aria-hidden="true">${IC.scan}</span></div>
-    <p class="small">Lab reports, discharge papers, prescriptions. Claude reads them and adds what it finds to the right person in your tree.</p>
-    <div class="row">${IMAGES?`<label class="btn sm" for="scanFile" style="cursor:pointer">Choose a photo</label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`:""}<button class="btn sm ghost" type="button" data-act="samplescan">Try a sample document</button></div>
-    ${S.scans.map(s=>`<div class="detail"><b>${esc(s.title)}</b><span class="small">${esc(s.found)}</span></div>`).join("")}
-   </section>
+   <p class="kicker" style="font-size:14px;margin-bottom:-8px">More ways to add roots</p>
+   <div class="grid2">
+    ${IMAGES?`<label class="mtile t-pista" for="scanFile"><span class="ico">${IC.scan}</span><b>Scan a document</b><span class="s">Reports, old papers</span></label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`
+      :`<button class="mtile t-pista" type="button" data-act="samplescan"><span class="ico">${IC.scan}</span><b>Scan a document</b><span class="s">Try a sample paper</span></button>`}
+    <a class="mtile t-mint" href="#ask"><span class="ico">${IC.chat}</span><b>Ask about your roots</b><span class="s">${S.chat.length?`${S.chat.filter(m=>m.r==="me").length} questions so far`:"Chat with Claude"}</span></a>
+   </div>
+   ${IMAGES?`<button class="btn sm ghost" type="button" data-act="samplescan" style="align-self:flex-start">Or try a sample document</button>`:""}
+   ${S.scans.length?`<section class="sheet" style="padding:8px"><div class="list">${S.scans.map(s=>`<div class="li"><span class="ic t-pista">${IC.scan}</span><div class="tx"><b>${esc(s.title)}</b><span>${esc(s.found)}</span></div></div>`).join("")}</div></section>`:""}`}
+function vAsk(){
+  return sub("root","Your family's health, explained","Ask about your roots")+`
    <section class="sheet">
-    <div class="sheet-h"><div><span class="small muted">3 · Ask</span><h2>Ask about your roots</h2></div><span class="mic" style="width:44px;height:44px;border-radius:14px;background:var(--mint);color:var(--mint-ink)" aria-hidden="true">${IC.chat}</span></div>
     <div class="chat" id="chat" aria-live="polite">${S.chat.length?S.chat.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Ask me anything about your family's health history and what it means for you.</div>`}</div>
     <div class="sugg">${["What did Paati have?","Will my menopause be early?","What should I tell my OB-GYN?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>
     <form id="chatForm" class="row" style="padding:0 6px;flex-wrap:nowrap"><label class="sr" for="chatQ">Your question</label><input type="text" id="chatQ" placeholder="Ask a question" style="flex:1;min-width:0"><button class="round" type="submit" style="background:var(--ink);color:var(--app)" aria-label="Send">${IC.send}</button></form>
-   </section>`}
-function vInterview(){const iv=S.iv,c=CH[iv.ch],d=c.demo[Math.min(iv.qi,c.demo.length-1)];
-  return `<div class="top"><button class="round" type="button" data-act="pause" aria-label="Back to Root">${IC.back}</button><div style="flex:1"><p class="kicker">${esc(A())}'s view · ${iv.ch+1} of ${CH.length}</p><h2>${esc(c.title)}</h2></div></div>
-   <section class="card t-forest" style="min-height:290px" aria-live="polite">
-    <div class="dots" aria-hidden="true">${CH.map((_,i)=>`<i class="${i<iv.ch?"done":i===iv.ch?"on":""}"></i>`).join("")}</div>
-    ${BUSY?`<p class="q"><span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span></p>`:`<p class="q ta">${esc(iv.cur?.text)}</p><p class="qen">${esc(iv.cur?.en||"")}</p>`}
-    <span class="small" style="opacity:.75;margin-top:auto">${LIVE?"Claude is listening":"Guided questions"} · ${S.facts.length} notes so far</span></section>
-   <form class="row" id="answerForm" style="align-items:stretch;flex-wrap:nowrap"><label class="sr" for="answer">Her answer</label>
-    <textarea id="answer" placeholder="இங்கே சொல்லுங்க…" style="flex:1;min-width:0"${BUSY?" disabled":""}></textarea>
-    <div style="display:flex;flex-direction:column;gap:8px"><button class="mic" type="button" data-act="mic" aria-label="Answer by voice">${IC.mic}</button><button class="mic" type="submit" style="background:var(--ink);color:var(--app)" aria-label="Send answer">${IC.send}</button></div></form>
-   <div class="row">${d?`<button class="btn sm" type="button" data-act="demo">Use sample answer</button>`:""}<button class="btn sm ghost" type="button" data-act="skip">Skip</button>${BUSY?`<button class="btn sm ghost" type="button" data-act="stop">Stop</button>`:""}</div>`}
+   </section>
+   <p class="small muted">Answers use only your family's notes, your cycles and your labs. Claude won't diagnose.</p>`}
+function vInterview(){
+  const iv=S.iv,pk=iv.persona||"niece";
+  if(!iv.started)return sub("root",`${esc(A())}'s view`,"Who would you like to talk to?")+`
+   <p class="muted">Pick a companion for your story. You can skip anything and stop anytime.</p>
+   <div class="pills" role="group" aria-label="Language">${[["Tamil","தமிழ்"],["Hindi","हिन्दी"],["English","English"]].map(([l,t])=>`<button class="pill" type="button" data-lang="${l}" aria-pressed="${S.me.lang===l}">${t}</button>`).join("")}</div>
+   <div class="grid2">${Object.keys(PERSONAS).map(k=>{const p=PERSONAS[k];return `<button class="persona t-${p.tone==="lime"?"pista":p.tone}" type="button" data-persona="${k}" aria-pressed="${pk===k}">
+     <span class="pav pv-${p.tone}">${esc(pinit(k))}</span><b>${esc(pname(k))}</b><span class="s">${esc(p.d)}</span><span class="say ${useTa()?"ta":""}">"${esc(useTa()?p.hi.ta:p.hi.en)}"</span></button>`}).join("")}</div>
+   <button class="btn lime" type="button" data-act="beginiv">${IC.mic}Start talking with ${esc(pname(pk))}</button>
+   <p class="small muted">${esc(S.me.name)} only sees the notes you approve at the end.</p>`;
+  if(iv.done)return vReview();
+  const p=PERSONAS[pk],c=CH[iv.ch],d=c.demo[Math.min(iv.qi,c.demo.length-1)];
+  return `<div class="top"><button class="round" type="button" data-act="pause" aria-label="Pause and go back">${IC.back}</button><span class="pav pv-${p.tone}" style="width:46px;height:46px">${esc(pinit(pk))}</span><div style="flex:1;min-width:0"><b>${esc(pname(pk))}</b><div class="small muted">${esc(p.d)} · ${esc(S.me.lang)}</div></div></div>
+   <div class="prog" aria-label="Chapter ${iv.ch+1} of ${CH.length}: ${esc(c.title)}">${CH.map((_,i)=>`<i class="${i<iv.ch?"done":i===iv.ch?"on":""}"></i>`).join("")}<span>${iv.ch+1}/${CH.length} · ${esc(c.title)}</span></div>
+   <div class="chat ivchat" id="ivchat" aria-live="polite">${iv.log.map(m=>`<div class="msg ${m.w==="q"?"ai":"me"} ${useTa()?"ta":""}">${esc(m.t)}${m.w==="q"&&m.en&&iv.showEn&&useTa()?`<small>${esc(m.en)}</small>`:""}</div>`).join("")}${BUSY?`<div class="msg ai"><span class="thinking" aria-label="${esc(pname(pk))} is typing"><i></i><i></i><i></i></span></div>`:""}</div>
+   <p class="small muted">${LIVE?"Claude is the interviewer.":"Guided questions."} ${S.facts.length} notes written down; you approve each one at the end.</p>
+   <form class="row" id="answerForm" style="align-items:flex-end;flex-wrap:nowrap"><label class="sr" for="answer">Your answer</label>
+    <textarea id="answer" placeholder="${useTa()?"இங்கே சொல்லுங்க…":"Type your answer…"}" style="flex:1;min-width:0;min-height:56px"${BUSY?" disabled":""}></textarea>
+    <button class="mic" type="button" data-act="mic" aria-label="Answer by voice" style="width:52px;height:52px">${IC.mic}</button><button class="mic" type="submit" style="width:52px;height:52px;background:var(--ink);color:var(--app)" aria-label="Send answer">${IC.send}</button></form>
+   <div class="row">${d?`<button class="btn sm" type="button" data-act="demo">Use sample answer</button>`:""}<button class="btn sm ghost" type="button" data-act="skip">Skip</button>${useTa()?`<button class="btn sm ghost" type="button" data-act="toggleen">${iv.showEn?"Hide":"Show"} English</button>`:""}${BUSY?`<button class="btn sm ghost" type="button" data-act="stop">Stop</button>`:""}</div>`}
 function vReview(){const c=S.facts.filter(f=>f.share==="share").length;
   return `<div><p class="kicker ta">${esc(S.me.name)} எதைப் பார்க்கலாம்?</p><h1 style="font-size:32px;line-height:1.05">What may ${esc(S.me.name)} see?</h1></div>
    <p class="small muted">${esc(A())} decides for each note. Private notes stay in her own summary.</p>
@@ -460,11 +504,11 @@ function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.pre
   <p class="small muted">Roots shows patterns, not diagnoses. Talk to your doctor before acting on anything here.</p>`}
 
 /* ============ engines ============ */
-const qFrom=(ch,qi)=>{const q=CH[ch].qs[Math.min(qi,CH[ch].qs.length-1)];return {text:q.ta,en:q.en}};
-function newInterview(){Object.assign(S.iv,{started:true,done:false,submitted:false,ch:0,qi:0,turns:0,log:[]});S.facts=[];S.iv.cur=qFrom(0,0);S.iv.log.push({w:"q",t:S.iv.cur.text});save();location.hash="root";render()}
+const qFrom=(ch,qi)=>{const q=CH[ch].qs[Math.min(qi,CH[ch].qs.length-1)];return {text:useTa()?q.ta:q.en,en:q.en}};
+function newInterview(){const p=PERSONAS[S.iv.persona||"niece"];Object.assign(S.iv,{started:true,done:false,submitted:false,ch:0,qi:0,turns:0,log:[]});S.facts=[];S.iv.cur=qFrom(0,0);S.iv.log.push({w:"q",t:useTa()?p.hi.ta:p.hi.en,en:p.hi.en},{w:"q",t:S.iv.cur.text,en:S.iv.cur.en});save();location.hash="interview";render()}
 function next(){const iv=S.iv;iv.qi++;iv.turns++;let moved=false;if(iv.qi>=CH[iv.ch].qs.length){iv.ch++;iv.qi=0;iv.turns=0;moved=true}
   if(iv.ch>=CH.length){iv.done=true;return}const q=qFrom(iv.ch,iv.qi),k=iv.log.length%3;
-  iv.cur={text:ACK[k]+" "+q.text,en:ACKEN[k]+" "+(moved?`Now, ${CH[iv.ch].title.toLowerCase()}. `:"")+q.en}}
+  iv.cur={text:(useTa()?ACK[k]:ACKEN[k])+" "+q.text,en:ACKEN[k]+" "+(moved?`Now, ${CH[iv.ch].title.toLowerCase()}. `:"")+q.en}}
 async function answer(text){const iv=S.iv,ch=iv.ch,d=CH[ch].demo[Math.min(iv.qi,CH[ch].demo.length-1)],isD=d&&d.a===text;
   const local=()=>(isD?d.f.map(f=>mkFact(f,ch,text)):[mkFact({label:CH[ch].title,value:text},ch,text)]).forEach(f=>S.facts.push(f));
   iv.log.push({w:"a",t:text});
@@ -478,9 +522,9 @@ async function answer(text){const iv=S.iv,ch=iv.ch,d=CH[ch].demo[Math.min(iv.qi,
       if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e?.code))LIVE=false;
       toast("Using the guided questions.");local();next()}
     BUSY=false}else{local();next()}
-  if(!iv.done)iv.log.push({w:"q",t:iv.cur.text});save();render()}
+  if(!iv.done)iv.log.push({w:"q",t:iv.cur.text,en:iv.cur.en});save();render()}
 function ivPrompt(text){const c=CH[S.iv.ch],n=CH[S.iv.ch+1];
-  return `You are the interviewer in Roots. ${S.me.mother}, a mother, tells her life and health story so her daughter ${S.me.name} can understand her own health. Speak only in simple, warm ${S.me.lang}. Never diagnose, judge, or ask about abuse or violence.
+  return `You are ${PERSONAS[S.iv.persona||"niece"].style}, interviewing for Roots. ${S.me.mother}, a mother, tells her life and health story so her daughter ${S.me.name} can understand her own health. Speak only in simple, warm ${S.me.lang}. Never diagnose, judge, or ask about abuse or violence.
 Chapter "${c.title}". Goal: ${c.goal}
 ${n?`Next chapter opening question: "${n.qs[0].en}"`:"This is the last chapter."}
 Recent conversation:
@@ -506,24 +550,29 @@ async function scan(file){toast("Reading the document…");
   catch(e){toast(e?.code==="image_rejected"?"That image couldn't be read. Try a JPEG or PNG.":"Couldn't read the document right now.")}}
 
 /* ============ router + events ============ */
-function route(){const h=location.hash.slice(1);return ["insights","root","family","settings"].includes(h)?h:"insights"}
+function route(){const h=location.hash.slice(1);return ["insights","root","family","settings","interview","ask"].includes(h)?h:"insights"}
 function render(){const r=route();if(r!=="settings")S.ui.prev=r;
-  document.getElementById("tabbar").innerHTML=`<a href="#insights"${r==="insights"?' aria-current="page"':""}>${IC.chart}Insights</a><a href="#root" class="rootbtn"${r==="root"?' aria-current="page"':""}>${IC.root}Root</a><a href="#family"${r==="family"?' aria-current="page"':""}>${IC.tree}Family</a>`;
-  document.getElementById("app").innerHTML=r==="insights"?vInsights():r==="root"?vRoot():r==="family"?vFamily():vSettings()}
+  document.getElementById("tabbar").hidden=r==="interview"&&S.iv.started&&!S.iv.done;
+  document.getElementById("tabbar").innerHTML=`<a href="#insights"${r==="insights"?' aria-current="page"':""}>${IC.chart}Insights</a><a href="#root" class="rootbtn"${["root","interview","ask"].includes(r)?' aria-current="page"':""}>${IC.root}Root</a><a href="#family"${r==="family"?' aria-current="page"':""}>${IC.tree}Family</a>`;
+  document.getElementById("app").innerHTML=r==="insights"?vInsights():r==="root"?vRoot():r==="interview"?vInterview():r==="ask"?vAsk():r==="family"?vFamily():vSettings();
+  if(r==="interview"||r==="ask")document.querySelector("#ivchat .msg:last-child, #chat .msg:last-child")?.scrollIntoView({block:"nearest"})}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
 document.addEventListener("click",async e=>{
   const t=e.target;let x;
   if(x=t.closest("[data-pill]")){S.ui[x.dataset.pill]=x.dataset.v;save();render();return}
   if(x=t.closest("[data-open]")){S.ui.open=S.ui.open===x.dataset.open?null:x.dataset.open;save();render();return}
   if(x=t.closest("[data-task]")){S.tasks[x.dataset.task]=!S.tasks[x.dataset.task];save();render();return}
+  if(x=t.closest("[data-persona]")){S.iv.persona=x.dataset.persona;save();render();return}
+  if(x=t.closest("[data-lang]")){S.me.lang=x.dataset.lang;save();render();return}
   if(x=t.closest("[data-person]")){S.ui.person=x.dataset.person;save();render();return}
   if(x=t.closest("[data-share]")){const f=S.facts.find(y=>y.id===x.dataset.share);if(f){f.share=x.dataset.v;save();render()}return}
   if(x=t.closest("[data-ask]")){if(!BUSY)ask(x.dataset.ask);return}
   const b=t.closest("[data-act]");if(!b)return;const a=b.dataset.act;
-  if(a==="newiv")newInterview();
-  if(a==="pause"){S.iv.started=false;S.iv.done=true;S.iv.submitted=S.facts.length>0;save();render()}
+  if(a==="beginiv")newInterview();
+  if(a==="toggleen"){S.iv.showEn=!S.iv.showEn;save();render()}
+  if(a==="pause"){S.iv.started=false;S.iv.done=true;S.iv.submitted=S.facts.length>0;save();location.hash="root";toast("Paused. Her notes so far are saved.")}
   if(a==="demo"){const iv=S.iv,d=CH[iv.ch].demo[Math.min(iv.qi,CH[iv.ch].demo.length-1)],ta=document.getElementById("answer");if(d&&ta){ta.value=d.a;ta.focus()}}
-  if(a==="skip"&&!BUSY){S.iv.log.push({w:"a",t:"(skipped)"});next();if(!S.iv.done)S.iv.log.push({w:"q",t:S.iv.cur.text});save();render()}
+  if(a==="skip"&&!BUSY){S.iv.log.push({w:"a",t:"(skipped)"});next();if(!S.iv.done)S.iv.log.push({w:"q",t:S.iv.cur.text,en:S.iv.cur.en});save();render()}
   if(a==="stop")ctl?.abort();
   if(a==="mic")toast("Voice comes with the phone app. Type here, or use the sample answer.");
   if(a==="send"){Object.assign(S.iv,{submitted:true,started:false,done:true,sharedOn:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"})});save();toast(`Sent to ${S.me.name}. Your tree is updated.`);location.hash="family"}
