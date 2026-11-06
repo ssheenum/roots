@@ -226,17 +226,18 @@ const SRC={meno:["Human Reproduction study","https://www.news-medical.net/news/2
 /* ============ state ============ */
 const MONTHS=["Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"];
 let uid=0;const nid=()=>"i"+Date.now().toString(36)+(uid++);
-function mkFact(f,ch,quote){const s=!!f.sensitive;return {id:nid(),ch,label:f.label,value:f.value,key:f.key||null,num:typeof f.num==="number"?f.num:null,rel:f.rel||"self",chip:f.chip||null,story:!!f.story,sensitive:s,quote:f.quote||quote||"",share:s?"private":"share"}}
+function mkFact(f,ch,quote){const s=!!f.sensitive;return {id:nid(),ch,label:f.label,value:f.value,key:f.key||null,num:typeof f.num==="number"?f.num:null,rel:f.rel||"self",chip:f.chip||null,story:!!f.story,sensitive:s,quote:f.quote||quote||"",share:s?"private":"share",approx:!!f.approx}}
 function demoFacts(){const o=[];CH.forEach((c,ci)=>c.demo.forEach(d=>d.f.forEach(f=>o.push(mkFact(f,ci,d.a)))));return o}
 const DEF=()=>({me:{name:"Kavya",age:31,call:"Amma",mother:"Lakshmi",lang:"Tamil"},
  iv:{started:false,done:true,submitted:true,sharedOn:"Oct 12",ch:0,qi:0,turns:0,cur:null,log:[]},
  invite:{sent:true,code:"K7Q2-AMMA"},
  facts:demoFacts(),
  cycles:MONTHS.map((m,i)=>({m,len:[28,29,27,29,28,30,29,33,30,34,32,35][i],heavy:[2,2,2,3,2,2,3,3,4,3,4,4][i],days:[5,5,5,5,5,5,6,6,6,6,7,7][i]})),
- labs:[{name:"Hemoglobin",short:"Hb",value:11.4,unit:"g/dL",lo:12,hi:15.5},{name:"Ferritin",short:"Ferritin",value:14,unit:"ng/mL",lo:15,hi:150},{name:"TSH",short:"TSH",value:3.9,unit:"mIU/L",lo:.4,hi:4},{name:"Vitamin D",short:"Vit D",value:18,unit:"ng/mL",lo:30,hi:100}],
+ labs:[{name:"Hemoglobin",short:"Hb",value:11.4,unit:"g/dL",lo:12,hi:15.5,date:"2026-09"},{name:"Ferritin",short:"Ferritin",value:14,unit:"ng/mL",lo:15,hi:150,date:"2026-09"},{name:"TSH",short:"TSH",value:3.9,unit:"mIU/L",lo:.4,hi:4,date:"2026-09"},{name:"Vitamin D",short:"Vit D",value:18,unit:"ng/mL",lo:30,hi:100,date:"2026-09"}],
  conds:["Iron deficiency in college","Vegetarian"],
  family:[{id:"fa1",who:"appa",text:"High BP at 50",src:"you"},{id:"fa2",who:"sister",text:"Painful periods",src:"you"}],
- scans:[],chat:[],tasks:{},ui:{ins:"trends",open:null,person:"amma",prev:"insights"}});
+ events:[{id:"ev1",kind:"travel",from:7,to:7}],checks:{},
+ scans:[],chat:[],tasks:{},ui:{ins:"trends",open:null,person:"amma",prev:"insights",evform:false,missed:false,evFrom:null}});
 let S=load()||DEF();
 function load(){try{const v=localStorage.getItem("mt4");if(!v)return null;const d=DEF(),p=JSON.parse(v);return Object.assign(d,p,{me:Object.assign(d.me,p.me),iv:Object.assign(d.iv,p.iv),ui:Object.assign(d.ui,p.ui)})}catch(e){return null}}
 function save(){try{localStorage.setItem("mt4",JSON.stringify(S))}catch(e){}}
@@ -267,23 +268,55 @@ const THEMES=[["Reproductive",/period|fibroid|menopause|pregnan|eclampsia|pcos|e
 /* ============ insights ============ */
 const mean=a=>a.reduce((s,x)=>s+x,0)/a.length,sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
 const lab=n=>S.labs.filter(l=>l.name===n).slice(-1)[0];
+function labAge(l){if(!l.date)return " Date unknown, so worth confirming with a recent test.";const d=new Date(l.date+"-01T12:00:00"),w=d.toLocaleDateString("en-US",{month:"short",year:"numeric"});return (Date.now()-d)/2.63e9>12?` From ${w}, over a year ago, so worth rechecking.`:` From ${w}.`}
+function labWhen(){const ds=[...new Set(S.labs.map(l=>l.date||"unknown"))];return ds.map(d=>d==="unknown"?"some with no date":new Date(d+"-01T12:00:00").toLocaleDateString("en-US",{month:"short",year:"numeric"})).join(", ")}
 function labState(l){if(l.lo!=null&&l.value<l.lo)return "flag";if(l.hi!=null&&l.value>l.hi)return "flag";if(l.lo!=null&&l.hi!=null&&l.value>l.hi-(l.hi-l.lo)*.12)return "watch";return "ok"}
-function sig(){const L=S.cycles.map(c=>c.len),H=S.cycles.map(c=>c.heavy),D=S.cycles.map(c=>c.days);
-  const s={cyc:{base:mean(L.slice(0,6)),sd:Math.max(1,sd(L.slice(0,6))),rec:mean(L.slice(-3)),var0:sd(L.slice(0,6)),var1:sd(L.slice(-6))},heavy:{base:mean(H.slice(0,6)),rec:mean(H.slice(-3))},days:{base:mean(D.slice(0,6)),rec:mean(D.slice(-3))}};
-  s.cyc.out=s.cyc.rec>s.cyc.base+2*s.cyc.sd;s.heavy.up=s.heavy.rec>=s.heavy.base+1;return s}
+/* ---- data safeguards: life events, missed logs, enough data, persistence ---- */
+// block: hormones/pregnancy change the cycle, so those cycles are set aside and cycle patterns pause while ongoing
+// skip: that cycle is set aside.  note: kept, but named as a possible reason for a change
+const EVK={hbc:["Hormonal birth control (pill, patch, ring)","block"],hiud:["Hormonal IUD","block"],ciud:["Copper IUD","note"],preg:["Pregnancy","block"],bf:["Breastfeeding","block"],
+ ill:["Illness or surgery","skip"],travel:["Travel or time-zone change","skip"],med:["New medication","note"],thyroid:["Thyroid treatment change","note"],stress:["A very stressful time","note"]};
+const EVMODE={block:"Cycles set aside; cycle patterns pause while ongoing",skip:"That cycle is set aside",note:"Kept, and named as a possible reason"};
+const MIN_BASE=6,MIN_REC=3;
+const evTo=e=>e.to==null?S.cycles.length-1:e.to;
+const evLabel=e=>`${EVK[e.kind][0]}, ${S.cycles[e.from].m}${e.to==null?" onward":e.to!==e.from?" to "+S.cycles[e.to].m:""}`;
+const fmt=v=>isNaN(v)?"–":Math.round(v);
+function cycleStatus(i){const c=S.cycles[i];
+  if(c.missed)return {use:false,why:"Missed log"};
+  const e=S.events.find(e=>EVK[e.kind][1]!=="note"&&i>=e.from&&i<=evTo(e));
+  return e?{use:false,why:EVK[e.kind][0].replace(/ \(.*\)/,"")}:{use:true}}
+function sig(){const C=S.cycles.map((c,i)=>Object.assign({i,st:cycleStatus(i)},c)),U=C.filter(c=>c.st.use);
+  const B=U.slice(0,MIN_BASE),R=U.length>=MIN_BASE+MIN_REC?U.slice(-MIN_REC):[],L=a=>a.map(c=>c.len),H=a=>a.map(c=>c.heavy),D=a=>a.map(c=>c.days),m0=a=>a.length?mean(a):NaN;
+  const s={C,U,R,enough:B.length>=MIN_BASE&&R.length>=MIN_REC,need:Math.max(0,MIN_BASE+MIN_REC-U.length),aside:C.filter(c=>!c.st.use),
+    cyc:{base:m0(L(B)),sd:Math.max(1,B.length?sd(L(B)):1),rec:m0(L(R)),var0:B.length?sd(L(B)):NaN,var1:U.length>=6?sd(L(U.slice(-6))):NaN},
+    heavy:{base:m0(H(B)),rec:m0(H(R))},days:{base:m0(D(B)),rec:m0(D(R))}};
+  // a cycle far longer than usual is more often a forgotten log than a real change: ask before using it
+  s.suspect=U.filter(c=>!c.ok&&B.length&&c.len>=Math.max(45,1.6*s.cyc.base));
+  // hormones or pregnancy still in effect: don't read cycle changes at all
+  s.paused=S.events.find(e=>EVK[e.kind][1]==="block"&&evTo(e)===S.cycles.length-1)||null;
+  // persistence: 2 of the last 3 usable cycles must be outside her range, so one odd cycle never triggers a pattern
+  s.cyc.long=R.filter(c=>c.len>s.cyc.base+2*s.cyc.sd).length;
+  s.cyc.out=s.enough&&!s.paused&&!s.suspect.length&&s.cyc.long>=2;
+  // she confirmed "nothing changed" for exactly these cycles (re-asks if cycles or life events change)
+  s.cyc.key=R.map(c=>c.m+c.len).join(",")+"|"+S.events.map(e=>e.kind+e.from+"-"+e.to).join(",");
+  s.cyc.ok=!!(S.checks.cycle&&S.checks.cycle.key===s.cyc.key);
+  s.heavy.up=s.enough&&s.heavy.rec>=s.heavy.base+1;
+  s.notes=S.events.filter(e=>EVK[e.kind][1]==="note");
+  return s}
 function patterns(){
   const s=sig(),o=[],hb=lab("Hemoglobin"),tsh=lab("TSH"),fib=fact("fibroids"),hv=fact("heavy_periods"),thy=fact("thyroid"),m=fact("menopause_age");
   if(s.heavy.up&&hb&&labState(hb)==="flag")o.push({id:"iron",tone:"moss",alert:1,t:"Heavier periods,\nlower iron",who:["you","lab",(hv||fib)&&"amma"].filter(Boolean),
     st:[[s.heavy.rec.toFixed(0)+" days","Heavy days now"],"was "+s.heavy.base.toFixed(0),[hb.value,"Hemoglobin"]],
-    ev:[["you",`Heavy days per period went from ${s.heavy.base.toFixed(1)} to ${s.heavy.rec.toFixed(1)}.`],["lab",`Hemoglobin ${hb.value} ${hb.unit}, below your lab's range of ${hb.lo} to ${hb.hi}.`],hv&&["amma",`${A()} had very heavy periods in her thirties.`],fib&&["amma",`${A()} had fibroids at ${fib.num}.`]].filter(Boolean),
+    ev:[["you",`Heavy days per period went from ${s.heavy.base.toFixed(1)} to ${s.heavy.rec.toFixed(1)}.`],["lab",`Hemoglobin ${hb.value} ${hb.unit}, below your lab's range of ${hb.lo} to ${hb.hi}.${labAge(hb)}`],hv&&["amma",`${A()} had very heavy periods in her thirties.`],fib&&["amma",`${A()} had fibroids at ${fib.num}.`]].filter(Boolean),
     so:"Heavy bleeding can lower iron over time, and fibroids run in some families. Worth one conversation with your doctor."});
-  if(s.cyc.out)o.push({id:"cycle",tone:"euca",t:"Cycles running\nlonger than normal",who:["you",tsh&&"lab",thy&&"amma"].filter(Boolean),
+  if(s.cyc.out&&s.cyc.ok)o.push({id:"cycle",tone:"euca",t:"Cycles running\nlonger than normal",who:["you",tsh&&"lab",thy&&"amma"].filter(Boolean),
     st:[[s.cyc.rec.toFixed(0)+" d","Last 3 cycles"],"+"+Math.round(s.cyc.rec-s.cyc.base)+" days",[Math.round(s.cyc.base)+" d","Your baseline"]],
-    ev:[["you",`Your baseline is about ${Math.round(s.cyc.base)} days; your last 3 cycles averaged ${s.cyc.rec.toFixed(1)}.`],tsh&&["lab",`TSH ${tsh.value}, near the top of your lab's range.`],thy&&["amma",`${A()} has a thyroid condition.`]].filter(Boolean),
+    ev:[["you",`Your baseline is about ${Math.round(s.cyc.base)} days; your last 3 cycles averaged ${s.cyc.rec.toFixed(1)}.`],tsh&&["lab",`TSH ${tsh.value}, near the top of your lab's range.${labAge(tsh)}`],thy&&["amma",`${A()} has a thyroid condition.`],
+      ["you",`You confirmed nothing else changed (like birth control, pregnancy, illness or travel) on ${S.checks.cycle?.on||"today"}.`],...s.notes.map(e=>["you",`You logged: ${evLabel(e)}. This may also explain the change.`])].filter(Boolean),
     so:`Longer cycles have many everyday causes. With ${A()}'s thyroid condition and your TSH near the top, a recheck is reasonable to ask about.`});
   if(m)o.push({id:"meno",tone:"pista",t:"Your menopause\nmay come early too",who:["amma","you"],
     st:[[m.num,`${A()}'s age`],"Typical ~51",["31","Your age now"]],
-    ev:[["amma",`${A()}'s periods stopped naturally at ${m.num}.`],["you","Your baseline, kept from now on, will show early changes against your own normal."]],
+    ev:[["amma",`${A()}'s periods stopped naturally at ${m.num}.`],["you",`Roots will watch your cycles for the clinical sign of the transition (STRAW+10: cycle length changing by 7 or more days, more than once) from about age ${Math.floor(51+.5*(m.num-51)-7-(m.approx?2:0))}, earlier than the usual mid-40s because ${A()}'s came at ${m.approx?"around ":""}${m.num}.`]],
     so:"In one study, daughters of mothers with menopause at 45 or younger showed faster drops in ovarian reserve markers. It doesn't predict your timing, but it's worth knowing in your thirties."});
   return o}
 function habits(){const o=[];
@@ -303,18 +336,18 @@ function steps(){const T=[],m=fact("menopause_age"),bc=fact("family_breast_cance
   return T}
 
 /* ============ charts ============ */
-function lineChart(vals,lo,hi,labels,label){const W=360,H=160,l=26,r=8,t=10,b=22,w=W-l-r,h=H-t-b,mn=Math.floor(Math.min(...vals,lo)-2),mx=Math.ceil(Math.max(...vals,hi)+2);
-  const x=i=>l+i*(w/(vals.length-1)),y=v=>t+h-(v-mn)/(mx-mn)*h,pts=vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+function lineChart(vals,lo,hi,labels,label,ex=[]){const W=360,H=160,l=26,r=8,t=10,b=22,w=W-l-r,h=H-t-b,band=!isNaN(lo)&&!isNaN(hi),mn=Math.floor(Math.min(...vals,...(band?[lo]:[]))-2),mx=Math.ceil(Math.max(...vals,...(band?[hi]:[]))+2);
+  const x=i=>l+i*(w/(vals.length-1)),y=v=>t+h-(v-mn)/(mx-mn)*h,pts=vals.map((v,i)=>ex[i]?null:`${x(i).toFixed(1)},${y(v).toFixed(1)}`).filter(Boolean).join(" ");
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">
   ${[mn,Math.round((mn+mx)/2),mx].map(v=>`<text x="0" y="${y(v)+4}" font-size="10" fill="#55635A">${v}</text><line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="#DFE4DA"/>`).join("")}
-  <rect x="${l}" y="${y(hi)}" width="${w}" height="${Math.max(2,y(lo)-y(hi))}" rx="6" fill="#D5EADB"/>
+  ${band?`<rect x="${l}" y="${y(hi)}" width="${w}" height="${Math.max(2,y(lo)-y(hi))}" rx="6" fill="#D5EADB"/>`:""}
   <polyline points="${pts}" fill="none" stroke="#1D4A37" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  ${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${v>hi||v<lo?"#C46A2B":"#1D4A37"}"/>`).join("")}
+  ${vals.map((v,i)=>ex[i]?`<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="#FFFFFF" stroke="#8C978F" stroke-width="2"/>`:`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${band&&(v>hi||v<lo)?"#C46A2B":"#1D4A37"}"/>`).join("")}
   ${labels.map((m,i)=>`<text x="${x(i)}" y="${H-5}" text-anchor="middle" font-size="10" fill="#55635A">${m[0]}</text>`).join("")}</svg>`}
-function bars(vals,base,labels){const W=360,H=120,l=8,r=8,t=8,b=20,w=W-l-r,h=H-t-b,mx=Math.max(5,...vals),bw=w/vals.length*.6,y=v=>t+h-v/mx*h;
+function bars(vals,base,labels,ex=[]){const W=360,H=120,l=8,r=8,t=8,b=20,w=W-l-r,h=H-t-b,mx=Math.max(5,...vals),bw=w/vals.length*.6,y=v=>t+h-v/mx*h;
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Heavy-flow days per period over 12 cycles">
-  ${vals.map((v,i)=>{const cx=l+(i+.5)*(w/vals.length),up=v>base+.5;return `<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${t+h-y(v)}" rx="${bw/2}" fill="${up?"#C46A2B":"#AFC8A0"}"/><text x="${cx}" y="${H-4}" text-anchor="middle" font-size="10" fill="#55635A">${labels[i][0]}</text>`}).join("")}
-  <line x1="${l}" x2="${W-r}" y1="${y(base)}" y2="${y(base)}" stroke="#15231B" stroke-dasharray="3 4"/></svg>`}
+  ${vals.map((v,i)=>{const cx=l+(i+.5)*(w/vals.length),up=v>base+.5;return `<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${t+h-y(v)}" rx="${bw/2}" fill="${ex[i]?"#DFE4DA":up?"#C46A2B":"#AFC8A0"}"/><text x="${cx}" y="${H-4}" text-anchor="middle" font-size="10" fill="#55635A">${labels[i][0]}</text>`}).join("")}
+  ${isNaN(base)?"":`<line x1="${l}" x2="${W-r}" y1="${y(base)}" y2="${y(base)}" stroke="#15231B" stroke-dasharray="3 4"/>`}</svg>`}
 
 /* ============ icons ============ */
 const svg=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -346,27 +379,70 @@ function vInsights(){
    <div class="grid2">${habits().map(([t,d,tone,w,src])=>`<article class="habit t-${tone}"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3>${esc(t)}</h3>${face(w[0])}</div><p>${esc(d)}</p><span class="mini">${esc(w[1])}</span>${src?`<a class="small" href="${src[1]}" target="_blank" rel="noopener" style="color:inherit">${esc(src[0])}</a>`:""}</article>`).join("")}</div>
    <section class="sheet"><div class="sheet-h"><h2>Conversations to have</h2><span class="tag">${T.filter(t=>S.tasks[t[0]]).length} of ${T.length}</span></div>
     <div>${T.map(([id,t,d,src])=>`<div class="tk ${S.tasks[id]?"done":""}"><button class="check" type="button" data-task="${id}" aria-pressed="${!!S.tasks[id]}" aria-label="Mark done: ${esc(t)}">${S.tasks[id]?IC.check:""}</button><div class="tx"><b>${esc(t)}</b><div class="small muted">${esc(d)}${src?` <a href="${src[1]}" target="_blank" rel="noopener" style="color:var(--forest)">${esc(src[0])}</a>`:""}</div></div></div>`).join("")}</div></section>`}
+  const need=`Need ${s.need} more cycle${s.need===1?"":"s"}`,arrow=(r,b)=>r>b+.5?"↑":r<b-.5?"↓":"→";
+  const now=(r,b,u)=>s.enough?`Now ${Math.round(r)}${u} ${arrow(r,b)}`:need,ex=s.C.map(c=>!c.st.use);
+  const defFrom=S.ui.evFrom??(s.R[0]?s.R[0].i:S.cycles.length-1);
+  let check="";
+  if(s.suspect.length){const c=s.suspect[0];check=`<section class="card t-apricot" aria-live="polite"><span class="small" style="opacity:.85">Quick check</span>
+    <h3>Your ${esc(c.m)} cycle was ${c.len} days. Did you miss logging a period?</h3>
+    <p class="small">A cycle this long is more often a forgotten log than a real change, so Roots asks before using it.</p>
+    <div class="row"><button class="btn sm" type="button" data-act="missedyes" data-i="${c.i}">Yes, I missed one</button><button class="btn sm ghost" type="button" data-act="missedno" data-i="${c.i}">No, it was that long</button></div></section>`}
+  else if(s.paused)check=`<section class="card t-white"><span class="small muted">Cycle patterns paused</span>
+    <h3>${esc(EVK[s.paused.kind][0])} changes your natural cycle.</h3>
+    <p class="small muted">Roots isn't reading cycle changes while it's in effect. Your baseline is kept for when you stop.</p></section>`;
+  else if(!s.enough)check=`<section class="card t-white"><span class="small muted">Building your baseline</span>
+    <h3>Roots needs ${s.need} more usable cycle${s.need===1?"":"s"} before it compares.</h3>
+    <p class="small muted">Patterns need ${MIN_BASE} baseline cycles and ${MIN_REC} recent ones, so a short history can't cause a false alarm.</p></section>`;
+  else if(s.cyc.long>=2&&!s.cyc.ok)check=`<section class="card t-apricot" aria-live="polite"><span class="small" style="opacity:.85">Before Roots flags this</span>
+    <h3>Your last 3 cycles were ${s.R.map(c=>c.len).join(", ")} days, longer than your usual ${Math.round(s.cyc.base)}. Did anything change?</h3>
+    <p class="small">Birth control, an IUD, pregnancy, breastfeeding, illness, travel or a new medication can all change your cycle.</p>
+    <div class="row"><button class="btn sm" type="button" data-act="cyclenone">Nothing changed</button><button class="btn sm ghost" type="button" data-act="cyclemissed" aria-expanded="${!!S.ui.missed}">I missed a log</button><button class="btn sm ghost" type="button" data-act="cycleevent">Something changed</button></div>
+    ${S.ui.missed?`<div class="row"><span class="small">Which cycle?</span>${s.R.map(c=>`<button class="btn sm light" type="button" data-act="markmissed" data-i="${c.i}">${esc(c.m)} · ${c.len} days</button>`).join("")}</div>`:""}</section>`;
+  const P=patterns();
   return head+tabs+`
    <div class="base">
-    <div class="bv t-moss"><span>Cycle length</span><b>${Math.round(s.cyc.base)} <small>days</small></b><em>Now ${s.cyc.rec.toFixed(0)} days ↑</em></div>
-    <div class="bv t-mint"><span>Cycle variation</span><b>±${s.cyc.var0.toFixed(0)} <small>days</small></b><em>Now ±${s.cyc.var1.toFixed(0)} days ↑</em></div>
-    <div class="bv t-pista"><span>Period length</span><b>${s.days.base.toFixed(0)} <small>days</small></b><em>Now ${s.days.rec.toFixed(0)} days ↑</em></div>
-    <div class="bv t-euca"><span>Heavy-flow days</span><b>${s.heavy.base.toFixed(0)} <small>a period</small></b><em>Now ${s.heavy.rec.toFixed(0)} ↑</em></div>
+    <div class="bv t-moss"><span>Cycle length</span><b>${fmt(s.cyc.base)} <small>days</small></b><em>${now(s.cyc.rec,s.cyc.base," days")}</em></div>
+    <div class="bv t-mint"><span>Cycle variation</span><b>±${fmt(s.cyc.var0)} <small>days</small></b><em>${s.enough?`Now ±${Math.round(s.cyc.var1)} days ${arrow(s.cyc.var1,s.cyc.var0)}`:need}</em></div>
+    <div class="bv t-pista"><span>Period length</span><b>${fmt(s.days.base)} <small>days</small></b><em>${now(s.days.rec,s.days.base," days")}</em></div>
+    <div class="bv t-euca"><span>Heavy-flow days</span><b>${fmt(s.heavy.base)} <small>a period</small></b><em>${now(s.heavy.rec,s.heavy.base,"")}</em></div>
    </div>
-   <p class="small muted" style="margin-top:-6px">Baseline is your Dec to May average. "Now" is your last 3 cycles.</p>
+   <p class="small muted" style="margin-top:-6px">Baseline is your first ${MIN_BASE} usable cycles${s.U.length>=MIN_BASE?` (${esc(s.U[0].m)} to ${esc(s.U[MIN_BASE-1].m)})`:""}. "Now" is your last ${MIN_REC} usable cycles.</p>
+   ${check}
    <section class="card t-white"><div class="row between"><h2>Cycle length</h2><span class="tag">12 months</span></div>
-    ${lineChart(L,s.cyc.base-2*s.cyc.sd,s.cyc.base+2*s.cyc.sd,lbl,"Cycle length over 12 months against your baseline range")}
-    <div class="legend"><span><i style="background:#D5EADB"></i>Your baseline range</span><span><i style="background:#C46A2B"></i>Outside it</span></div></section>
-   <section class="card t-white"><div class="row between"><h2>Heavy-flow days</h2><span class="tag">Per period</span></div>${bars(H,s.heavy.base,lbl)}</section>
+    ${lineChart(S.cycles.map(c=>c.len),s.cyc.base-2*s.cyc.sd,s.cyc.base+2*s.cyc.sd,S.cycles.map(c=>c.m),"Cycle length over 12 months against your baseline range",ex)}
+    <div class="legend"><span><i style="background:#D5EADB"></i>Your baseline range</span><span><i style="background:#C46A2B"></i>Outside it</span>${s.aside.length?`<span><i style="background:#FFFFFF;box-shadow:inset 0 0 0 1.5px #8C978F"></i>Set aside</span>`:""}</div></section>
+   <section class="card t-white"><div class="row between"><h2>Heavy-flow days</h2><span class="tag">Per period</span></div>${bars(S.cycles.map(c=>c.heavy),s.heavy.base,S.cycles.map(c=>c.m),ex)}</section>
    <section class="sheet"><div class="sheet-h"><h2>Patterns worth a conversation</h2></div>
-    ${patterns().map(c=>{const o=S.ui.open===c.id;return `<div class="card t-${c.tone} tap" role="button" tabindex="0" data-open="${c.id}" aria-expanded="${o}">
+    ${P.length?"":`<p class="small muted" style="padding:0 8px">Nothing to flag right now.</p>`}
+    ${P.map(c=>{const o=S.ui.open===c.id;return `<div class="card t-${c.tone} tap" role="button" tabindex="0" data-open="${c.id}" aria-expanded="${o}">
      <div class="head"><h3 style="white-space:pre-line">${esc(c.t)}</h3><div class="faces">${c.who.map(face).join("")}</div></div>
      ${c.alert?`<div><span class="chip alert">Talk to your doctor</span></div>`:""}
      <div class="stats"><div><b>${esc(c.st[0][0])}</b><span>${esc(c.st[0][1])}</span></div><span class="chip">${esc(c.st[1])}</span><div class="r"><b>${esc(c.st[2][0])}</b><span>${esc(c.st[2][1])}</span></div></div>
      ${o?`<div class="detail">${c.ev.map(([k,t])=>`<div class="ev">${face(k)}<span>${esc(t)}</span></div>`).join("")}<p>${esc(c.so)}</p></div>`:""}</div>`}).join("")}</section>
+   <section class="sheet" id="events"><div class="sheet-h"><h2>Life events</h2><button class="btn sm ghost" type="button" data-act="evform" aria-expanded="${!!S.ui.evform}">${S.ui.evform?"Close":"Add"}</button></div>
+    <p class="small muted" style="padding:0 8px">Things that change cycles. They stay on this device and are never shared with family.</p>
+    ${S.events.length?`<div class="list">${S.events.map(e=>`<div class="li"><div class="tx"><b>${esc(evLabel(e))}</b><span>${esc(EVMODE[EVK[e.kind][1]])}</span></div><button class="round" type="button" style="width:38px;height:38px" data-act="evdel" data-id="${e.id}" aria-label="Remove ${esc(evLabel(e))}">×</button></div>`).join("")}</div>`:`<p class="small muted" style="padding:0 8px">None logged.</p>`}
+    ${S.ui.evform?`<form id="evForm" style="display:flex;flex-direction:column;gap:10px;padding:0 6px" novalidate>
+     <label class="f">What happened<select id="evKind">${Object.entries(EVK).map(([k,v])=>`<option value="${k}">${esc(v[0])}</option>`).join("")}</select></label>
+     <div class="grid2"><label class="f">From<select id="evFrom">${S.cycles.map((c,i)=>`<option value="${i}"${i===defFrom?" selected":""}>${esc(c.m)}</option>`).join("")}</select></label>
+      <label class="f">Until<select id="evTo"><option value="">Still ongoing</option>${S.cycles.map((c,i)=>`<option value="${i}">${esc(c.m)}</option>`).join("")}</select></label></div>
+     <div><button class="btn sm" type="submit">Save life event</button></div></form>`:""}</section>
+   <section class="sheet"><div class="sheet-h"><h2>What Roots is using</h2><span class="tag">${s.U.length} of ${s.C.length} cycles</span></div>
+    <div class="list">
+     <div class="li"><span class="ic" style="background:var(--moss);color:var(--moss-ink)">${s.U.length}</span><div class="tx"><b>Cycles used</b><span>${s.aside.length?s.aside.map(c=>`${esc(c.m)} set aside (${esc(c.st.why.toLowerCase())})`).join(" · "):"None set aside"}</span></div></div>
+     <div class="li"><span class="ic" style="background:var(--mint);color:var(--mint-ink)">Lab</span><div class="tx"><b>Lab results</b><span>${S.labs.length} results from ${esc(labWhen())}</span></div></div>
+     <div class="li"><span class="ic" style="background:var(--pista);color:var(--pista-ink)">A</span><div class="tx"><b>${esc(A())}'s story</b><span>${S.iv.submitted?`Shared ${esc(S.iv.sharedOn)}. Only notes she approved.`:"Not shared yet"}</span></div></div>
+    </div>
+    <details style="padding:0 8px 6px"><summary class="small" style="cursor:pointer;font-weight:600">How Roots checks its work</summary>
+     <ul class="small muted" style="margin:8px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
+      <li>Patterns need ${MIN_BASE} baseline cycles and ${MIN_REC} recent ones.</li>
+      <li>One odd cycle never triggers a pattern: 2 of your last 3 must be outside your range.</li>
+      <li>Very long cycles get a "did you miss a log?" check before they count.</li>
+      <li>Cycles during birth control, pregnancy, breastfeeding, illness or travel are set aside.</li>
+      <li>Roots asks you before flagging a change, and shows how old each lab result is.</li></ul></details></section>
    <section class="card t-white"><h2>Labs that touch your cycle</h2>
     <div class="circles">${S.labs.slice(0,4).map(l=>`<div class="circ"><i class="c-${labState(l)}">${l.value}</i>${esc(l.short||l.name)}</div>`).join("")}</div>
-    <p class="small muted">Orange is outside your lab's range.</p></section>`}
+    <p class="small muted">Orange is outside your lab's range. Results from ${esc(labWhen())}.</p></section>`}
 
 /* ============ Root ============ */
 function inviteText(){return `${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in ${S.me.lang}, skip anything, and you choose what I see. — ${S.me.name}`}
@@ -471,7 +547,7 @@ async function answer(text){const iv=S.iv,ch=iv.ch,d=CH[ch].demo[Math.min(iv.qi,
   if(LIVE){BUSY=true;render();ctl=new AbortController();
     try{const r=await SAMPLE.json(ivPrompt(text),{modelTier:"quick",cache:false,signal:ctl.signal});
       const fs=(Array.isArray(r?.facts)?r.facts:[]).filter(f=>f&&f.label&&f.value);
-      if(fs.length)fs.forEach(f=>S.facts.push(mkFact({label:String(f.label),value:String(f.value),key:KEYS.includes(f.key)?f.key:null,num:typeof f.num==="number"?f.num:null,rel:f.rel==="mother"?"mother":"self",sensitive:!!f.sensitive,chip:f.chip?String(f.chip):null,story:!!f.story},ch,text)));else local();
+      if(fs.length)fs.forEach(f=>S.facts.push(mkFact({label:String(f.label),value:String(f.value),key:KEYS.includes(f.key)?f.key:null,num:typeof f.num==="number"?f.num:null,rel:f.rel==="mother"?"mother":"self",sensitive:!!f.sensitive,chip:f.chip?String(f.chip):null,story:!!f.story,approx:!!f.approx},ch,text)));else local();
       iv.qi++;iv.turns++;if(r?.move_on||iv.turns>=3){iv.ch++;iv.qi=0;iv.turns=0}
       if(iv.ch>=CH.length)iv.done=true;else iv.cur={text:String(r?.reply||qFrom(iv.ch,iv.qi).text),en:String(r?.reply_en||"")}}
     catch(e){if(e?.code==="cancelled"){iv.log.pop();BUSY=false;render();return}
@@ -486,22 +562,23 @@ ${n?`Next chapter opening question: "${n.qs[0].en}"`:"This is the last chapter."
 Recent conversation:
 ${S.iv.log.slice(-6).map(x=>(x.w==="q"?"Interviewer: ":"Her: ")+x.t).join("\n")}
 Her latest answer: "${text}"
-Reply with only JSON: {"reply":"${S.me.lang}: one short acknowledgment, then exactly one question","reply_en":"English translation","facts":[{"label":"short English label","value":"short English fact","key":"one of ${KEYS.join(", ")} or null","num":null,"rel":"self or mother","sensitive":false,"story":false,"chip":"2-4 word English health-condition tag, or null if not a health condition"}],"move_on":false}
-Set story true for life-context facts (where she grew up, cooking smoke, tobacco, first period). Set move_on true when this chapter is covered or she wants to skip; then ask the next chapter's opening question naturally, or thank her if this is the last chapter. Extract only facts she said; mark painful ones sensitive.`}
+Reply with only JSON: {"reply":"${S.me.lang}: one short acknowledgment, then exactly one question","reply_en":"English translation","facts":[{"label":"short English label","value":"short English fact","key":"one of ${KEYS.join(", ")} or null","num":null,"rel":"self or mother","sensitive":false,"story":false,"approx":false,"chip":"2-4 word English health-condition tag, or null if not a health condition"}],"move_on":false}
+Set story true for life-context facts (where she grew up, cooking smoke, tobacco, first period). Set move_on true when this chapter is covered or she wants to skip; then ask the next chapter's opening question naturally, or thank her if this is the last chapter. Set approx true when she is unsure of an age or year. Extract only facts she said; mark painful ones sensitive.`}
 function context(){const people=Object.keys(PEOPLE).map(k=>{const c=conditions(k);return c.length?`${PEOPLE[k].n()} (${PEOPLE[k].r()}): ${c.map(x=>x.t).join(", ")}`:null}).filter(Boolean).join("\n");
-  const s=sig();return `User: ${S.me.name}, ${S.me.age}. Cycle baseline ${Math.round(s.cyc.base)} days, now ${s.cyc.rec.toFixed(0)}; heavy days ${s.heavy.base.toFixed(0)} now ${s.heavy.rec.toFixed(0)}. Labs: ${S.labs.map(l=>`${l.name} ${l.value} ${l.unit} (range ${l.lo}-${l.hi})`).join("; ")}.\nFamily:\n${people}`}
+  const s=sig();return `User: ${S.me.name}, ${S.me.age}. Cycle baseline ${fmt(s.cyc.base)} days, now ${fmt(s.cyc.rec)}; heavy days ${fmt(s.heavy.base)} now ${fmt(s.heavy.rec)}.
+Data quality: ${s.U.length} of ${s.C.length} cycles used${s.aside.length?` (set aside: ${s.aside.map(c=>c.m+", "+c.st.why).join("; ")})`:""}. ${s.enough?"":"Not enough cycles yet for patterns. "}${s.paused?`Cycle patterns paused: ${evLabel(s.paused)}. `:""}${s.cyc.long>=2&&!s.cyc.ok?"Recent cycles are long but she has not yet confirmed whether anything changed. ":""}Life events: ${S.events.map(evLabel).join("; ")||"none"}. Lab results from ${labWhen()}. Labs: ${S.labs.map(l=>`${l.name} ${l.value} ${l.unit} (range ${l.lo}-${l.hi})`).join("; ")}.\nFamily:\n${people}`}
 async function ask(q){
   S.chat.push({r:"me",t:q});S.chat.push({r:"ai",t:"…"});save();render();
   const box=[...document.querySelectorAll("#chat .msg.ai")].pop();if(box)box.innerHTML=`<span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span>`;
   if(!SAMPLE){S.chat[S.chat.length-1].t="Open this app in Claude to ask questions. Your family data stays on this page.";save();render();return}
-  try{const turns=[{role:"user",content:`You answer questions inside Roots, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
+  try{const turns=[{role:"user",content:`You answer questions inside Roots, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below, and mention data-quality limits when they matter. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
     const r=await SAMPLE(turns,{modelTier:"quick",cache:false,onText:({text})=>{if(box)box.textContent=text}});S.chat[S.chat.length-1].t=r.text}
   catch(e){S.chat[S.chat.length-1].t=e?.text||"I couldn't answer right now. Try again in a moment."}
   save();render()}
 async function scan(file){toast("Reading the document…");
-  try{const r=await SAMPLE.json(`This image is a medical document (lab report, discharge summary, prescription). Reply with only JSON: {"title":"short description of the document","person":"one of me, amma, appa, paati, thatha, sister, or unknown","conditions":["short condition tags with age or year if shown"],"labs":[{"name":"Ferritin","value":18,"unit":"ng/mL","lo":15,"hi":150}]}. Use [] when none. Only include what you can read clearly.`,{images:file});
+  try{const r=await SAMPLE.json(`This image is a medical document (lab report, discharge summary, prescription). Reply with only JSON: {"title":"short description of the document","person":"one of me, amma, appa, paati, thatha, sister, or unknown","conditions":["short condition tags with age or year if shown"],"labs":[{"name":"Ferritin","value":18,"unit":"ng/mL","lo":15,"hi":150,"date":"YYYY-MM the test was done, or null"}]}. Use [] when none. Only include what you can read clearly.`,{images:file});
     const who=PEOPLE[r?.person]?r.person:"me",cs=(Array.isArray(r?.conditions)?r.conditions:[]).map(String),ls=(Array.isArray(r?.labs)?r.labs:[]).filter(l=>l&&l.name&&typeof l.value==="number");
-    cs.forEach(t=>S.family.push({id:nid(),who,text:t,src:"scan"}));if(who==="me")ls.forEach(l=>S.labs.push({name:String(l.name),short:String(l.name).slice(0,8),value:l.value,unit:String(l.unit||""),lo:typeof l.lo==="number"?l.lo:null,hi:typeof l.hi==="number"?l.hi:null}));
+    cs.forEach(t=>S.family.push({id:nid(),who,text:t,src:"scan"}));if(who==="me")ls.forEach(l=>S.labs.push({name:String(l.name),short:String(l.name).slice(0,8),value:l.value,unit:String(l.unit||""),lo:typeof l.lo==="number"?l.lo:null,hi:typeof l.hi==="number"?l.hi:null,date:/^\d{4}-\d{2}$/.test(l.date||"")?l.date:null}));
     S.scans.unshift({title:String(r?.title||"Document"),found:`Added to ${PEOPLE[who].n()}: ${[...cs,...ls.map(l=>l.name+" "+l.value)].join(", ")||"nothing readable"}`});save();render();toast("Added to your tree.")}
   catch(e){toast(e?.code==="image_rejected"?"That image couldn't be read. Try a JPEG or PNG.":"Couldn't read the document right now.")}}
 
@@ -530,6 +607,14 @@ document.addEventListener("click",async e=>{
   if(a==="copyinvite"){const txt=inviteText()+"\n\nhttps://"+inviteLink();try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
   if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("Sample already added.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997. This confirms the high blood pressure she described.`});save();render();toast("Added to Amma in your tree.")}
   if(a==="reset"){S=DEF();save();location.hash="insights";render();toast("Sample data restored.")}
+  if(a==="missedyes"){S.cycles[+b.dataset.i].missed=true;save();render();toast("Set aside. Add the missed period in your tracker and Roots will recompute.")}
+  if(a==="missedno"){S.cycles[+b.dataset.i].ok=true;save();render()}
+  if(a==="cyclenone"){S.checks.cycle={key:sig().cyc.key,on:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"})};S.ui.open="cycle";save();render();toast("Thanks. Roots added this to your patterns.")}
+  if(a==="cyclemissed"){S.ui.missed=!S.ui.missed;save();render()}
+  if(a==="markmissed"){S.cycles[+b.dataset.i].missed=true;S.ui.missed=false;save();render();toast("Set aside as a missed log.")}
+  if(a==="cycleevent"){S.ui.evform=true;S.ui.evFrom=sig().R[0]?.i??null;save();render();document.getElementById("events")?.scrollIntoView({behavior:"smooth"})}
+  if(a==="evform"){S.ui.evform=!S.ui.evform;S.ui.evFrom=null;save();render()}
+  if(a==="evdel"){S.events=S.events.filter(e=>e.id!==b.dataset.id);save();render();toast("Life event removed.")}
 });
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open]")){e.preventDefault();e.target.click()}});
 document.addEventListener("change",e=>{if(e.target.id==="scanFile"&&e.target.files[0])scan(e.target.files[0])});
@@ -537,6 +622,8 @@ document.addEventListener("submit",e=>{e.preventDefault();const id=e.target.id,v
   if(id==="answerForm"){if(!v("answer")){toast("Type her answer first, or tap Skip.");return}answer(v("answer"))}
   if(id==="chatForm"){const q=v("chatQ");if(!q){toast("Type a question first.");return}ask(q)}
   if(id==="famForm"){if(!v("mText")){toast("Describe the condition first.");return}if(S.ui.person==="me")S.conds.push(v("mText"));else S.family.push({id:nid(),who:S.ui.person,text:v("mText"),src:"you"});save();render();toast("Added to your tree.")}
+  if(id==="evForm"){const from=+v("evFrom"),to=v("evTo")===""?null:+v("evTo");if(to!=null&&to<from){toast("'Until' can't be before 'From'.");return}
+    S.events.push({id:nid(),kind:v("evKind"),from,to});S.ui.evform=false;S.ui.evFrom=null;save();render();toast("Saved. Roots updated your insights.")}
   if(id==="setForm"){S.me.name=v("sName")||"Kavya";S.me.call=v("sCall")||"Amma";S.me.lang=v("sLang");save();render();toast("Saved.")}
 });
 render();
