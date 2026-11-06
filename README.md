@@ -1,15 +1,15 @@
 # Roots
 
-**Know your roots. Your mother's health story is your health history.**
+**Your mother's health history is a great predictor of your health story.**
 
-Roots is a tree-themed app that helps women understand the reproductive health they inherit. A mother tells her life and health story to a patient interviewer in her own language (Tamil, Hindi or English) and chooses what her daughter sees. The daughter's own cycle data, labs and family history then come together into insights and a plan.
+Roots is a tool to help women understand the reproductive health they inherit. A mother tells her life and health story to a patient interviewer in her own language (Tamil, Hindi or English) and chooses what her daughter sees. The daughter's own cycle data, labs and family history then come together into insights and a plan.
 
 Built for the Code with Claude: Women in AI Hackathon (women's health track).
 
 ## The problem
 
 - Many women never talk to their mothers about menopause, periods or pregnancy. Both sides are too shy.
-- That history matters: early menopause, breast cancer under 50, preeclampsia and PCOS in a mother are things doctors use to plan screening and care.
+- That history matters: early menopause, breast cancer under 50, preeclampsia and PMOS in a mother are things doctors use to plan screening and care.
 - It lives only in the mother's memory, and it's lost when she can no longer tell it.
 
 ## The app
