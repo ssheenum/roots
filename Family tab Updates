@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roots</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;600&display=swap">
+<style>
+/* Layout: a tree-themed phone app. You are the crown, your family are the roots. Three tabs (Insights, Root, Family) with Root as the raised centre button; settings behind a gear. Deliberately single light theme, garden greens with one earth tone for roots. */
+:root{
+  color-scheme:light;
+  --page:#E7EBE3; --app:#F5F6F1; --white:#FFFFFF; --ink:#15231B; --ink-2:#55635A; --line:#DFE4DA;
+  --forest:#1D4A37; --on-forest:#F3F8EF;
+  --lime:#D3EE7C; --lime-ink:#2C3A08;
+  --moss:#AFC8A0; --moss-ink:#1C3A26;
+  --mint:#D5EADB; --mint-ink:#1B4733;
+  --pista:#DCE5B4; --pista-ink:#3B4711;
+  --euca:#A9D0C3; --euca-ink:#123F33;
+  --apricot:#F3CFA8; --apricot-ink:#6A3510;
+  --soil:#ECE6D5; --root:#6B5B3A;
+  --font:"Instrument Sans","Noto Sans Tamil",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{background:var(--page)}
+body{color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-weight:600;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:40px;line-height:1}
+h2{font-size:18px}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--forest);outline-offset:2px}
+.phone{max-width:420px;margin:0 auto;background:var(--app);border:10px solid #17211B;border-radius:48px;padding:22px 18px 0;min-height:820px;position:relative;display:flex;flex-direction:column}
+@media (max-width:520px){body{padding-block:0}.phone{border:0;border-radius:0;padding:14px 0 0;min-height:100vh} html,body{background:var(--app)}}
+.screen{flex:1;display:flex;flex-direction:column;gap:18px;padding-bottom:120px}
+.top{display:flex;align-items:center;gap:8px}
+.pills{display:flex;gap:8px;flex:1;flex-wrap:wrap}
+.pill{min-height:44px;padding:0 20px;border-radius:999px;border:1.5px solid #C9CFC4;background:transparent;font-weight:600;font-size:15px;cursor:pointer}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--app)}
+.round{width:46px;height:46px;border-radius:50%;border:0;background:#E2E6DD;display:grid;place-items:center;cursor:pointer;flex:none;color:var(--ink);text-decoration:none}
+.kicker{font-size:16px;color:var(--ink-2)}
+.big{font-size:76px;line-height:.86;font-weight:600;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.big small{display:block;font-size:44px;letter-spacing:-.04em}
+.hero{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center}
+.side{border-left:1.5px solid var(--ink);padding-left:16px;display:flex;flex-direction:column;gap:10px}
+.side b{display:block;font-size:22px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.side span{font-size:13px;color:var(--ink-2)}
+.sheet{background:var(--white);border-radius:30px;padding:18px 12px 12px;display:flex;flex-direction:column;gap:10px;margin-inline:-6px}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;padding:0 8px 2px;gap:8px}
+.tag{font-size:13px;font-weight:600;padding:7px 13px;border-radius:999px;background:var(--app);white-space:nowrap}
+.card{border-radius:26px;padding:20px;display:flex;flex-direction:column;gap:14px;border:0;text-align:left;width:100%}
+.tap{cursor:pointer}
+.t-moss{background:var(--moss);color:var(--moss-ink)} .t-mint{background:var(--mint);color:var(--mint-ink)}
+.t-pista{background:var(--pista);color:var(--pista-ink)} .t-euca{background:var(--euca);color:var(--euca-ink)}
+.t-forest{background:var(--forest);color:var(--on-forest)} .t-white{background:var(--white);color:var(--ink)}
+.t-apricot{background:var(--apricot);color:var(--apricot-ink)}
+.card h3{font-size:24px;line-height:1.08;font-weight:600;letter-spacing:-.03em}
+.head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.faces{display:flex;flex:none}
+.face{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;border:2px solid currentColor;margin-left:-8px;background:var(--white);color:var(--ink);flex:none}
+.face:first-child{margin-left:0}
+.f-you{background:var(--lime);color:var(--lime-ink)} .f-amma{background:var(--forest);color:var(--on-forest)} .f-paati{background:#E9F3EC;color:var(--euca-ink)} .f-lab{background:var(--white);color:var(--ink);font-size:9px}
+.stats{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px}
+.stats b{display:block;font-size:24px;font-weight:600;letter-spacing:-.02em;line-height:1;font-variant-numeric:tabular-nums}
+.stats span{font-size:13px;opacity:.85}
+.stats .r{text-align:right}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:7px 12px;border-radius:999px;background:rgba(21,35,27,.82);color:#F5F6F1;white-space:nowrap}
+.chip.alert{background:var(--apricot);color:var(--apricot-ink)}
+.detail{background:rgba(255,255,255,.55);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+.ev{display:flex;gap:10px;align-items:flex-start}
+.ev .face{width:26px;height:26px;font-size:11px;border-width:0;margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:0;background:var(--ink);color:var(--app);font-weight:600;cursor:pointer;text-decoration:none}
+.btn.lime{background:var(--lime);color:var(--lime-ink)}
+.btn.light{background:rgba(255,255,255,.18);color:inherit}
+.btn.ghost{background:transparent;color:inherit;border:1.5px solid currentColor}
+.btn.sm{min-height:40px;padding:0 14px;font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.muted{color:var(--ink-2)} .small{font-size:14px}
+.base{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.bv{border-radius:22px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.bv span{font-size:13px;opacity:.85}
+.bv b{font-size:30px;font-weight:600;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.bv b small{font-size:15px;font-weight:500}
+.bv em{font-style:normal;font-size:13px;font-weight:600}
+.circles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;text-align:center}
+.circ{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--ink-2);line-height:1.2}
+.circ i{width:62px;height:62px;max-width:100%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.c-ok{background:var(--mint)} .c-watch{background:var(--pista)} .c-flag{background:var(--apricot);color:var(--apricot-ink)!important}
+svg.chart{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);padding:0 4px}
+.legend i{display:inline-block;width:12px;height:8px;border-radius:3px;margin-right:5px}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.habit{border-radius:22px;padding:16px;display:flex;flex-direction:column;gap:8px}
+.habit h3{font-size:18px;line-height:1.15}
+.habit p{font-size:13px;line-height:1.4}
+.mini{display:inline-flex;font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.82);color:var(--ink);align-self:flex-start}
+.mini.mine{background:var(--lime);color:var(--lime-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.list{display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:12px;padding:13px 8px;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li .ic{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;flex:none;font-weight:700;font-size:12px}
+.li .tx{flex:1;min-width:0}
+.li .tx b{display:block;font-weight:600}
+.li .tx span{font-size:13px;color:var(--ink-2)}
+.seg{display:inline-flex;background:var(--app);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;min-height:34px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--app)}
+.ta{font-family:"Noto Sans Tamil",var(--font)}
+.bubble{background:rgba(255,255,255,.12);border-radius:20px 20px 20px 6px;padding:14px 16px;font-size:15px;white-space:pre-wrap}
+.linkbox{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border-radius:999px;padding:6px 6px 6px 16px}
+.linkbox code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-family:var(--font)}
+.chat{display:flex;flex-direction:column;gap:8px;padding:0 6px}
+.msg{max-width:88%;padding:11px 14px;border-radius:20px;font-size:15px;white-space:pre-wrap}
+.msg.me{align-self:flex-end;background:var(--ink);color:var(--app);border-bottom-right-radius:6px}
+.msg.ai{align-self:flex-start;background:var(--mint);color:var(--mint-ink);border-bottom-left-radius:6px}
+.sugg{display:flex;gap:6px;overflow-x:auto;padding:0 6px 4px}
+.sugg button{flex:none;border:1.5px solid var(--line);background:var(--app);border-radius:999px;min-height:38px;padding:0 12px;font-size:13px;font-weight:600;cursor:pointer}
+textarea,input[type=text],input[type=number],select{width:100%;border:1.5px solid var(--line);background:var(--white);border-radius:18px;padding:11px 14px;font-size:16px;min-height:46px}
+textarea{min-height:100px;resize:vertical;font-size:18px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--ink-2);min-width:0}
+.q{font-size:25px;line-height:1.3;font-weight:600;letter-spacing:-.01em}
+.qen{font-size:14px;opacity:.85}
+.dots{display:flex;gap:5px}
+.dots i{width:22px;height:5px;border-radius:3px;background:rgba(255,255,255,.3)}
+.dots i.on{background:var(--lime)} .dots i.done{background:rgba(255,255,255,.85)}
+.mic{width:60px;height:60px;border-radius:20px;background:var(--lime);color:var(--lime-ink);border:0;display:grid;place-items:center;cursor:pointer;flex:none}
+.rv{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:20px;background:var(--white)}
+.thinking{display:inline-flex;gap:5px}
+.thinking i{width:8px;height:8px;border-radius:50%;background:currentColor;animation:b 1s infinite ease-in-out}
+.thinking i:nth-child(2){animation-delay:.15s}.thinking i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.thinking i{animation:none;opacity:.7}}
+/* tree */
+.tree{position:relative;border-radius:32px;overflow:hidden;background:linear-gradient(var(--app) 0 33%,var(--soil) 33% 100%);margin-inline:-6px}
+.tree svg{display:block;width:100%;height:auto}
+.node{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:transparent;cursor:pointer;padding:0;width:84px}
+.node .dot{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:16px;position:relative;border:3px solid var(--white);box-shadow:0 0 0 1.5px rgba(21,35,27,.15)}
+.node.lg .dot{width:78px;height:78px;font-size:22px}
+.node .nm{font-size:12px;font-weight:600;background:rgba(255,255,255,.88);padding:2px 8px;border-radius:999px;white-space:nowrap}
+.node .ct{position:absolute;top:-4px;right:-6px;min-width:22px;height:22px;border-radius:11px;background:var(--apricot);color:var(--apricot-ink);font-size:11px;display:grid;place-items:center;border:2px solid var(--white)}
+.node.empty .dot{background:transparent;border:2px dashed var(--root);color:var(--root);box-shadow:none}
+.node[aria-pressed="true"] .dot{outline:3px solid var(--forest);outline-offset:3px}
+.matrix{display:flex;flex-direction:column}
+.mrow{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:center;padding:11px 8px;border-bottom:1px solid var(--line)}
+.mrow:last-child{border-bottom:0}
+.mrow b{font-size:14px}
+.mrow .who{display:flex;flex-wrap:wrap;gap:6px}
+.tk{display:flex;align-items:center;gap:10px;padding:12px 8px;border-bottom:1px solid var(--line)}
+.tk:last-child{border-bottom:0}
+.tk .tx{flex:1;min-width:0}
+.check{width:30px;height:30px;border-radius:50%;border:2px solid var(--forest);background:transparent;display:grid;place-items:center;cursor:pointer;flex:none;color:var(--on-forest)}
+.check[aria-pressed="true"]{background:var(--forest)}
+.tk.done .tx b{text-decoration:line-through;opacity:.6}
+.set{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 8px;border-bottom:1px solid var(--line)}
+.set:last-child{border-bottom:0}
+.set input,.set select{max-width:170px}
+/* tab bar */
+.tabbar{position:sticky;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0 auto 14px;width:calc(100% - 8px);background:var(--ink);border-radius:999px;padding:6px 10px;display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;z-index:5}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:52px;border-radius:999px;color:#A9B4AC;text-decoration:none;font-size:12px;font-weight:600}
+.tabbar a[aria-current="page"]{background:#2A3A30;color:var(--white)}
+.tabbar a.rootbtn{width:76px;height:76px;margin-top:-30px;border-radius:50%;background:var(--lime);color:var(--lime-ink);border:6px solid var(--app);font-size:12px;gap:0}
+.tabbar a.rootbtn[aria-current="page"]{background:var(--lime);color:var(--lime-ink);box-shadow:0 0 0 2px var(--forest)}
+.caption{max-width:420px;margin:16px auto 0;font-size:13px;color:var(--ink-2);text-align:center}
+@media (max-width:520px){.caption{padding-bottom:16px}}
+#toast{position:fixed;left:50%;bottom:calc(110px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--forest);color:var(--on-forest);padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;z-index:20;max-width:calc(100% - 32px);text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<div class="phone">
+  <main class="screen" id="app" tabindex="-1"></main>
+  <nav class="tabbar" aria-label="Main" id="tabbar"></nav>
+</div>
+<p class="caption">App prototype with a fictional family: Kavya, 31, her mother Lakshmi, 58, and her grandmother. All numbers are sample data.</p>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script>
+/* ============ interview content ============ */
+const CH=[
+ {title:"Where she grew up",goal:"Where she grew up, home, cooking fuel and years of smoke, food and lean times.",
+  qs:[{en:"Where did you grow up? Tell me what your home was like.",ta:"நீங்க எங்க வளர்ந்தீங்க? உங்க வீடு எப்படி இருந்துச்சு?"},
+      {en:"What did your family cook on: wood, kerosene, or gas?",ta:"உங்க வீட்டுல எதுல சமைச்சீங்க? விறகு, மண்ணெண்ணெய், கேஸ்?"}],
+  demo:[{a:"நான் மதுரை பக்கத்துல ஒரு கிராமத்துல வளர்ந்தேன். வீட்டுல பாட்டி, அப்பா, அம்மா, நாலு பிள்ளைங்க.",f:[{label:"Grew up",value:"Village near Madurai, joint family",key:"childhood_setting",story:true}]},
+        {a:"விறகு அடுப்புலதான் சமைச்சோம். பன்னிரண்டு வயசுலேர்ந்து நான் சமைப்பேன். கல்யாணம் ஆகி சென்னை வந்த பிறகுதான் கேஸ் அடுப்பு.",f:[{label:"Cooking smoke",value:"Cooked on a wood stove from 12 until marriage at 19",key:"cooking_fuel",num:7,story:true}]}]},
+ {title:"Growing up as a girl",goal:"Age at first period and whether anyone explained it.",
+  qs:[{en:"How old were you when your periods first came? Did anyone tell you what was happening?",ta:"உங்களுக்கு முதல் முதல்ல மாதவிடாய் எந்த வயசுல வந்துச்சு? யாராவது சொன்னாங்களா?"}],
+  demo:[{a:"பதிமூணு வயசுல. யாரும் எதுவும் சொல்லல. ரொம்ப பயந்துட்டேன்.",f:[{label:"First period",value:"At 13; no one explained it to her",key:"menarche_age",num:13,story:true}]}]},
+ {title:"Her adult life",goal:"Caregiving, hard years and sleep, tobacco of any kind.",
+  qs:[{en:"Were there very hard years? How was your sleep then?",ta:"ரொம்ப கஷ்டமான வருஷங்கள் இருந்துச்சா? அப்போ தூக்கம் எப்படி?"},
+      {en:"Did you or anyone at home use tobacco?",ta:"நீங்களோ வீட்டுல யாராவதோ புகையிலை பயன்படுத்தினாங்களா?"}],
+  demo:[{a:"மாமியாரைப் பதினைந்து வருஷம் பார்த்துக்கிட்டேன். தூக்கம் ரொம்ப கம்மி.",f:[{label:"Hard years",value:"Cared for her mother-in-law for 15 years",key:"stress",sensitive:true}]},
+        {a:"இல்லை, யாரும் புகை பிடிக்கல.",f:[{label:"Tobacco",value:"Never used tobacco",key:"tobacco",num:0,story:true}]}]},
+ {title:"Her monthly days",goal:"Heaviness, pain, regularity, diagnoses like fibroids, PCOS, endometriosis.",
+  qs:[{en:"In your twenties and thirties, what were your monthly days like?",ta:"இருபது, முப்பது வயசுல மாதவிடாய் நாட்கள் எப்படி இருந்துச்சு?"}],
+  demo:[{a:"முப்பதுகள்ல ரொம்ப அதிகமா இருக்கும். நாப்பத்தொரு வயசுல டாக்டர் ஃபைப்ராய்டுன்னு சொன்னாங்க.",
+    f:[{label:"Periods",value:"Very heavy periods in her thirties",key:"heavy_periods",chip:"Heavy periods"},{label:"Fibroids",value:"Fibroids at 41",key:"fibroids",num:41,chip:"Fibroids at 41"}]}]},
+ {title:"Pregnancy",goal:"Ease of conceiving, high BP or sugar in pregnancy.",
+  qs:[{en:"While pregnant, did a doctor ever say your blood pressure or sugar was high?",ta:"கர்ப்பமா இருந்தப்போ BP அல்லது சுகர் அதிகம்னு டாக்டர் சொன்னாங்களா?"}],
+  demo:[{a:"ரெண்டாவது குழந்தையப்போ BP அதிகமா இருந்துச்சு, கால் வீங்கிச்சு. ஆஸ்பத்திரியில வச்சிருந்தாங்க.",f:[{label:"Pregnancy BP",value:"High BP in her second pregnancy; hospitalized",key:"pregnancy_high_bp",chip:"High BP in pregnancy"}]}]},
+ {title:"The change",goal:"Age periods stopped, natural or surgical, symptoms before.",
+  qs:[{en:"When did your monthly days stop for good? On their own, or after an operation?",ta:"மாதவிடாய் எந்த வயசுல முழுசா நின்னுச்சு? தானா, இல்ல ஆப்பரேஷனுக்குப் பிறகா?"}],
+  demo:[{a:"நாப்பத்தி நாலு வயசுல நின்னுடுச்சு. ஆப்பரேஷன் எதுவும் இல்ல. ராத்திரி வியர்த்து எழுந்துடுவேன்.",f:[{label:"Menopause",value:"Natural menopause at 44, with night sweats",key:"menopause_age",num:44,chip:"Menopause at 44"}]}]},
+ {title:"Family health",goal:"Her conditions, cancers in the family with type and age, bones.",
+  qs:[{en:"Has a doctor told you about any long-term condition: sugar, blood pressure, thyroid?",ta:"சுகர், BP, தைராய்டு மாதிரி ஏதாவது இருக்குன்னு டாக்டர் சொல்லியிருக்காங்களா?"},
+      {en:"Has anyone in the family had cancer or weak bones? How old were they?",ta:"குடும்பத்துல யாருக்காவது புற்றுநோய் அல்லது எலும்பு பலவீனம் இருந்துச்சா? எந்த வயசுல?"}],
+  demo:[{a:"சுகர் இருக்கு, மாத்திரை சாப்பிடறேன். தைராய்டும் இருக்கு.",f:[{label:"Diabetes",value:"Type 2 diabetes",key:"diabetes",chip:"Type 2 diabetes"},{label:"Thyroid",value:"Thyroid condition",key:"thyroid",chip:"Thyroid"}]},
+        {a:"என் அம்மாவுக்கு நாப்பத்தேழு வயசுல மார்பகப் புற்றுநோய் வந்துச்சு. எழுபது வயசுல இடுப்பு எலும்பு உடைஞ்சுது.",f:[{label:"Her mother: cancer",value:"Breast cancer at 47",key:"family_breast_cancer",num:47,rel:"mother",chip:"Breast cancer at 47"},{label:"Her mother: bones",value:"Hip fracture at 70",key:"family_osteoporosis",num:70,rel:"mother",chip:"Hip fracture at 70"}]}]},
+ {title:"Her advice",goal:"What she wants her daughter to know about her body.",
+  qs:[{en:"What would you want your daughter to know about her body?",ta:"உங்க மகளுக்கு அவ உடம்பைப் பத்தி என்ன சொல்வீங்க?"}],
+  demo:[{a:"உடம்பு சொல்றதைக் கேளு. வெட்கப்படாம டாக்டர்கிட்ட பேசு. நான் பண்ணலை, நீ பண்ணு.",f:[{label:"Her advice",value:"Listen to your body. Talk to the doctor without shyness. I didn't. You should.",key:"advice"}]}]}
+];
+const KEYS="childhood_setting cooking_fuel menarche_age stress tobacco heavy_periods fibroids pcos endometriosis thyroid pregnancy_high_bp menopause_age diabetes hypertension family_breast_cancer family_ovarian_cancer family_osteoporosis advice".split(" ");
+const ACK=["சொன்னதுக்கு நன்றி.","இது ரொம்ப உதவியா இருக்கு.","நன்றி அம்மா."],ACKEN=["Thank you for telling me that.","That helps a lot.","Thank you, Amma."];
+const SRC={meno:["Human Reproduction study","https://www.news-medical.net/news/20121113/Like-mothers-menopause-like-daughters-fertility-decline.aspx"],
+ smoke:["Am. J. Epidemiology","https://academic.oup.com/aje/article/187/4/696/4080179"],
+ breast:["Cancer Research UK","https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes"],
+ pe:["BMJ study, via ScienceDaily","https://www.sciencedaily.com/releases/2005/09/050918131619.htm"]};
+
+/* ============ state ============ */
+const MONTHS=["Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"];
+let uid=0;const nid=()=>"i"+Date.now().toString(36)+(uid++);
+function mkFact(f,ch,quote){const s=!!f.sensitive;return {id:nid(),ch,label:f.label,value:f.value,key:f.key||null,num:typeof f.num==="number"?f.num:null,rel:f.rel||"self",chip:f.chip||null,story:!!f.story,sensitive:s,quote:f.quote||quote||"",share:s?"private":"share"}}
+function demoFacts(){const o=[];CH.forEach((c,ci)=>c.demo.forEach(d=>d.f.forEach(f=>o.push(mkFact(f,ci,d.a)))));return o}
+const DEF=()=>({me:{name:"Kavya",age:31,call:"Amma",mother:"Lakshmi",lang:"Tamil"},
+ iv:{started:false,done:true,submitted:true,sharedOn:"Oct 12",ch:0,qi:0,turns:0,cur:null,log:[]},
+ invite:{sent:true,code:"K7Q2-AMMA"},
+ facts:demoFacts(),
+ cycles:MONTHS.map((m,i)=>({m,len:[28,29,27,29,28,30,29,33,30,34,32,35][i],heavy:[2,2,2,3,2,2,3,3,4,3,4,4][i],days:[5,5,5,5,5,5,6,6,6,6,7,7][i]})),
+ labs:[{name:"Hemoglobin",short:"Hb",value:11.4,unit:"g/dL",lo:12,hi:15.5},{name:"Ferritin",short:"Ferritin",value:14,unit:"ng/mL",lo:15,hi:150},{name:"TSH",short:"TSH",value:3.9,unit:"mIU/L",lo:.4,hi:4},{name:"Vitamin D",short:"Vit D",value:18,unit:"ng/mL",lo:30,hi:100}],
+ conds:["Iron deficiency in college","Vegetarian"],
+ family:[{id:"fa1",who:"appa",text:"High BP at 50",src:"you"},{id:"fa2",who:"sister",text:"Painful periods",src:"you"}],
+ scans:[],chat:[],tasks:{},ui:{ins:"trends",open:null,person:"amma",prev:"insights"}});
+let S=load()||DEF();
+function load(){try{const v=localStorage.getItem("mt4");if(!v)return null;const d=DEF(),p=JSON.parse(v);return Object.assign(d,p,{me:Object.assign(d.me,p.me),iv:Object.assign(d.iv,p.iv),ui:Object.assign(d.ui,p.ui)})}catch(e){return null}}
+function save(){try{localStorage.setItem("mt4",JSON.stringify(S))}catch(e){}}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(m){const t=document.getElementById("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
+let SAMPLE=null,LIVE=false,IMAGES=false,BUSY=false,ctl=null;
+const A=()=>S.me.call;
+
+/* ============ family model ============ */
+const shared=()=>S.iv.submitted?S.facts.filter(f=>f.share==="share"):[];
+const fact=k=>shared().find(f=>f.key===k);
+const PEOPLE={me:{n:()=>"You",r:()=>`${S.me.name}, ${S.me.age}`,i:()=>S.me.name[0],x:180,y:78,lg:1},
+ sister:{n:()=>"Sister",r:()=>"Your sister",i:()=>"S",x:292,y:96},
+ amma:{n:()=>A(),r:()=>`${S.me.mother}, 58`,i:()=>"A",x:100,y:318},
+ appa:{n:()=>"Appa",r:()=>"Your father",i:()=>"Ap",x:262,y:318},
+ paati:{n:()=>"Paati",r:()=>`${A()}'s mother`,i:()=>"P",x:46,y:470},
+ thatha:{n:()=>"Thatha",r:()=>`${A()}'s father`,i:()=>"T",x:150,y:470},
+ appapaati:{n:()=>"Grandma",r:()=>"Appa's mother",i:()=>"AM",x:224,y:470},
+ appathatha:{n:()=>"Grandpa",r:()=>"Appa's father",i:()=>"AF",x:322,y:470}};
+function conditions(who){const fs=shared(),o=[];
+  if(who==="paati")fs.filter(f=>f.rel==="mother"&&f.chip).forEach(f=>o.push({t:f.chip,src:"interview"}));
+  if(who==="amma")fs.filter(f=>f.rel==="self"&&f.chip).forEach(f=>o.push({t:f.chip,src:"interview"}));
+  if(who==="me")S.conds.filter(c=>!/vegetarian/i.test(c)).forEach(c=>o.push({t:c,src:"you"}));
+  S.family.filter(f=>f.who===who).forEach(f=>o.push({t:f.text,src:f.src||"you"}));
+  return o}
+const THEMES=[["Reproductive",/period|fibroid|menopause|pregnan|eclampsia|pcos|endometri/i,"pista"],["Cancer",/cancer/i,"apricot"],["Heart and sugar",/diabetes|sugar|bp|blood pressure|heart/i,"euca"],["Bones",/hip|bone|fracture|osteo/i,"mint"],["Thyroid",/thyroid/i,"moss"]];
+
+/* ============ insights ============ */
+const mean=a=>a.reduce((s,x)=>s+x,0)/a.length,sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
+const lab=n=>S.labs.filter(l=>l.name===n).slice(-1)[0];
+function labState(l){if(l.lo!=null&&l.value<l.lo)return "flag";if(l.hi!=null&&l.value>l.hi)return "flag";if(l.lo!=null&&l.hi!=null&&l.value>l.hi-(l.hi-l.lo)*.12)return "watch";return "ok"}
+function sig(){const L=S.cycles.map(c=>c.len),H=S.cycles.map(c=>c.heavy),D=S.cycles.map(c=>c.days);
+  const s={cyc:{base:mean(L.slice(0,6)),sd:Math.max(1,sd(L.slice(0,6))),rec:mean(L.slice(-3)),var0:sd(L.slice(0,6)),var1:sd(L.slice(-6))},heavy:{base:mean(H.slice(0,6)),rec:mean(H.slice(-3))},days:{base:mean(D.slice(0,6)),rec:mean(D.slice(-3))}};
+  s.cyc.out=s.cyc.rec>s.cyc.base+2*s.cyc.sd;s.heavy.up=s.heavy.rec>=s.heavy.base+1;return s}
+function patterns(){
+  const s=sig(),o=[],hb=lab("Hemoglobin"),tsh=lab("TSH"),fib=fact("fibroids"),hv=fact("heavy_periods"),thy=fact("thyroid"),m=fact("menopause_age");
+  if(s.heavy.up&&hb&&labState(hb)==="flag")o.push({id:"iron",tone:"moss",alert:1,t:"Heavier periods,\nlower iron",who:["you","lab",(hv||fib)&&"amma"].filter(Boolean),
+    st:[[s.heavy.rec.toFixed(0)+" days","Heavy days now"],"was "+s.heavy.base.toFixed(0),[hb.value,"Hemoglobin"]],
+    ev:[["you",`Heavy days per period went from ${s.heavy.base.toFixed(1)} to ${s.heavy.rec.toFixed(1)}.`],["lab",`Hemoglobin ${hb.value} ${hb.unit}, below your lab's range of ${hb.lo} to ${hb.hi}.`],hv&&["amma",`${A()} had very heavy periods in her thirties.`],fib&&["amma",`${A()} had fibroids at ${fib.num}.`]].filter(Boolean),
+    so:"Heavy bleeding can lower iron over time, and fibroids run in some families. Worth one conversation with your doctor."});
+  if(s.cyc.out)o.push({id:"cycle",tone:"euca",t:"Cycles running\nlonger than normal",who:["you",tsh&&"lab",thy&&"amma"].filter(Boolean),
+    st:[[s.cyc.rec.toFixed(0)+" d","Last 3 cycles"],"+"+Math.round(s.cyc.rec-s.cyc.base)+" days",[Math.round(s.cyc.base)+" d","Your baseline"]],
+    ev:[["you",`Your baseline is about ${Math.round(s.cyc.base)} days; your last 3 cycles averaged ${s.cyc.rec.toFixed(1)}.`],tsh&&["lab",`TSH ${tsh.value}, near the top of your lab's range.`],thy&&["amma",`${A()} has a thyroid condition.`]].filter(Boolean),
+    so:`Longer cycles have many everyday causes. With ${A()}'s thyroid condition and your TSH near the top, a recheck is reasonable to ask about.`});
+  if(m)o.push({id:"meno",tone:"pista",t:"Your menopause\nmay come early too",who:["amma","you"],
+    st:[[m.num,`${A()}'s age`],"Typical ~51",["31","Your age now"]],
+    ev:[["amma",`${A()}'s periods stopped naturally at ${m.num}.`],["you","Your baseline, kept from now on, will show early changes against your own normal."]],
+    so:"In one study, daughters of mothers with menopause at 45 or younger showed faster drops in ovarian reserve markers. It doesn't predict your timing, but it's worth knowing in your thirties."});
+  return o}
+function habits(){const o=[];
+  o.push(["Stay tobacco-free","Smokers had about 1.9 times the risk of menopause before 45.","moss",["amma",`${A()}: 44`],SRC.smoke]);
+  o.push(["Strength train","Two or three sessions a week protect bone and muscle before menopause speeds bone loss.","pista",["paati","Hip fracture"]]);
+  o.push(["Eat for iron","Lentils, rajma, ragi and spinach, with lemon or amla. Keep tea away from meals.","mint",["you","Heavier periods"]]);
+  o.push(["Steady sugar","A 10-minute walk after meals. Menopause raises heart and sugar risk.","euca",["amma","Diabetes"]]);
+  o.push(["Protect sleep","Steady wake time and a cool room. Good sleep habits help later with night sweats.","pista",["amma","Night sweats"]]);
+  o.push(["Calcium and vitamin D","Curd, ragi, sesame, and some daylight. Ask about your low vitamin D.","moss",["lab","Vit D 18"]]);
+  return o}
+function steps(){const T=[],m=fact("menopause_age"),bc=fact("family_breast_cancer"),pe=fact("pregnancy_high_bp");
+  T.push(["t-iron","Ask why your periods are heavier","Bring this app's summary. Ask about an iron recheck and a pelvic ultrasound."]);
+  T.push(["t-tsh","Ask about a thyroid recheck",`Mention ${A()}'s thyroid condition.`]);
+  if(m)T.push(["t-amh","Ask about an AMH test before 35",`${A()}'s menopause came at ${m.num}.`,SRC.meno]);
+  if(pe)T.push(["t-pe","Tell your OB-GYN about Amma's BP","Daughters of women with preeclampsia had over twice the risk.",SRC.pe]);
+  if(bc)T.push(["t-breast","Plan breast screening","Paati was diagnosed at 47. Ask whether to start earlier.",SRC.breast]);
+  return T}
+
+/* ============ charts ============ */
+function lineChart(vals,lo,hi,labels,label){const W=360,H=160,l=26,r=8,t=10,b=22,w=W-l-r,h=H-t-b,mn=Math.floor(Math.min(...vals,lo)-2),mx=Math.ceil(Math.max(...vals,hi)+2);
+  const x=i=>l+i*(w/(vals.length-1)),y=v=>t+h-(v-mn)/(mx-mn)*h,pts=vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">
+  ${[mn,Math.round((mn+mx)/2),mx].map(v=>`<text x="0" y="${y(v)+4}" font-size="10" fill="#55635A">${v}</text><line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="#DFE4DA"/>`).join("")}
+  <rect x="${l}" y="${y(hi)}" width="${w}" height="${Math.max(2,y(lo)-y(hi))}" rx="6" fill="#D5EADB"/>
+  <polyline points="${pts}" fill="none" stroke="#1D4A37" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+  ${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${v>hi||v<lo?"#C46A2B":"#1D4A37"}"/>`).join("")}
+  ${labels.map((m,i)=>`<text x="${x(i)}" y="${H-5}" text-anchor="middle" font-size="10" fill="#55635A">${m[0]}</text>`).join("")}</svg>`}
+function bars(vals,base,labels){const W=360,H=120,l=8,r=8,t=8,b=20,w=W-l-r,h=H-t-b,mx=Math.max(5,...vals),bw=w/vals.length*.6,y=v=>t+h-v/mx*h;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Heavy-flow days per period over 12 cycles">
+  ${vals.map((v,i)=>{const cx=l+(i+.5)*(w/vals.length),up=v>base+.5;return `<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${t+h-y(v)}" rx="${bw/2}" fill="${up?"#C46A2B":"#AFC8A0"}"/><text x="${cx}" y="${H-4}" text-anchor="middle" font-size="10" fill="#55635A">${labels[i][0]}</text>`}).join("")}
+  <line x1="${l}" x2="${W-r}" y1="${y(base)}" y2="${y(base)}" stroke="#15231B" stroke-dasharray="3 4"/></svg>`}
+
+/* ============ icons ============ */
+const svg=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const IC={gear:svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+ chart:svg('<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/>'),
+ root:svg('<path d="M12 3c-3 0-5 2-5 4.5S9 11 12 11s5-1 5-3.5S15 3 12 3z"/><path d="M12 11v5"/><path d="M12 16c-2 0-3 1.5-5 4M12 16c2 0 3 1.5 5 4M12 16v5"/>',28),
+ tree:svg('<circle cx="12" cy="5" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M12 7.5V12M12 12c-3 0-6 2-6 4.5M12 12c3 0 6 2 6 4.5"/>'),
+ mic:svg('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',24),
+ scan:svg('<path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2M7 12h10"/>',24),
+ chat:svg('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',24),
+ copy:svg('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',18),
+ send:svg('<path d="M5 12h14M13 6l6 6-6 6"/>',22),
+ back:svg('<path d="M15 6l-6 6 6 6"/>'),
+ check:svg('<path d="M20 6 9 17l-5-5"/>',16),
+ lock:svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',14)};
+const FACE={you:["f-you"],amma:["f-amma","A"],paati:["f-paati","P"],lab:["f-lab","Lab"]};
+const face=k=>`<span class="face ${FACE[k][0]}" aria-hidden="true">${k==="you"?esc(S.me.name[0]):FACE[k][1]}</span>`;
+const hdr=(title,kicker,extra="")=>`<div class="top"><div style="flex:1;min-width:0"><p class="kicker">${kicker}</p><h1>${title}</h1></div>${extra}<a class="round" href="#settings" aria-label="Settings">${IC.gear}</a></div>`;
+const pills=(key,opts)=>`<div class="pills" role="group">${opts.map(([v,l])=>`<button class="pill" type="button" data-pill="${key}" data-v="${v}" aria-pressed="${S.ui[key]===v}">${l}</button>`).join("")}</div>`;
+
+/* ============ Insights ============ */
+function vInsights(){
+  const s=sig(),L=S.cycles.map(c=>c.len),H=S.cycles.map(c=>c.heavy),lbl=S.cycles.map(c=>c.m);
+  const head=hdr("Insights","Your reproductive baseline");
+  const tabs=`<div class="top">${pills("ins",[["trends","Trends"],["lifestyle","Lifestyle"]])}</div>`;
+  if(S.ui.ins==="lifestyle"){const T=steps();return head+tabs+`
+   <section class="card t-forest"><span class="small" style="opacity:.8">Toward an easier menopause</span>
+    <h3>${esc(A())}'s came at 44. The habits you build in your 30s shape how yours goes.</h3></section>
+   <div class="grid2">${habits().map(([t,d,tone,w,src])=>`<article class="habit t-${tone}"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3>${esc(t)}</h3>${face(w[0])}</div><p>${esc(d)}</p><span class="mini">${esc(w[1])}</span>${src?`<a class="small" href="${src[1]}" target="_blank" rel="noopener" style="color:inherit">${esc(src[0])}</a>`:""}</article>`).join("")}</div>
+   <section class="sheet"><div class="sheet-h"><h2>Conversations to have</h2><span class="tag">${T.filter(t=>S.tasks[t[0]]).length} of ${T.length}</span></div>
+    <div>${T.map(([id,t,d,src])=>`<div class="tk ${S.tasks[id]?"done":""}"><button class="check" type="button" data-task="${id}" aria-pressed="${!!S.tasks[id]}" aria-label="Mark done: ${esc(t)}">${S.tasks[id]?IC.check:""}</button><div class="tx"><b>${esc(t)}</b><div class="small muted">${esc(d)}${src?` <a href="${src[1]}" target="_blank" rel="noopener" style="color:var(--forest)">${esc(src[0])}</a>`:""}</div></div></div>`).join("")}</div></section>`}
+  return head+tabs+`
+   <div class="base">
+    <div class="bv t-moss"><span>Cycle length</span><b>${Math.round(s.cyc.base)} <small>days</small></b><em>Now ${s.cyc.rec.toFixed(0)} days ↑</em></div>
+    <div class="bv t-mint"><span>Cycle variation</span><b>±${s.cyc.var0.toFixed(0)} <small>days</small></b><em>Now ±${s.cyc.var1.toFixed(0)} days ↑</em></div>
+    <div class="bv t-pista"><span>Period length</span><b>${s.days.base.toFixed(0)} <small>days</small></b><em>Now ${s.days.rec.toFixed(0)} days ↑</em></div>
+    <div class="bv t-euca"><span>Heavy-flow days</span><b>${s.heavy.base.toFixed(0)} <small>a period</small></b><em>Now ${s.heavy.rec.toFixed(0)} ↑</em></div>
+   </div>
+   <p class="small muted" style="margin-top:-6px">Baseline is your Dec to May average. "Now" is your last 3 cycles.</p>
+   <section class="card t-white"><div class="row between"><h2>Cycle length</h2><span class="tag">12 months</span></div>
+    ${lineChart(L,s.cyc.base-2*s.cyc.sd,s.cyc.base+2*s.cyc.sd,lbl,"Cycle length over 12 months against your baseline range")}
+    <div class="legend"><span><i style="background:#D5EADB"></i>Your baseline range</span><span><i style="background:#C46A2B"></i>Outside it</span></div></section>
+   <section class="card t-white"><div class="row between"><h2>Heavy-flow days</h2><span class="tag">Per period</span></div>${bars(H,s.heavy.base,lbl)}</section>
+   <section class="sheet"><div class="sheet-h"><h2>Patterns worth a conversation</h2></div>
+    ${patterns().map(c=>{const o=S.ui.open===c.id;return `<div class="card t-${c.tone} tap" role="button" tabindex="0" data-open="${c.id}" aria-expanded="${o}">
+     <div class="head"><h3 style="white-space:pre-line">${esc(c.t)}</h3><div class="faces">${c.who.map(face).join("")}</div></div>
+     ${c.alert?`<div><span class="chip alert">Talk to your doctor</span></div>`:""}
+     <div class="stats"><div><b>${esc(c.st[0][0])}</b><span>${esc(c.st[0][1])}</span></div><span class="chip">${esc(c.st[1])}</span><div class="r"><b>${esc(c.st[2][0])}</b><span>${esc(c.st[2][1])}</span></div></div>
+     ${o?`<div class="detail">${c.ev.map(([k,t])=>`<div class="ev">${face(k)}<span>${esc(t)}</span></div>`).join("")}<p>${esc(c.so)}</p></div>`:""}</div>`}).join("")}</section>
+   <section class="card t-white"><h2>Labs that touch your cycle</h2>
+    <div class="circles">${S.labs.slice(0,4).map(l=>`<div class="circ"><i class="c-${labState(l)}">${l.value}</i>${esc(l.short||l.name)}</div>`).join("")}</div>
+    <p class="small muted">Orange is outside your lab's range.</p></section>`}
+
+/* ============ Root ============ */
+function inviteText(){return `${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in ${S.me.lang}, skip anything, and you choose what I see. — ${S.me.name}`}
+const inviteLink=()=>`getroots.app/i/${S.invite.code}`;
+function vRoot(){
+  if(S.iv.started&&!S.iv.done)return vInterview();
+  if(S.iv.started&&S.iv.done)return vReview();
+  const notes=shared().length,scans=S.scans.length;
+  return hdr("Root","Gather your family's story")+`
+   <div class="hero"><div class="big">${String(notes+S.family.length+scans).padStart(2,"0")}<small>ROOTS</small></div>
+    <div class="side"><div><b>${notes} from ${esc(A())}</b><span>Her interview, ${esc(S.iv.sharedOn||"not yet")}</span></div><div><b>${scans+S.family.length} added by you</b><span>Scans and notes</span></div></div></div>
+   <section class="card t-forest">
+    <div class="head"><div><span class="small" style="opacity:.8">1 · Interview</span><h3>Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:48px;height:48px;border-radius:16px" aria-hidden="true">${IC.mic}</span></div>
+    <div class="bubble">${esc(inviteText())}</div>
+    <div class="linkbox"><code>${esc(inviteLink())}</code><button class="btn sm lime" type="button" data-act="copyinvite">${IC.copy}Copy invite</button></div>
+    <div class="row"><button class="btn sm light" type="button" data-act="newiv">Preview her interview</button><span class="small" style="opacity:.8">${S.iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(S.iv.sharedOn)}`:"Waiting for her"}</span></div>
+   </section>
+   <section class="card t-pista">
+    <div class="head"><div><span class="small">2 · Scan</span><h3>Scan a report or old document</h3></div><span class="mic" style="width:48px;height:48px;border-radius:16px;background:var(--white)" aria-hidden="true">${IC.scan}</span></div>
+    <p class="small">Lab reports, discharge papers, prescriptions. Claude reads them and adds what it finds to the right person in your tree.</p>
+    <div class="row">${IMAGES?`<label class="btn sm" for="scanFile" style="cursor:pointer">Choose a photo</label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`:""}<button class="btn sm ghost" type="button" data-act="samplescan">Try a sample document</button></div>
+    ${S.scans.map(s=>`<div class="detail"><b>${esc(s.title)}</b><span class="small">${esc(s.found)}</span></div>`).join("")}
+   </section>
+   <section class="sheet">
+    <div class="sheet-h"><div><span class="small muted">3 · Ask</span><h2>Ask about your roots</h2></div><span class="mic" style="width:44px;height:44px;border-radius:14px;background:var(--mint);color:var(--mint-ink)" aria-hidden="true">${IC.chat}</span></div>
+    <div class="chat" id="chat" aria-live="polite">${S.chat.length?S.chat.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Ask me anything about your family's health history and what it means for you.</div>`}</div>
+    <div class="sugg">${["What did Paati have?","Will my menopause be early?","What should I tell my OB-GYN?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>
+    <form id="chatForm" class="row" style="padding:0 6px;flex-wrap:nowrap"><label class="sr" for="chatQ">Your question</label><input type="text" id="chatQ" placeholder="Ask a question" style="flex:1;min-width:0"><button class="round" type="submit" style="background:var(--ink);color:var(--app)" aria-label="Send">${IC.send}</button></form>
+   </section>`}
+function vInterview(){const iv=S.iv,c=CH[iv.ch],d=c.demo[Math.min(iv.qi,c.demo.length-1)];
+  return `<div class="top"><button class="round" type="button" data-act="pause" aria-label="Back to Root">${IC.back}</button><div style="flex:1"><p class="kicker">${esc(A())}'s view · ${iv.ch+1} of ${CH.length}</p><h2>${esc(c.title)}</h2></div></div>
+   <section class="card t-forest" style="min-height:290px" aria-live="polite">
+    <div class="dots" aria-hidden="true">${CH.map((_,i)=>`<i class="${i<iv.ch?"done":i===iv.ch?"on":""}"></i>`).join("")}</div>
+    ${BUSY?`<p class="q"><span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span></p>`:`<p class="q ta">${esc(iv.cur?.text)}</p><p class="qen">${esc(iv.cur?.en||"")}</p>`}
+    <span class="small" style="opacity:.75;margin-top:auto">${LIVE?"Claude is listening":"Guided questions"} · ${S.facts.length} notes so far</span></section>
+   <form class="row" id="answerForm" style="align-items:stretch;flex-wrap:nowrap"><label class="sr" for="answer">Her answer</label>
+    <textarea id="answer" placeholder="இங்கே சொல்லுங்க…" style="flex:1;min-width:0"${BUSY?" disabled":""}></textarea>
+    <div style="display:flex;flex-direction:column;gap:8px"><button class="mic" type="button" data-act="mic" aria-label="Answer by voice">${IC.mic}</button><button class="mic" type="submit" style="background:var(--ink);color:var(--app)" aria-label="Send answer">${IC.send}</button></div></form>
+   <div class="row">${d?`<button class="btn sm" type="button" data-act="demo">Use sample answer</button>`:""}<button class="btn sm ghost" type="button" data-act="skip">Skip</button>${BUSY?`<button class="btn sm ghost" type="button" data-act="stop">Stop</button>`:""}</div>`}
+function vReview(){const c=S.facts.filter(f=>f.share==="share").length;
+  return `<div><p class="kicker ta">${esc(S.me.name)} எதைப் பார்க்கலாம்?</p><h1 style="font-size:32px;line-height:1.05">What may ${esc(S.me.name)} see?</h1></div>
+   <p class="small muted">${esc(A())} decides for each note. Private notes stay in her own summary.</p>
+   ${S.facts.map(f=>`<div class="rv"><div class="row between"><b>${esc(f.label)}</b>${f.sensitive?`<span class="mini" style="background:var(--pista)">${IC.lock} Starts private</span>`:""}</div><span class="small">${esc(f.value)}</span>
+    <div class="seg" role="group" aria-label="Sharing for ${esc(f.label)}">${[["share","Share"],["private","Private"],["remove","Remove"]].map(([v,l])=>`<button type="button" data-share="${f.id}" data-v="${v}" aria-pressed="${f.share===v}">${l}</button>`).join("")}</div></div>`).join("")}
+   <button class="btn lime" type="button" data-act="send">Send ${c} notes to ${esc(S.me.name)}</button>`}
+
+/* ============ Family tree ============ */
+function vFamily(){
+  const sel=S.ui.person,P=PEOPLE[sel],cs=conditions(sel);
+  const line=(a,b,w)=>{const p=PEOPLE[a],q=PEOPLE[b],my=(p.y+q.y)/2;return `<path d="M${p.x} ${p.y+30} C ${p.x} ${my}, ${q.x} ${my}, ${q.x} ${q.y-30}" fill="none" stroke="#6B5B3A" stroke-width="${w}" stroke-linecap="round"/>`};
+  const story=sel==="amma"?shared().filter(f=>f.story):[];
+  const adv=sel==="amma"&&fact("advice");
+  /* coverage: which relatives have any history yet */
+  const rels=Object.keys(PEOPLE).filter(k=>k!=="me"),known=rels.filter(k=>conditions(k).length),gaps=rels.filter(k=>!conditions(k).length);
+  /* what each relative's history means for you */
+  const means=sel==="me"?[]:famMeaning(sel,cs);
+  const isAppaSide=sel==="appa"||sel.startsWith("appa");
+  return hdr("Family","Your roots, three generations")+`
+   <style>
+    .fx-cov{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:22px;background:var(--white)}
+    .fx-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.fx-bar i{display:block;height:100%;background:var(--forest);border-radius:4px}
+    .fx-gap{border:1.5px dashed var(--root);background:transparent;color:var(--root);border-radius:999px;min-height:32px;padding:0 12px;font-size:12px;font-weight:600;cursor:pointer}
+    .fx-mean{display:flex;flex-direction:column;gap:10px;border-radius:18px;padding:14px;background:rgba(255,255,255,.12)}
+    .t-white .fx-mean,.t-pista .fx-mean{background:var(--app)}
+    .fx-mean li{display:flex;gap:10px;font-size:14px;line-height:1.4}
+    .fx-mean li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--lime);margin-top:6px}
+    .fx-mean ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+    .fx-mean a{color:inherit;opacity:.75;font-size:12px}
+    .fx-gen{display:block;font-size:11px;font-weight:600;color:var(--apricot-ink);margin-top:2px}
+    button.mini{border:0;cursor:pointer;text-align:left}
+    #famCard{scroll-margin-top:12px}
+   </style>
+   <div class="fx-cov">
+    <div class="row between"><b class="small">${known.length} of ${rels.length} relatives have history</b><span class="small muted">${Math.round(known.length/rels.length*100)}%</span></div>
+    <div class="fx-bar" aria-hidden="true"><i style="width:${known.length/rels.length*100}%"></i></div>
+    ${gaps.length?`<div class="row" style="gap:6px"><span class="small muted">Still missing</span>${gaps.map(k=>`<button type="button" class="fx-gap" data-person="${k}">${esc(PEOPLE[k].n())}</button>`).join("")}</div>`:`<span class="small muted">Every branch has a story. Nice work.</span>`}
+   </div>
+   <div class="tree">
+    <svg viewBox="0 0 360 540" aria-hidden="true">
+     <circle cx="130" cy="70" r="46" fill="#AFC8A0" opacity=".55"/><circle cx="232" cy="64" r="50" fill="#AFC8A0" opacity=".5"/><circle cx="180" cy="40" r="44" fill="#D5EADB"/><circle cx="292" cy="104" r="34" fill="#D5EADB" opacity=".8"/>
+     <path d="M180 118 C 176 140, 186 158, 180 178" stroke="#6B5B3A" stroke-width="14" stroke-linecap="round" fill="none"/>
+     <path d="M0 176 Q 90 168 180 178 T 360 174" stroke="#B9AE8E" stroke-width="2" fill="none"/>
+     <path d="M180 178 C 180 220, 100 230, 100 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
+     <path d="M180 178 C 180 220, 262 230, 262 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
+     <text x="14" y="206" font-size="11" font-weight="600" fill="#6B5B3A" letter-spacing=".04em">${esc(A().toUpperCase())}'S SIDE</text>
+     <text x="346" y="206" font-size="11" font-weight="600" fill="#6B5B3A" text-anchor="end" letter-spacing=".04em">APPA'S SIDE</text>
+     ${line("amma","paati",6)}${line("amma","thatha",6)}${line("appa","appapaati",6)}${line("appa","appathatha",6)}
+     <path d="M46 500 q -8 18 -18 26 M150 500 q 6 16 14 24 M224 500 q -6 16 -14 24 M322 500 q 8 18 18 26" stroke="#6B5B3A" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>
+    </svg>
+    ${Object.entries(PEOPLE).map(([k,p])=>{const c=conditions(k),has=c.length||k==="me";const tone=k==="me"?"background:var(--lime);color:var(--lime-ink)":k==="amma"?"background:var(--forest);color:var(--on-forest)":has?"background:var(--moss);color:var(--moss-ink)":"";
+      return `<button type="button" class="node ${p.lg?"lg":""} ${has?"":"empty"}" style="left:${p.x/360*100}%;top:${p.y/540*100}%" data-person="${k}" aria-pressed="${sel===k}" aria-label="${esc(p.n())}, ${c.length} conditions"><span class="dot" style="${tone}">${esc(p.i())}${c.length?`<span class="ct">${c.length}</span>`:""}</span><span class="nm">${esc(p.n())}</span></button>`}).join("")}
+   </div>
+   <section id="famCard" class="card ${sel==="amma"?"t-forest":sel==="me"?"t-pista":"t-white"}">
+    <div class="head"><div><span class="small" style="opacity:.8">${esc(P.r())}</span><h3>${esc(P.n())}</h3></div><span class="tag" style="background:rgba(255,255,255,.7);color:var(--ink)">${cs.length} on record</span></div>
+    ${cs.length?`<div class="chips">${cs.map(c=>`<span class="mini ${c.src==="you"||c.src==="scan"?"mine":""}">${esc(c.t)}${c.src==="scan"?" · scan":""}</span>`).join("")}</div>`:`<p class="small" style="opacity:.8">Nothing recorded yet. ${isAppaSide?"Ask Appa for his family's story, or scan an old report.":"Add what you know below, or scan an old report."}</p>
+      <div class="row"><a class="btn sm" href="#root">${isAppaSide?"Invite Appa":"Scan a report"}</a></div>`}
+    ${means.length?`<div class="fx-mean"><b class="small">What this means for you</b><ul>${means.map(m=>`<li><span>${esc(m.t)}${m.src?` <a href="${m.src[1]}" target="_blank" rel="noopener">${esc(m.src[0])}</a>`:""}</span></li>`).join("")}</ul></div>`:""}
+    ${sel==="me"?`<p class="small" style="opacity:.8">Tap anyone in your tree to see what their history means for you.</p>`:""}
+    ${story.length?`<div class="detail" style="background:rgba(255,255,255,.1)"><b class="small">Her story</b>${story.map(f=>`<span class="small">${esc(f.value)}</span>`).join("")}</div>`:""}
+    ${adv?`<p class="ta small" style="opacity:.9">"${esc(adv.quote)}"</p>`:""}
+    <form id="famForm" class="row" style="flex-wrap:nowrap" novalidate><label class="sr" for="mText">Add a condition for ${esc(P.n())}</label><input type="text" id="mText" placeholder="Add a condition, e.g. Thyroid at 40" style="flex:1;min-width:0"><button class="btn sm ${sel==="amma"?"lime":""}" type="submit">Add</button></form>
+   </section>
+   <section class="sheet"><div class="sheet-h"><h2>Health across the family</h2><span class="tag">${Object.keys(PEOPLE).reduce((n,k)=>n+conditions(k).length,0)} conditions</span></div>
+    <div class="matrix">${THEMES.map(([name,re,tone])=>{const who=Object.keys(PEOPLE).map(k=>({k,c:conditions(k).filter(c=>re.test(c.t))})).filter(x=>x.c.length);
+      const gens=new Set(who.map(x=>FAM_GEN[x.k])).size;
+      return `<div class="mrow"><div><b>${name}</b>${gens>1?`<span class="fx-gen">Across ${gens} generations</span>`:""}</div><div class="who">${who.length?who.map(x=>`<button type="button" class="mini t-${tone}" data-person="${x.k}" title="${esc(x.c.map(c=>c.t).join(", "))}">${esc(PEOPLE[x.k].n())}: ${esc(x.c.map(c=>c.t).join(", "))}</button>`).join(""):`<span class="small muted">None recorded</span>`}</div></div>`}).join("")}</div>
+    <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview. Tap any chip to see that person.</p></section>`}
+
+/* ============ family page extras ============ */
+const FAM_GEN={me:0,sister:0,amma:1,appa:1,paati:2,thatha:2,appapaati:2,appathatha:2};
+const FAM_MEAN=[
+ [/pregnan|eclampsia/i,()=>"Daughters of women with high blood pressure in pregnancy had over twice the risk. Tell your OB-GYN before a pregnancy.",SRC.pe],
+ [/menopause/i,n=>`${n}'s menopause came earlier than the typical 51. Yours may come early too, so ask about an AMH test before 35.`,SRC.meno],
+ [/fibroid/i,()=>"Fibroids can run in families. With your periods getting heavier, it's worth mentioning to your doctor."],
+ [/heavy period/i,()=>"Your own periods are getting heavier too. Bring this up together with your iron levels."],
+ [/breast cancer/i,n=>`${n} was diagnosed young. Ask your doctor whether to start breast screening earlier.`,SRC.breast],
+ [/diabetes|sugar/i,()=>"Type 2 diabetes in the family raises your own risk. A short walk after meals helps keep sugar steady."],
+ [/thyroid/i,()=>"Thyroid conditions run in families. Ask about a thyroid recheck at your next visit."],
+ [/hip|fracture|bone|osteo/i,()=>"A family history of hip fracture is a risk factor for weak bones. Strength training in your 30s helps."],
+ [/\bbp\b|blood pressure|heart/i,()=>"High blood pressure in a parent raises your own risk. Get yours checked once a year."],
+ [/painful period|endometri/i,()=>"Painful periods can run in families, and so can endometriosis. Mention it if yours are painful too."],
+ [/pcos/i,()=>"PCOS often runs in families. Worth mentioning if your cycles become irregular."]];
+function famMeaning(who,cs){const n=PEOPLE[who].n(),o=[],seen=new Set();
+  cs.forEach(c=>{const m=FAM_MEAN.find(([re])=>re.test(c.t));if(!m)return;const t=m[1](n);if(seen.has(t))return;seen.add(t);o.push({t,src:m[2]})});
+  return o}
+document.addEventListener("click",e=>{if(location.hash==="#family"&&e.target.closest("[data-person]"))requestAnimationFrame(()=>{const c=document.getElementById("famCard");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})})});
+
+/* ============ Settings ============ */
+function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.prev||"insights"}" aria-label="Back">${IC.back}</a><div style="flex:1"><p class="kicker">Roots</p><h1>Settings</h1></div></div>
+  <form class="sheet" id="setForm" novalidate>
+   <div class="set"><label for="sName"><b>Your name</b></label><input type="text" id="sName" value="${esc(S.me.name)}"></div>
+   <div class="set"><label for="sCall"><b>You call your mother</b></label><input type="text" id="sCall" value="${esc(S.me.call)}"></div>
+   <div class="set"><label for="sLang"><b>Her language</b></label><select id="sLang">${["Tamil","Hindi","English"].map(l=>`<option${S.me.lang===l?" selected":""}>${l}</option>`).join("")}</select></div>
+   <div style="padding:6px 8px"><button class="btn sm" type="submit">Save</button></div></form>
+  <section class="sheet">
+   <div class="set"><span><b>Claude</b><br><span class="small muted">Interview, scans and questions</span></span><span class="tag">${LIVE?"On":"Off"}</span></div>
+   <div class="set"><span><b>Your data</b><br><span class="small muted">Stays in this browser in the prototype</span></span><button class="btn sm ghost" type="button" data-act="reset">Reset sample data</button></div>
+   <div class="set"><span><b>${esc(A())}'s privacy</b><br><span class="small muted">She approves every note. Private notes never reach you.</span></span></div>
+  </section>
+  <p class="small muted">Roots shows patterns, not diagnoses. Talk to your doctor before acting on anything here.</p>`}
+
+/* ============ engines ============ */
+const qFrom=(ch,qi)=>{const q=CH[ch].qs[Math.min(qi,CH[ch].qs.length-1)];return {text:q.ta,en:q.en}};
+function newInterview(){Object.assign(S.iv,{started:true,done:false,submitted:false,ch:0,qi:0,turns:0,log:[]});S.facts=[];S.iv.cur=qFrom(0,0);S.iv.log.push({w:"q",t:S.iv.cur.text});save();location.hash="root";render()}
+function next(){const iv=S.iv;iv.qi++;iv.turns++;let moved=false;if(iv.qi>=CH[iv.ch].qs.length){iv.ch++;iv.qi=0;iv.turns=0;moved=true}
+  if(iv.ch>=CH.length){iv.done=true;return}const q=qFrom(iv.ch,iv.qi),k=iv.log.length%3;
+  iv.cur={text:ACK[k]+" "+q.text,en:ACKEN[k]+" "+(moved?`Now, ${CH[iv.ch].title.toLowerCase()}. `:"")+q.en}}
+async function answer(text){const iv=S.iv,ch=iv.ch,d=CH[ch].demo[Math.min(iv.qi,CH[ch].demo.length-1)],isD=d&&d.a===text;
+  const local=()=>(isD?d.f.map(f=>mkFact(f,ch,text)):[mkFact({label:CH[ch].title,value:text},ch,text)]).forEach(f=>S.facts.push(f));
+  iv.log.push({w:"a",t:text});
+  if(LIVE){BUSY=true;render();ctl=new AbortController();
+    try{const r=await SAMPLE.json(ivPrompt(text),{modelTier:"quick",cache:false,signal:ctl.signal});
+      const fs=(Array.isArray(r?.facts)?r.facts:[]).filter(f=>f&&f.label&&f.value);
+      if(fs.length)fs.forEach(f=>S.facts.push(mkFact({label:String(f.label),value:String(f.value),key:KEYS.includes(f.key)?f.key:null,num:typeof f.num==="number"?f.num:null,rel:f.rel==="mother"?"mother":"self",sensitive:!!f.sensitive,chip:f.chip?String(f.chip):null,story:!!f.story},ch,text)));else local();
+      iv.qi++;iv.turns++;if(r?.move_on||iv.turns>=3){iv.ch++;iv.qi=0;iv.turns=0}
+      if(iv.ch>=CH.length)iv.done=true;else iv.cur={text:String(r?.reply||qFrom(iv.ch,iv.qi).text),en:String(r?.reply_en||"")}}
+    catch(e){if(e?.code==="cancelled"){iv.log.pop();BUSY=false;render();return}
+      if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e?.code))LIVE=false;
+      toast("Using the guided questions.");local();next()}
+    BUSY=false}else{local();next()}
+  if(!iv.done)iv.log.push({w:"q",t:iv.cur.text});save();render()}
+function ivPrompt(text){const c=CH[S.iv.ch],n=CH[S.iv.ch+1];
+  return `You are the interviewer in Roots. ${S.me.mother}, a mother, tells her life and health story so her daughter ${S.me.name} can understand her own health. Speak only in simple, warm ${S.me.lang}. Never diagnose, judge, or ask about abuse or violence.
+Chapter "${c.title}". Goal: ${c.goal}
+${n?`Next chapter opening question: "${n.qs[0].en}"`:"This is the last chapter."}
+Recent conversation:
+${S.iv.log.slice(-6).map(x=>(x.w==="q"?"Interviewer: ":"Her: ")+x.t).join("\n")}
+Her latest answer: "${text}"
+Reply with only JSON: {"reply":"${S.me.lang}: one short acknowledgment, then exactly one question","reply_en":"English translation","facts":[{"label":"short English label","value":"short English fact","key":"one of ${KEYS.join(", ")} or null","num":null,"rel":"self or mother","sensitive":false,"story":false,"chip":"2-4 word English health-condition tag, or null if not a health condition"}],"move_on":false}
+Set story true for life-context facts (where she grew up, cooking smoke, tobacco, first period). Set move_on true when this chapter is covered or she wants to skip; then ask the next chapter's opening question naturally, or thank her if this is the last chapter. Extract only facts she said; mark painful ones sensitive.`}
+function context(){const people=Object.keys(PEOPLE).map(k=>{const c=conditions(k);return c.length?`${PEOPLE[k].n()} (${PEOPLE[k].r()}): ${c.map(x=>x.t).join(", ")}`:null}).filter(Boolean).join("\n");
+  const s=sig();return `User: ${S.me.name}, ${S.me.age}. Cycle baseline ${Math.round(s.cyc.base)} days, now ${s.cyc.rec.toFixed(0)}; heavy days ${s.heavy.base.toFixed(0)} now ${s.heavy.rec.toFixed(0)}. Labs: ${S.labs.map(l=>`${l.name} ${l.value} ${l.unit} (range ${l.lo}-${l.hi})`).join("; ")}.\nFamily:\n${people}`}
+async function ask(q){
+  S.chat.push({r:"me",t:q});S.chat.push({r:"ai",t:"…"});save();render();
+  const box=[...document.querySelectorAll("#chat .msg.ai")].pop();if(box)box.innerHTML=`<span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span>`;
+  if(!SAMPLE){S.chat[S.chat.length-1].t="Open this app in Claude to ask questions. Your family data stays on this page.";save();render();return}
+  try{const turns=[{role:"user",content:`You answer questions inside Roots, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
+    const r=await SAMPLE(turns,{modelTier:"quick",cache:false,onText:({text})=>{if(box)box.textContent=text}});S.chat[S.chat.length-1].t=r.text}
+  catch(e){S.chat[S.chat.length-1].t=e?.text||"I couldn't answer right now. Try again in a moment."}
+  save();render()}
+async function scan(file){toast("Reading the document…");
+  try{const r=await SAMPLE.json(`This image is a medical document (lab report, discharge summary, prescription). Reply with only JSON: {"title":"short description of the document","person":"one of me, amma, appa, paati, thatha, sister, or unknown","conditions":["short condition tags with age or year if shown"],"labs":[{"name":"Ferritin","value":18,"unit":"ng/mL","lo":15,"hi":150}]}. Use [] when none. Only include what you can read clearly.`,{images:file});
+    const who=PEOPLE[r?.person]?r.person:"me",cs=(Array.isArray(r?.conditions)?r.conditions:[]).map(String),ls=(Array.isArray(r?.labs)?r.labs:[]).filter(l=>l&&l.name&&typeof l.value==="number");
+    cs.forEach(t=>S.family.push({id:nid(),who,text:t,src:"scan"}));if(who==="me")ls.forEach(l=>S.labs.push({name:String(l.name),short:String(l.name).slice(0,8),value:l.value,unit:String(l.unit||""),lo:typeof l.lo==="number"?l.lo:null,hi:typeof l.hi==="number"?l.hi:null}));
+    S.scans.unshift({title:String(r?.title||"Document"),found:`Added to ${PEOPLE[who].n()}: ${[...cs,...ls.map(l=>l.name+" "+l.value)].join(", ")||"nothing readable"}`});save();render();toast("Added to your tree.")}
+  catch(e){toast(e?.code==="image_rejected"?"That image couldn't be read. Try a JPEG or PNG.":"Couldn't read the document right now.")}}
+
+/* ============ router + events ============ */
+function route(){const h=location.hash.slice(1);return ["insights","root","family","settings"].includes(h)?h:"insights"}
+function render(){const r=route();if(r!=="settings")S.ui.prev=r;
+  document.getElementById("tabbar").innerHTML=`<a href="#insights"${r==="insights"?' aria-current="page"':""}>${IC.chart}Insights</a><a href="#root" class="rootbtn"${r==="root"?' aria-current="page"':""}>${IC.root}Root</a><a href="#family"${r==="family"?' aria-current="page"':""}>${IC.tree}Family</a>`;
+  document.getElementById("app").innerHTML=r==="insights"?vInsights():r==="root"?vRoot():r==="family"?vFamily():vSettings()}
+window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
+document.addEventListener("click",async e=>{
+  const t=e.target;let x;
+  if(x=t.closest("[data-pill]")){S.ui[x.dataset.pill]=x.dataset.v;save();render();return}
+  if(x=t.closest("[data-open]")){S.ui.open=S.ui.open===x.dataset.open?null:x.dataset.open;save();render();return}
+  if(x=t.closest("[data-task]")){S.tasks[x.dataset.task]=!S.tasks[x.dataset.task];save();render();return}
+  if(x=t.closest("[data-person]")){S.ui.person=x.dataset.person;save();render();return}
+  if(x=t.closest("[data-share]")){const f=S.facts.find(y=>y.id===x.dataset.share);if(f){f.share=x.dataset.v;save();render()}return}
+  if(x=t.closest("[data-ask]")){if(!BUSY)ask(x.dataset.ask);return}
+  const b=t.closest("[data-act]");if(!b)return;const a=b.dataset.act;
+  if(a==="newiv")newInterview();
+  if(a==="pause"){S.iv.started=false;S.iv.done=true;S.iv.submitted=S.facts.length>0;save();render()}
+  if(a==="demo"){const iv=S.iv,d=CH[iv.ch].demo[Math.min(iv.qi,CH[iv.ch].demo.length-1)],ta=document.getElementById("answer");if(d&&ta){ta.value=d.a;ta.focus()}}
+  if(a==="skip"&&!BUSY){S.iv.log.push({w:"a",t:"(skipped)"});next();if(!S.iv.done)S.iv.log.push({w:"q",t:S.iv.cur.text});save();render()}
+  if(a==="stop")ctl?.abort();
+  if(a==="mic")toast("Voice comes with the phone app. Type here, or use the sample answer.");
+  if(a==="send"){Object.assign(S.iv,{submitted:true,started:false,done:true,sharedOn:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"})});save();toast(`Sent to ${S.me.name}. Your tree is updated.`);location.hash="family"}
+  if(a==="copyinvite"){const txt=inviteText()+"\n\nhttps://"+inviteLink();try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
+  if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("Sample already added.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997. This confirms the high blood pressure she described.`});save();render();toast("Added to Amma in your tree.")}
+  if(a==="reset"){S=DEF();save();location.hash="insights";render();toast("Sample data restored.")}
+});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open]")){e.preventDefault();e.target.click()}});
+document.addEventListener("change",e=>{if(e.target.id==="scanFile"&&e.target.files[0])scan(e.target.files[0])});
+document.addEventListener("submit",e=>{e.preventDefault();const id=e.target.id,v=x=>document.getElementById(x).value.trim();
+  if(id==="answerForm"){if(!v("answer")){toast("Type her answer first, or tap Skip.");return}answer(v("answer"))}
+  if(id==="chatForm"){const q=v("chatQ");if(!q){toast("Type a question first.");return}ask(q)}
+  if(id==="famForm"){if(!v("mText")){toast("Describe the condition first.");return}if(S.ui.person==="me")S.conds.push(v("mText"));else S.family.push({id:nid(),who:S.ui.person,text:v("mText"),src:"you"});save();render();toast("Added to your tree.")}
+  if(id==="setForm"){S.me.name=v("sName")||"Kavya";S.me.call=v("sCall")||"Amma";S.me.lang=v("sLang");save();render();toast("Saved.")}
+});
+render();
+(async()=>{try{SAMPLE=window.claude?await window.claude.use("sample"):null}catch(e){SAMPLE=null}LIVE=!!SAMPLE;
+  if(SAMPLE){try{IMAGES=!!(await SAMPLE.limits())?.images}catch(e){}}render()})();
+</script>
+
+</body>
+</html>
