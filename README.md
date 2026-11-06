@@ -17,7 +17,7 @@ Built for the Code with Claude: Women in AI Hackathon (women's health track).
 | Tab | What it does |
 |---|---|
 | **Insights** | Your reproductive baseline (cycle length, variation, period length, heavy-flow days), trends against your own normal, patterns that link your data to your family's history, and habits toward an easier menopause. |
-| **Root** (centre) | A chat at the top answers questions about your cycle and your family's health. Below it is the heart of the app: invite your mother with a shareable link, written in Tamil, Hindi or English. She opens her interview, picks who she talks to (a warm niece, a calm nurse, a friend her age, or her daughter's own words), and chats in Tamil, Hindi or English, then approves every note. A smaller row lets you scan old reports into your tree. |
+| **Root** (centre) | A chat at the top answers questions about your cycle and your family's health. You can type, talk (voice input), have replies read aloud, or attach an old report, which Claude reads and adds to your tree. Below it is the heart of the app: invite your mother with a shareable link, written in Tamil, Hindi or English. She opens her interview, picks who she talks to (a warm niece, a calm nurse, a friend her age, or her daughter's own words), and chats in Tamil, Hindi or English, then approves every note. |
 | **Family** | A visual family tree. You are the crown; your parents and grandparents are the roots. Tap anyone to see their conditions and story, and see health themes across generations. |
 
 Privacy is built in: the mother approves every note before it reaches her daughter, and sensitive topics start out private.

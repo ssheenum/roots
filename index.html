@@ -157,7 +157,18 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:60
 .ivchat{padding:0}
 .ivchat .msg{font-size:17px;line-height:1.45}
 .msg small{display:block;font-size:13px;opacity:.75;margin-top:6px;font-family:var(--font)}
-.rootchat .chat{max-height:300px;overflow-y:auto}
+.rootchat{padding:20px 14px 14px;gap:14px}
+.rootchat .chat{min-height:280px;max-height:440px;overflow-y:auto;padding:4px 2px}
+.rootchat .msg{font-size:16px}
+.chatform{display:flex;align-items:flex-end;gap:8px;background:var(--mint);border-radius:26px;padding:8px;margin:0 2px}
+.chatform textarea{flex:1;min-width:0;min-height:52px;max-height:140px;border:0;background:transparent;font-size:17px;padding:12px 10px;resize:none}
+.chatform textarea:focus-visible{outline:none}
+.chatform:focus-within{box-shadow:0 0 0 2px var(--forest)}
+.attbtn{background:var(--white);color:var(--ink);width:48px;height:48px;cursor:pointer}
+.micbtn{background:var(--lime);color:var(--lime-ink);width:48px;height:48px}
+.micbtn.on{background:var(--apricot);color:var(--apricot-ink);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(243,207,168,.45)}}
+@media (prefers-reduced-motion:reduce){.micbtn.on{animation:none}}
 .rootchat .msg.ai{background:var(--mint)}
 .lpill{border-color:rgba(255,255,255,.35);color:var(--on-forest);min-height:40px;padding:0 16px}
 .lpill[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
@@ -361,6 +372,9 @@ const IC={gear:svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0
  send:svg('<path d="M5 12h14M13 6l6 6-6 6"/>',22),
  back:svg('<path d="M15 6l-6 6 6 6"/>'),
  check:svg('<path d="M20 6 9 17l-5-5"/>',16),
+ spk:svg('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',20),
+ spkoff:svg('<path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/>',20),
+ clip:svg('<path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/>',22),
  lock:svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',14)};
 const FACE={you:["f-you"],amma:["f-amma","A"],paati:["f-paati","P"],lab:["f-lab","Lab"]};
 const face=k=>`<span class="face ${FACE[k][0]}" aria-hidden="true">${k==="you"?esc(S.me.name[0]):FACE[k][1]}</span>`;
@@ -423,10 +437,10 @@ function vRoot(){
   const recent=S.chat.slice(-4);
   return hdr("Root","Gather your family's story")+`
    <section class="sheet rootchat" aria-labelledby="chath">
-    <div class="sheet-h"><h2 id="chath" style="font-size:24px">Chat</h2>${S.chat.length>4?`<a class="tag" href="#ask" style="text-decoration:none;color:var(--ink)">See all</a>`:""}</div>
-    <div class="chat" id="chat" aria-live="polite">${recent.length?recent.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Hi ${esc(S.me.name)}. Ask me anything about your cycle or your family's health. I'll compare it with your own normal and what ${esc(A())} shared.</div>`}</div>
-    ${recent.length?"":`<div class="sugg">${["Will my menopause be early?","What did Paati have?","Why are my periods heavier?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`}
-    <form id="chatForm" class="row" style="padding:0 6px;flex-wrap:nowrap"><label class="sr" for="chatQ">Message</label><input type="text" id="chatQ" placeholder="Message" style="flex:1;min-width:0;background:var(--mint);border-color:transparent"><button class="round" type="submit" style="background:var(--forest);color:var(--on-forest)" aria-label="Send">${IC.send}</button></form>
+    <div class="sheet-h"><h2 id="chath" style="font-size:26px">Chat</h2><div class="row" style="flex-wrap:nowrap">${S.chat.length>4?`<a class="tag" href="#ask" style="text-decoration:none;color:var(--ink)">See all</a>`:""}<button class="round" type="button" data-act="speak" aria-pressed="${!!S.ui.speak}" aria-label="${S.ui.speak?"Stop reading replies aloud":"Read replies aloud"}" title="Read replies aloud" style="width:42px;height:42px;${S.ui.speak?"background:var(--forest);color:var(--on-forest)":""}">${S.ui.speak?IC.spk:IC.spkoff}</button></div></div>
+    <div class="chat" id="chat" aria-live="polite">${recent.length?recent.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Hi ${esc(S.me.name)}. Ask me anything about your cycle or your family's health. I'll compare it with your own normal and what ${esc(A())} shared. You can also attach an old report and I'll add it to your tree.</div>`}</div>
+    ${recent.length?"":`<div class="sugg"><button type="button" data-act="samplescan">Attach a sample report</button>${["Will my menopause be early?","What did Paati have?","Why are my periods heavier?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`}
+    <form id="chatForm" class="chatform"><label class="sr" for="chatQ">Message</label><textarea id="chatQ" rows="2" placeholder="Type, talk, or attach a report"></textarea>${IMAGES?`<label class="round attbtn" for="scanFile" aria-label="Attach a report or document" title="Attach a document">${IC.clip}</label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`:`<button class="round attbtn" type="button" data-act="samplescan" aria-label="Attach a sample document" title="Attach a sample document">${IC.clip}</button>`}<button class="round micbtn" type="button" data-act="listen" data-target="chatQ" aria-label="Speak your question">${IC.mic}</button><button class="round" type="submit" style="background:var(--forest);color:var(--on-forest)" aria-label="Send">${IC.send}</button></form>
    </section>
    <section class="card t-forest">
     <div class="head"><div><span class="small" style="opacity:.8">Start here</span><h3 style="font-size:28px">Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:52px;height:52px;border-radius:18px" aria-hidden="true">${IC.mic}</span></div>
@@ -438,15 +452,13 @@ function vRoot(){
     <a class="btn lime" href="#interview">${IC.mic}${iv.started&&!iv.done?"Continue her interview":"Open her interview"}</a>
     <p class="small" style="opacity:.85">${iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(iv.sharedOn)} and kept ${priv} private. She talked with ${esc(pname(iv.persona||"niece"))}.`:`She'll open it in ${esc(S.me.lang)}, pick who she talks to, and approve every note.`}</p>
    </section>
-   ${IMAGES?`<label class="scanrow t-pista" for="scanFile"><span class="ico">${IC.scan}</span><span class="tx"><b>Scan a document</b><span class="s">Reports and old papers go straight into your tree</span></span></label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr"><button class="btn sm ghost" type="button" data-act="samplescan" style="align-self:flex-start">Or try a sample document</button>`
-     :`<button class="scanrow t-pista" type="button" data-act="samplescan"><span class="ico">${IC.scan}</span><span class="tx"><b>Scan a document</b><span class="s">Try a sample paper. It goes straight into your tree.</span></span></button>`}
-   ${S.scans.length?`<section class="sheet" style="padding:8px"><div class="list">${S.scans.map(s=>`<div class="li"><span class="ic t-pista">${IC.scan}</span><div class="tx"><b>${esc(s.title)}</b><span>${esc(s.found)}</span></div></div>`).join("")}</div></section>`:""}`}
+`}
 function vAsk(){
   return sub("root","Your family's health, explained","Ask about your roots")+`
    <section class="sheet">
     <div class="chat" id="chat" aria-live="polite">${S.chat.length?S.chat.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Ask me anything about your family's health history and what it means for you.</div>`}</div>
     <div class="sugg">${["What did Paati have?","Will my menopause be early?","What should I tell my OB-GYN?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>
-    <form id="chatForm" class="row" style="padding:0 6px;flex-wrap:nowrap"><label class="sr" for="chatQ">Your question</label><input type="text" id="chatQ" placeholder="Ask a question" style="flex:1;min-width:0"><button class="round" type="submit" style="background:var(--ink);color:var(--app)" aria-label="Send">${IC.send}</button></form>
+    <form id="chatForm" class="chatform"><label class="sr" for="chatQ">Message</label><textarea id="chatQ" rows="2" placeholder="Type, talk, or attach a report"></textarea>${IMAGES?`<label class="round attbtn" for="scanFile" aria-label="Attach a report or document" title="Attach a document">${IC.clip}</label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`:`<button class="round attbtn" type="button" data-act="samplescan" aria-label="Attach a sample document" title="Attach a sample document">${IC.clip}</button>`}<button class="round micbtn" type="button" data-act="listen" data-target="chatQ" aria-label="Speak your question">${IC.mic}</button><button class="round" type="submit" style="background:var(--forest);color:var(--on-forest)" aria-label="Send">${IC.send}</button></form>
    </section>
    <p class="small muted">Answers use only your family's notes, your cycles and your labs. Claude won't diagnose.</p>`}
 function vInterview(){
@@ -466,7 +478,7 @@ function vInterview(){
    <p class="small muted">${LIVE?"Claude is the interviewer.":"Guided questions."} ${S.facts.length} notes written down; you approve each one at the end.</p>
    <form class="row" id="answerForm" style="align-items:flex-end;flex-wrap:nowrap"><label class="sr" for="answer">Your answer</label>
     <textarea id="answer" placeholder="${useTa()?"இங்கே சொல்லுங்க…":"Type your answer…"}" style="flex:1;min-width:0;min-height:56px"${BUSY?" disabled":""}></textarea>
-    <button class="mic" type="button" data-act="mic" aria-label="Answer by voice" style="width:52px;height:52px">${IC.mic}</button><button class="mic" type="submit" style="width:52px;height:52px;background:var(--ink);color:var(--app)" aria-label="Send answer">${IC.send}</button></form>
+    <button class="mic micbtn" type="button" data-act="listen" data-target="answer" aria-label="Answer by voice" style="width:52px;height:52px">${IC.mic}</button><button class="mic" type="submit" style="width:52px;height:52px;background:var(--ink);color:var(--app)" aria-label="Send answer">${IC.send}</button></form>
    <div class="row">${d?`<button class="btn sm" type="button" data-act="demo">Use sample answer</button>`:""}<button class="btn sm ghost" type="button" data-act="skip">Skip</button>${useTa()?`<button class="btn sm ghost" type="button" data-act="toggleen">${iv.showEn?"Hide":"Show"} English</button>`:""}${BUSY?`<button class="btn sm ghost" type="button" data-act="stop">Stop</button>`:""}</div>`}
 function vReview(){const c=S.facts.filter(f=>f.share==="share").length;
   return `<div><p class="kicker ta">${esc(S.me.name)} எதைப் பார்க்கலாம்?</p><h1 style="font-size:32px;line-height:1.05">What may ${esc(S.me.name)} see?</h1></div>
@@ -481,31 +493,7 @@ function vFamily(){
   const line=(a,b,w)=>{const p=PEOPLE[a],q=PEOPLE[b],my=(p.y+q.y)/2;return `<path d="M${p.x} ${p.y+30} C ${p.x} ${my}, ${q.x} ${my}, ${q.x} ${q.y-30}" fill="none" stroke="#6B5B3A" stroke-width="${w}" stroke-linecap="round"/>`};
   const story=sel==="amma"?shared().filter(f=>f.story):[];
   const adv=sel==="amma"&&fact("advice");
-  /* coverage: which relatives have any history yet */
-  const rels=Object.keys(PEOPLE).filter(k=>k!=="me"),known=rels.filter(k=>conditions(k).length),gaps=rels.filter(k=>!conditions(k).length);
-  /* what each relative's history means for you */
-  const means=sel==="me"?[]:famMeaning(sel,cs);
-  const isAppaSide=sel==="appa"||sel.startsWith("appa");
   return hdr("Family","Your roots, three generations")+`
-   <style>
-    .fx-cov{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:22px;background:var(--white)}
-    .fx-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.fx-bar i{display:block;height:100%;background:var(--forest);border-radius:4px}
-    .fx-gap{border:1.5px dashed var(--root);background:transparent;color:var(--root);border-radius:999px;min-height:32px;padding:0 12px;font-size:12px;font-weight:600;cursor:pointer}
-    .fx-mean{display:flex;flex-direction:column;gap:10px;border-radius:18px;padding:14px;background:rgba(255,255,255,.12)}
-    .t-white .fx-mean,.t-pista .fx-mean{background:var(--app)}
-    .fx-mean li{display:flex;gap:10px;font-size:14px;line-height:1.4}
-    .fx-mean li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--lime);margin-top:6px}
-    .fx-mean ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-    .fx-mean a{color:inherit;opacity:.75;font-size:12px}
-    .fx-gen{display:block;font-size:11px;font-weight:600;color:var(--apricot-ink);margin-top:2px}
-    button.mini{border:0;cursor:pointer;text-align:left}
-    #famCard{scroll-margin-top:12px}
-   </style>
-   <div class="fx-cov">
-    <div class="row between"><b class="small">${known.length} of ${rels.length} relatives have history</b><span class="small muted">${Math.round(known.length/rels.length*100)}%</span></div>
-    <div class="fx-bar" aria-hidden="true"><i style="width:${known.length/rels.length*100}%"></i></div>
-    ${gaps.length?`<div class="row" style="gap:6px"><span class="small muted">Still missing</span>${gaps.map(k=>`<button type="button" class="fx-gap" data-person="${k}">${esc(PEOPLE[k].n())}</button>`).join("")}</div>`:`<span class="small muted">Every branch has a story. Nice work.</span>`}
-   </div>
    <div class="tree">
     <svg viewBox="0 0 360 540" aria-hidden="true">
      <circle cx="130" cy="70" r="46" fill="#AFC8A0" opacity=".55"/><circle cx="232" cy="64" r="50" fill="#AFC8A0" opacity=".5"/><circle cx="180" cy="40" r="44" fill="#D5EADB"/><circle cx="292" cy="104" r="34" fill="#D5EADB" opacity=".8"/>
@@ -513,48 +501,23 @@ function vFamily(){
      <path d="M0 176 Q 90 168 180 178 T 360 174" stroke="#B9AE8E" stroke-width="2" fill="none"/>
      <path d="M180 178 C 180 220, 100 230, 100 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
      <path d="M180 178 C 180 220, 262 230, 262 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
-     <text x="14" y="206" font-size="11" font-weight="600" fill="#6B5B3A" letter-spacing=".04em">${esc(A().toUpperCase())}'S SIDE</text>
-     <text x="346" y="206" font-size="11" font-weight="600" fill="#6B5B3A" text-anchor="end" letter-spacing=".04em">APPA'S SIDE</text>
      ${line("amma","paati",6)}${line("amma","thatha",6)}${line("appa","appapaati",6)}${line("appa","appathatha",6)}
      <path d="M46 500 q -8 18 -18 26 M150 500 q 6 16 14 24 M224 500 q -6 16 -14 24 M322 500 q 8 18 18 26" stroke="#6B5B3A" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>
     </svg>
     ${Object.entries(PEOPLE).map(([k,p])=>{const c=conditions(k),has=c.length||k==="me";const tone=k==="me"?"background:var(--lime);color:var(--lime-ink)":k==="amma"?"background:var(--forest);color:var(--on-forest)":has?"background:var(--moss);color:var(--moss-ink)":"";
       return `<button type="button" class="node ${p.lg?"lg":""} ${has?"":"empty"}" style="left:${p.x/360*100}%;top:${p.y/540*100}%" data-person="${k}" aria-pressed="${sel===k}" aria-label="${esc(p.n())}, ${c.length} conditions"><span class="dot" style="${tone}">${esc(p.i())}${c.length?`<span class="ct">${c.length}</span>`:""}</span><span class="nm">${esc(p.n())}</span></button>`}).join("")}
    </div>
-   <section id="famCard" class="card ${sel==="amma"?"t-forest":sel==="me"?"t-pista":"t-white"}">
+   <section class="card ${sel==="amma"?"t-forest":sel==="me"?"t-pista":"t-white"}">
     <div class="head"><div><span class="small" style="opacity:.8">${esc(P.r())}</span><h3>${esc(P.n())}</h3></div><span class="tag" style="background:rgba(255,255,255,.7);color:var(--ink)">${cs.length} on record</span></div>
-    ${cs.length?`<div class="chips">${cs.map(c=>`<span class="mini ${c.src==="you"||c.src==="scan"?"mine":""}">${esc(c.t)}${c.src==="scan"?" · scan":""}</span>`).join("")}</div>`:`<p class="small" style="opacity:.8">Nothing recorded yet. ${isAppaSide?"Ask Appa for his family's story, or scan an old report.":"Add what you know below, or scan an old report."}</p>
-      <div class="row"><a class="btn sm" href="#root">${isAppaSide?"Invite Appa":"Scan a report"}</a></div>`}
-    ${means.length?`<div class="fx-mean"><b class="small">What this means for you</b><ul>${means.map(m=>`<li><span>${esc(m.t)}${m.src?` <a href="${m.src[1]}" target="_blank" rel="noopener">${esc(m.src[0])}</a>`:""}</span></li>`).join("")}</ul></div>`:""}
-    ${sel==="me"?`<p class="small" style="opacity:.8">Tap anyone in your tree to see what their history means for you.</p>`:""}
+    ${cs.length?`<div class="chips">${cs.map(c=>`<span class="mini ${c.src==="you"||c.src==="scan"?"mine":""}">${esc(c.t)}${c.src==="scan"?" · scan":""}</span>`).join("")}</div>`:`<p class="small" style="opacity:.8">Nothing recorded yet. ${sel.startsWith("appa")?"Ask Appa for his family's story.":"Add what you know below."}</p>`}
     ${story.length?`<div class="detail" style="background:rgba(255,255,255,.1)"><b class="small">Her story</b>${story.map(f=>`<span class="small">${esc(f.value)}</span>`).join("")}</div>`:""}
     ${adv?`<p class="ta small" style="opacity:.9">"${esc(adv.quote)}"</p>`:""}
     <form id="famForm" class="row" style="flex-wrap:nowrap" novalidate><label class="sr" for="mText">Add a condition for ${esc(P.n())}</label><input type="text" id="mText" placeholder="Add a condition, e.g. Thyroid at 40" style="flex:1;min-width:0"><button class="btn sm ${sel==="amma"?"lime":""}" type="submit">Add</button></form>
    </section>
    <section class="sheet"><div class="sheet-h"><h2>Health across the family</h2><span class="tag">${Object.keys(PEOPLE).reduce((n,k)=>n+conditions(k).length,0)} conditions</span></div>
     <div class="matrix">${THEMES.map(([name,re,tone])=>{const who=Object.keys(PEOPLE).map(k=>({k,c:conditions(k).filter(c=>re.test(c.t))})).filter(x=>x.c.length);
-      const gens=new Set(who.map(x=>FAM_GEN[x.k])).size;
-      return `<div class="mrow"><div><b>${name}</b>${gens>1?`<span class="fx-gen">Across ${gens} generations</span>`:""}</div><div class="who">${who.length?who.map(x=>`<button type="button" class="mini t-${tone}" data-person="${x.k}" title="${esc(x.c.map(c=>c.t).join(", "))}">${esc(PEOPLE[x.k].n())}: ${esc(x.c.map(c=>c.t).join(", "))}</button>`).join(""):`<span class="small muted">None recorded</span>`}</div></div>`}).join("")}</div>
-    <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview. Tap any chip to see that person.</p></section>`}
-
-/* ============ family page extras ============ */
-const FAM_GEN={me:0,sister:0,amma:1,appa:1,paati:2,thatha:2,appapaati:2,appathatha:2};
-const FAM_MEAN=[
- [/pregnan|eclampsia/i,()=>"Daughters of women with high blood pressure in pregnancy had over twice the risk. Tell your OB-GYN before a pregnancy.",SRC.pe],
- [/menopause/i,n=>`${n}'s menopause came earlier than the typical 51. Yours may come early too, so ask about an AMH test before 35.`,SRC.meno],
- [/fibroid/i,()=>"Fibroids can run in families. With your periods getting heavier, it's worth mentioning to your doctor."],
- [/heavy period/i,()=>"Your own periods are getting heavier too. Bring this up together with your iron levels."],
- [/breast cancer/i,n=>`${n} was diagnosed young. Ask your doctor whether to start breast screening earlier.`,SRC.breast],
- [/diabetes|sugar/i,()=>"Type 2 diabetes in the family raises your own risk. A short walk after meals helps keep sugar steady."],
- [/thyroid/i,()=>"Thyroid conditions run in families. Ask about a thyroid recheck at your next visit."],
- [/hip|fracture|bone|osteo/i,()=>"A family history of hip fracture is a risk factor for weak bones. Strength training in your 30s helps."],
- [/\bbp\b|blood pressure|heart/i,()=>"High blood pressure in a parent raises your own risk. Get yours checked once a year."],
- [/painful period|endometri/i,()=>"Painful periods can run in families, and so can endometriosis. Mention it if yours are painful too."],
- [/pcos/i,()=>"PCOS often runs in families. Worth mentioning if your cycles become irregular."]];
-function famMeaning(who,cs){const n=PEOPLE[who].n(),o=[],seen=new Set();
-  cs.forEach(c=>{const m=FAM_MEAN.find(([re])=>re.test(c.t));if(!m)return;const t=m[1](n);if(seen.has(t))return;seen.add(t);o.push({t,src:m[2]})});
-  return o}
-document.addEventListener("click",e=>{if(location.hash==="#family"&&e.target.closest("[data-person]"))requestAnimationFrame(()=>{const c=document.getElementById("famCard");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})})});
+      return `<div class="mrow"><b>${name}</b><div class="who">${who.length?who.map(x=>`<span class="mini t-${tone}" title="${esc(x.c.map(c=>c.t).join(", "))}">${esc(PEOPLE[x.k].n())}: ${esc(x.c.map(c=>c.t).join(", "))}</span>`).join(""):`<span class="small muted">None recorded</span>`}</div></div>`}).join("")}</div>
+    <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview.</p></section>`}
 
 /* ============ Settings ============ */
 function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.prev||"insights"}" aria-label="Back">${IC.back}</a><div style="flex:1"><p class="kicker">Roots</p><h1>Settings</h1></div></div>
@@ -606,16 +569,30 @@ async function ask(q){
   const box=[...document.querySelectorAll("#chat .msg.ai")].pop();if(box)box.innerHTML=`<span class="thinking" aria-label="Thinking"><i></i><i></i><i></i></span>`;
   if(!SAMPLE){S.chat[S.chat.length-1].t="Open this app in Claude to ask questions. Your family data stays on this page.";save();render();return}
   try{const turns=[{role:"user",content:`You answer questions inside Roots, an app that helps a woman understand her family's health history. Be warm, plain and brief (under 90 words). Use only the data below. Never diagnose or give risk percentages you weren't given; suggest what to ask a doctor.\n\n${context()}`},...S.chat.slice(0,-1).slice(-8).map(m=>({role:m.r==="me"?"user":"assistant",content:m.t}))];
-    const r=await SAMPLE(turns,{modelTier:"quick",cache:false,onText:({text})=>{if(box)box.textContent=text}});S.chat[S.chat.length-1].t=r.text}
+    const r=await SAMPLE(turns,{modelTier:"quick",cache:false,onText:({text})=>{if(box)box.textContent=text}});S.chat[S.chat.length-1].t=r.text;speak(r.text)}
   catch(e){S.chat[S.chat.length-1].t=e?.text||"I couldn't answer right now. Try again in a moment."}
   save();render()}
 async function scan(file){toast("Reading the document…");
   try{const r=await SAMPLE.json(`This image is a medical document (lab report, discharge summary, prescription). Reply with only JSON: {"title":"short description of the document","person":"one of me, amma, appa, paati, thatha, sister, or unknown","conditions":["short condition tags with age or year if shown"],"labs":[{"name":"Ferritin","value":18,"unit":"ng/mL","lo":15,"hi":150}]}. Use [] when none. Only include what you can read clearly.`,{images:file});
     const who=PEOPLE[r?.person]?r.person:"me",cs=(Array.isArray(r?.conditions)?r.conditions:[]).map(String),ls=(Array.isArray(r?.labs)?r.labs:[]).filter(l=>l&&l.name&&typeof l.value==="number");
     cs.forEach(t=>S.family.push({id:nid(),who,text:t,src:"scan"}));if(who==="me")ls.forEach(l=>S.labs.push({name:String(l.name),short:String(l.name).slice(0,8),value:l.value,unit:String(l.unit||""),lo:typeof l.lo==="number"?l.lo:null,hi:typeof l.hi==="number"?l.hi:null}));
-    S.scans.unshift({title:String(r?.title||"Document"),found:`Added to ${PEOPLE[who].n()}: ${[...cs,...ls.map(l=>l.name+" "+l.value)].join(", ")||"nothing readable"}`});save();render();toast("Added to your tree.")}
+    const found=`Added to ${PEOPLE[who].n()}: ${[...cs,...ls.map(l=>l.name+" "+l.value)].join(", ")||"nothing readable"}`;S.scans.unshift({title:String(r?.title||"Document"),found});S.chat.push({r:"me",t:"Attached: "+String(r?.title||"a document")},{r:"ai",t:`I read your ${String(r?.title||"document").toLowerCase()}. ${found}. You can see it in Family.`});save();render();speak(found)}
   catch(e){toast(e?.code==="image_rejected"?"That image couldn't be read. Try a JPEG or PNG.":"Couldn't read the document right now.")}}
 
+/* ============ voice ============ */
+let REC=null;
+function listen(btn,targetId){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition,box=document.getElementById(targetId);
+  if(REC){REC.stop();return}
+  if(!SR||!box){toast("Voice input isn't supported in this browser. Try Chrome, or type instead.");return}
+  const r=new SR();r.lang=targetId==="answer"?({Tamil:"ta-IN",Hindi:"hi-IN",English:"en-IN"}[S.me.lang]):"en-IN";r.interimResults=true;r.continuous=false;
+  const start=box.value?box.value.trim()+" ":"";
+  r.onresult=e=>{let t="";for(const res of e.results)t+=res[0].transcript;box.value=start+t};
+  r.onerror=e=>{toast(e.error==="not-allowed"||e.error==="service-not-allowed"?"Microphone isn't allowed here. Allow it in your browser, or type instead.":e.error==="no-speech"?"Didn't catch that. Tap the mic and try again.":"Voice input stopped. You can type instead.")};
+  r.onend=()=>{REC=null;btn.classList.remove("on");btn.setAttribute("aria-label","Speak");box.focus()};
+  try{r.start();REC=r;btn.classList.add("on");btn.setAttribute("aria-label","Stop listening");box.placeholder="Listening…"}catch(err){toast("Voice input isn't available here. Type instead.")}
+}
+function speak(text){try{if(!S.ui.speak||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="en-IN";u.rate=1;speechSynthesis.speak(u)}catch(e){}}
 /* ============ router + events ============ */
 function route(){const h=location.hash.slice(1);return ["insights","root","family","settings","interview","ask"].includes(h)?h:"insights"}
 function render(){const r=route();if(r!=="settings")S.ui.prev=r;
@@ -642,13 +619,14 @@ document.addEventListener("click",async e=>{
   if(a==="demo"){const iv=S.iv,d=CH[iv.ch].demo[Math.min(iv.qi,CH[iv.ch].demo.length-1)],ta=document.getElementById("answer");if(d&&ta){ta.value=d.a;ta.focus()}}
   if(a==="skip"&&!BUSY){S.iv.log.push({w:"a",t:"(skipped)"});next();if(!S.iv.done)S.iv.log.push({w:"q",t:S.iv.cur.text,en:S.iv.cur.en});save();render()}
   if(a==="stop")ctl?.abort();
-  if(a==="mic")toast("Voice comes with the phone app. Type here, or use the sample answer.");
+  if(a==="listen")listen(b,b.dataset.target);
+  if(a==="speak"){S.ui.speak=!S.ui.speak;if(!S.ui.speak)try{speechSynthesis.cancel()}catch(err){};save();render();toast(S.ui.speak?"Replies will be read aloud.":"Read aloud is off.")}
   if(a==="send"){Object.assign(S.iv,{submitted:true,started:false,done:true,sharedOn:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"})});save();toast(`Sent to ${S.me.name}. Your tree is updated.`);location.hash="family"}
   if(a==="copyinvite"){const txt=INVITE[S.me.lang](S.me.name)+"\n\nhttps://"+inviteLink()+"?lang="+LCODE[S.me.lang];try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
-  if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("Sample already added.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997. This confirms the high blood pressure she described.`});save();render();toast("Added to Amma in your tree.")}
+  if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("That sample is already in your chat and tree.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997.`});S.chat.push({r:"me",t:"Attached: hospital discharge note, 1997 (sample)"},{r:"ai",t:`I read it. It's from ${A()}'s second pregnancy and says "preeclampsia", which confirms the high blood pressure she described. I've added it to ${A()} in your Family tree. It's worth telling your OB-GYN if you plan a pregnancy.`});save();if(location.hash!=="#ask"&&location.hash!=="#root")location.hash="root";render()}
   if(a==="reset"){S=DEF();save();location.hash="insights";render();toast("Sample data restored.")}
 });
-document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open]")){e.preventDefault();e.target.click()}});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&e.target.id==="chatQ"){e.preventDefault();e.target.form.requestSubmit();return}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open]")){e.preventDefault();e.target.click()}});
 document.addEventListener("change",e=>{if(e.target.id==="scanFile"&&e.target.files[0])scan(e.target.files[0])});
 document.addEventListener("submit",e=>{e.preventDefault();const id=e.target.id,v=x=>document.getElementById(x).value.trim();
   if(id==="answerForm"){if(!v("answer")){toast("Type her answer first, or tap Skip.");return}answer(v("answer"))}
