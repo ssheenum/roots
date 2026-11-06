@@ -16,7 +16,7 @@ Built for the Code with Claude: Women in AI Hackathon (women's health track).
 
 | Tab | What it does |
 |---|---|
-| **Insights** | Your reproductive baseline (cycle length, variation, period length, heavy-flow days), trends against your own normal, patterns that link your data to your family's history, and habits toward an easier menopause. |
+| **Insights** | **Your cycle:** each number gets a verdict in words (Steady, Changing, Ask your doctor, Get care soon) against both *your normal* and the typical adult range. Insight cards explain what changed, rule out common reasons with a short check-in, then suggest 2–3 small steps and cite one source. **Prepare ahead:** what to watch for perimenopause and when to start preparing, using family history without predicting. |
 | **Root** (centre) | A chat at the top answers questions about your cycle and your family's health. You can type, talk (voice input), have replies read aloud, or attach an old report, which Claude reads and adds to your tree. Below it is the heart of the app: invite your mother with a shareable link, written in Tamil, Hindi or English. She opens her interview, picks who she talks to (a warm niece, a calm nurse, a friend her age, or her daughter's own words), and chats in Tamil, Hindi or English, then approves every note. |
 | **Family** | A visual family tree. You are the crown; your parents and grandparents are the roots. Tap anyone to see their conditions and story, and see health themes across generations. |
 
@@ -40,9 +40,28 @@ The app ships with a fictional family (Kavya, 31; her mother Lakshmi, 58; and he
 
 ## Sources behind the insights
 
-- Daughters of mothers with menopause at 45 or younger had faster declines in ovarian reserve markers — Human Reproduction, via [News-Medical](https://www.news-medical.net/news/20121113/Like-mothers-menopause-like-daughters-fertility-decline.aspx)
-- Smoking and early natural menopause — [American Journal of Epidemiology](https://academic.oup.com/aje/article/187/4/696/4080179)
-- Family history and breast cancer — [Cancer Research UK](https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes)
-- Daughters of women with preeclampsia — [BMJ study, via ScienceDaily](https://www.sciencedaily.com/releases/2005/09/050918131619.htm)
+Every insight card cites exactly one entry from the built-in library (`LIT` in `index.html`). The app never fetches or invents sources; `search_literature(tags)` only picks from this list.
+
+| Topic | Source |
+|---|---|
+| Typical cycle (24–38 days) and period length (up to 8 days) | [FIGO, Munro et al. 2018](https://doi.org/10.1002/ijgo.12666) |
+| Regularity = spread between shortest and longest cycle | [StatPearls: Physiology, Menstrual Cycle](https://www.ncbi.nlm.nih.gov/books/NBK500020/) |
+| Bleeding red flags | [ACOG: Abnormal Uterine Bleeding](https://www.acog.org/womens-health/faqs/abnormal-uterine-bleeding) |
+| Heavy periods, iron, copper IUD, blood thinners | [ACOG: Heavy Menstrual Bleeding](https://www.acog.org/womens-health/faqs/heavy-menstrual-bleeding) |
+| Common reasons for cycle changes | [NHS: Irregular periods](https://www.nhs.uk/symptoms/irregular-periods/), [NHS: Missed or late periods](https://www.nhs.uk/symptoms/missed-or-late-periods/) |
+| Rule out other causes before stress | [Nagma et al. 2015](https://pmc.ncbi.nlm.nih.gov/articles/PMC4413117/), [Endocrine Society FHA guideline 2017](https://academic.oup.com/jcem/article-abstract/102/5/1413/3077281) |
+| Stress and cycles | [Nillni et al. 2018](https://doi.org/10.2147/CLEP.S152131) |
+| Heart rate and HRV across the cycle | [Alzueta et al. 2022 (Oura)](https://pmc.ncbi.nlm.nih.gov/articles/PMC9005074/) |
+| Perimenopause signals and timing | [Harlow et al., STRAW](https://pubmed.ncbi.nlm.nih.gov/17453859/), [Bleeding changes across the transition](https://pmc.ncbi.nlm.nih.gov/articles/PMC3232023/), [NIA: What Is Menopause?](https://www.nia.nih.gov/health/menopause/what-menopause) |
+| Average menopause age in India | [Indian Menopause Society survey 2016](https://pmc.ncbi.nlm.nih.gov/articles/PMC5051232/) |
+| Early menopause: family history, smoking, thyroid | [Office on Women's Health](https://womenshealth.gov/menopause/early-or-premature-menopause), [Cramer et al. 1995](https://pubmed.ncbi.nlm.nih.gov/7672145/), [Human Reproduction study](https://www.eurekalert.org/news-releases/629623), [American Journal of Epidemiology 2018](https://academic.oup.com/aje/article/187/4/696/4080179) |
+| AMH does not predict natural fertility | [Steiner et al., JAMA 2017](https://doi.org/10.1001/jama.2017.14588) |
+| Bone health | [NIAMS: Exercise for Your Bone Health](https://www.niams.nih.gov/health-topics/exercise-your-bone-health) |
+| Breast cancer family history | [Cancer Research UK](https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes) |
+| Preeclampsia in mothers and daughters | [BMJ study, via ScienceDaily](https://www.sciencedaily.com/releases/2005/09/050918131619.htm) |
+
+## Tests
+
+Open `index.html?test` in a browser. The self-tests run in the page (no build step, no dependencies) against a separate storage key, so your real data is untouched. Results show at the bottom of the page and in `window.__TEST`.
 
 Roots shows patterns, not diagnoses. It is a hackathon prototype, not a medical device.

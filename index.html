@@ -213,6 +213,100 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:60
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style>
 <style>body{margin:0}[hidden]{display:none!important}</style>
+<style>
+/* Insights redesign: verdict pills, range strips, insight cards, check-in. Strong color is reserved for "Get care soon". */
+:root{--care:#7A2E14;--on-care:#FFF4EC}
+.ix-st{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;padding:5px 11px 5px 8px;border-radius:999px;white-space:nowrap;flex:none;line-height:1.2}
+.ix-steady{background:var(--mint);color:var(--mint-ink)} .ix-changing{background:var(--pista);color:var(--pista-ink)}
+.ix-doctor{background:var(--apricot);color:var(--apricot-ink)} .ix-care{background:var(--care);color:var(--on-care)}
+.ix-docchip{min-height:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--ink);background:var(--white);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.ix-link{background:none;border:0;padding:10px 0;min-height:44px;font-weight:600;font-size:14px;color:var(--forest);text-decoration:underline;text-underline-offset:3px;cursor:pointer;text-align:left}
+.ix-lbl{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.t-forest .ix-lbl{color:inherit}
+.ix-h2{font-size:20px;padding:4px 2px 0}
+.ix-summary h3{font-size:26px}
+.ix-summary p{font-size:16px;opacity:.92}
+.ix-num{padding:12px 8px 10px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:4px}
+.ix-num:last-of-type{border-bottom:0}
+.ix-numh{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center}
+.ix-numh b{font-weight:600;line-height:1.25}
+.ix-sub{display:block;font-size:12px;font-weight:500;color:var(--ink-2)}
+.ix-val{font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ix-val small{font-size:12px;font-weight:500;color:var(--ink-2)}
+.ix-strip{margin:0;display:flex;flex-direction:column;gap:4px}
+.ix-strip svg{width:100%;height:auto;display:block}
+.ix-leg{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--ink-2)}
+.ix-leg span{display:inline-flex;align-items:center;gap:5px}
+.ix-leg i{display:inline-block;flex:none}
+.sw-typ{width:14px;height:9px;border-radius:3px;background:#D5EADB}
+.sw-norm{width:14px;height:9px;border-radius:3px;background:#8FB89E}
+.sw-ring{width:10px;height:10px;border-radius:50%;border:2.5px solid var(--forest);background:#fff}
+.sw-dot{width:10px;height:10px;border-radius:50%;background:var(--ink)}
+.ix-sent{font-size:14px}
+.ix-tip summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--forest);min-height:32px;display:flex;align-items:center;list-style:none}
+.ix-tip summary::-webkit-details-marker{display:none}
+.ix-tip summary::before{content:"ⓘ";margin-right:6px}
+.ix-tipr{position:relative}
+.ix-tipr summary{width:44px;height:44px;justify-content:center;border-radius:50%;background:var(--app);font-size:0}
+.ix-tipr summary::before{font-size:18px;margin:0}
+.ix-tipr[open] p{position:absolute;right:0;top:48px;width:260px;background:var(--ink);color:var(--app);padding:12px 14px;border-radius:16px;z-index:3}
+.ix-tipr[open] .ix-src{color:var(--lime)}
+.ix-more summary{cursor:pointer;font-size:13px;color:var(--ink-2);min-height:32px;display:flex;align-items:center}
+.ix-more ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.ix-cards{display:flex;flex-direction:column;gap:12px}
+.ix-card{gap:16px;box-shadow:0 0 0 1px var(--line)}
+.ix-card h3{font-size:22px}
+.ix-sec{display:flex;flex-direction:column;gap:8px}
+.ix-what p{font-size:16px}
+.ix-ci{display:flex;flex-direction:column;gap:10px;outline-offset:4px}
+.ix-q{font-size:19px;line-height:1.35;font-weight:600}
+.ix-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ix-opt{min-height:52px;border-radius:16px;border:1.5px solid #C9CFC4;background:var(--app);font-weight:600;font-size:15px;cursor:pointer;padding:6px 10px}
+.ix-opt:hover{border-color:var(--ink)}
+.ix-dots{display:flex;gap:6px}
+.ix-dots i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--forest)}
+.ix-dots i.done{background:var(--forest)} .ix-dots i.on{background:var(--lime);border-color:var(--lime-ink)}
+.ix-ans{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;font-size:14px}
+.ix-ans li{display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line)}
+.ix-ans .ix-link{font-size:13px;flex:none}
+.ix-note{background:var(--app);border-radius:16px;padding:12px 14px}
+.ix-body{background:#F2F5EC;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.ix-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.ix-step,.ix-flag{display:flex;gap:12px;align-items:center;width:100%;min-height:48px;padding:6px 4px;border:0;background:none;text-align:left;cursor:pointer;font-size:15px}
+.ix-box{width:26px;height:26px;border-radius:8px;border:2px solid var(--forest);display:grid;place-items:center;flex:none;color:var(--on-forest)}
+[aria-pressed="true"]>.ix-box{background:var(--forest)}
+.ix-done{text-decoration:line-through;opacity:.65}
+.ix-doc{background:#FBF1E6;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
+.ix-doc .ix-lbl{color:var(--apricot-ink)}
+.ix-src{font-size:13px;color:var(--forest);font-weight:600;text-underline-offset:3px;overflow-wrap:anywhere;display:inline-block;padding:6px 0}
+.ix-askwrap{display:flex;flex-direction:column;gap:10px}
+.ix-ai{background:var(--mint);color:var(--mint-ink);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.ix-ai ul{margin:0;padding-left:18px}
+.ix-banner{background:var(--care);color:var(--on-care)}
+.ix-banner .ix-src{color:#FFE2CC}
+.ix-flags{display:flex;flex-direction:column;padding:0 8px 8px}
+.ix-doclist{margin:0;padding:0 8px 0 28px;display:flex;flex-direction:column;gap:10px}
+.ix-doclist li{display:flex;flex-direction:column;gap:2px}
+.ix-inc{display:flex;gap:10px;align-items:center;padding:8px;font-size:14px;min-height:44px}
+.ix-inc input{width:22px;height:22px;accent-color:var(--forest)}
+.ix-spark{display:flex;flex-direction:column;gap:2px}
+.ix-pt{cursor:pointer}
+.ix-watchl{list-style:none;margin:0;padding:0}
+.ix-watch{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+.ix-watch:last-child{border-bottom:0}
+.ix-watch>.small,.ix-watch>.ix-link,.ix-watch>.btn{grid-column:1/-1;justify-self:start}
+.ix-wt{font-size:15px}
+.ix-wchip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:var(--app);white-space:nowrap}
+.ix-wchip.on{background:var(--pista);color:var(--pista-ink)}
+.ix-stepper{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.ix-stepper>li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;padding-bottom:16px;position:relative}
+.ix-stepper>li:not(:last-child)::after{content:"";position:absolute;left:15px;top:34px;bottom:2px;width:2px;background:var(--line)}
+.ix-sn{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:14px;background:var(--app);border:2px solid var(--forest)}
+.ix-stepper>li.on .ix-sn{background:var(--forest);color:var(--on-forest)}
+.ix-stepper ul{margin:4px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:15px}
+.habit .ix-src{font-size:12px;color:inherit;opacity:.85}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+</style>
 </head>
 <body>
 
@@ -261,10 +355,6 @@ const CH=[
 ];
 const KEYS="childhood_setting cooking_fuel menarche_age stress tobacco heavy_periods fibroids pcos endometriosis thyroid pregnancy_high_bp menopause_age diabetes hypertension family_breast_cancer family_ovarian_cancer family_osteoporosis advice".split(" ");
 const ACK=["சொன்னதுக்கு நன்றி.","இது ரொம்ப உதவியா இருக்கு.","நன்றி அம்மா."],ACKEN=["Thank you for telling me that.","That helps a lot.","Thank you, Amma."];
-const SRC={meno:["Human Reproduction study","https://www.news-medical.net/news/20121113/Like-mothers-menopause-like-daughters-fertility-decline.aspx"],
- smoke:["Am. J. Epidemiology","https://academic.oup.com/aje/article/187/4/696/4080179"],
- breast:["Cancer Research UK","https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes"],
- pe:["BMJ study, via ScienceDaily","https://www.sciencedaily.com/releases/2005/09/050918131619.htm"]};
 
 /* ============ state ============ */
 const MONTHS=["Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov"];
@@ -279,10 +369,16 @@ const DEF=()=>({me:{name:"Kavya",age:31,call:"Amma",mother:"Lakshmi",lang:"Tamil
  labs:[{name:"Hemoglobin",short:"Hb",value:11.4,unit:"g/dL",lo:12,hi:15.5},{name:"Ferritin",short:"Ferritin",value:14,unit:"ng/mL",lo:15,hi:150},{name:"TSH",short:"TSH",value:3.9,unit:"mIU/L",lo:.4,hi:4},{name:"Vitamin D",short:"Vit D",value:18,unit:"ng/mL",lo:30,hi:100}],
  conds:["Iron deficiency in college","Vegetarian"],
  family:[{id:"fa1",who:"appa",text:"High BP at 50",src:"you"},{id:"fa2",who:"sister",text:"Painful periods",src:"you"}],
- scans:[],chat:[],tasks:{},ui:{ins:"trends",open:null,person:"amma",prev:"insights"}});
+ /* monthly whole-cycle averages from a wearable, same months as cycles */
+ body:{sleep:[7.4,7.5,7.3,7.4,7.6,7.3,7.2,6.9,6.8,6.6,6.7,6.5], // hours/night → baseline 7.4, now 6.6 (−49 min)
+   rhr:[60,59,60,61,60,60,61,63,64,65,64,66],                  // bpm → 60 → 65 (+5)
+   hrv:[52,54,51,53,52,52,50,46,44,42,43,40]},                 // ms (rMSSD) → 52 → 42 (−20%)
+ answers:{},cards:{},doctor:[],flags:{}, // check-in answers stay here: never shown on the Family tab or to Amma
+ scans:[],chat:[],tasks:{},ui:{ins:"cycle",open:null,person:"amma",prev:"insights"}});
+const STORE=/[?&]test\b/.test(location.search)?"mt4-test":"mt4";
 let S=load()||DEF();
-function load(){try{const v=localStorage.getItem("mt4");if(!v)return null;const d=DEF(),p=JSON.parse(v);return Object.assign(d,p,{me:Object.assign(d.me,p.me),iv:Object.assign(d.iv,p.iv),ui:Object.assign(d.ui,p.ui)})}catch(e){return null}}
-function save(){try{localStorage.setItem("mt4",JSON.stringify(S))}catch(e){}}
+function load(){try{const v=localStorage.getItem(STORE);if(!v)return null;const d=DEF(),p=JSON.parse(v);return Object.assign(d,p,{me:Object.assign(d.me,p.me),iv:Object.assign(d.iv,p.iv),ui:Object.assign(d.ui,p.ui)})}catch(e){return null}}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(S))}catch(e){}}
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function toast(m){const t=document.getElementById("toast");t.textContent=m;t.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>t.hidden=true,2600)}
 let SAMPLE=null,LIVE=false,IMAGES=false,BUSY=false,ctl=null;
@@ -307,57 +403,542 @@ function conditions(who){const fs=shared(),o=[];
   return o}
 const THEMES=[["Reproductive",/period|fibroid|menopause|pregnan|eclampsia|pcos|endometri/i,"pista"],["Cancer",/cancer/i,"apricot"],["Heart and sugar",/diabetes|sugar|bp|blood pressure|heart/i,"euca"],["Bones",/hip|bone|fracture|osteo/i,"mint"],["Thyroid",/thyroid/i,"moss"]];
 
-/* ============ insights ============ */
+/* ============ insights: rules ============ */
+/* Every threshold the Insights tab uses lives here. Change a number here, not in the copy. */
+const RULES={
+  baselineN:6,          // "your normal" = the first 6 logged cycles (Dec–May in the sample). Design choice.
+  minSd:1.5,            // 6 cycles is too few for a stable SD, so the SD is floored at 1.5 days.
+  sdMult:2,             // your normal = [floor(mean − 2·sd), ceil(mean + 2·sd)] → 25–32 for Kavya.
+  recentN:3,            // "now" = the last 3 cycles.
+  changingOf:2,         // Changing = ≥2 of the last 3 cycles outside your normal (one odd cycle is common). Design choice.
+  typicalCycle:[24,38], // FIGO 2018 (figo2018). ACOG uses 21–35 (shown as a tooltip).
+  spreadN:6,            // spread = longest − shortest of the last 6 cycles (statpearls_cycle).
+  regularSpread:age=>age>=26&&age<=41?7:9, // regular if spread ≤7 days at 26–41, ≤9 at 18–25 and 42–45 (statpearls_cycle).
+  typicalPeriodMax:8,   // bleeding lasts up to 8 days (figo2018); >7 days is one sign of heavy bleeding (acog_hmb).
+  periodDelta:1.5,      // period length Changing if last-3 average differs from baseline by ≥1.5 days. Design choice.
+  heavyDelta:1,         // heavy-flow days Changing if last-3 average differs by ≥1 day (same as the old heavy.up). Design choice.
+  noPeriodDays:90,      // Get care soon: no period for ≥90 days and not pregnant (nhs_missed, acog_aub).
+  body:{sleepMin:-30,rhr:3,hrvPct:-10,need:2}, // app thresholds: stress/sleep is mentioned only if ≥2 of 3 signals moved this far.
+  watchJump:7,watchWindow:10, // perimenopause watch: a 7+ day jump between back-to-back cycles, repeated within 10 cycles (straw2007).
+  watchGap:60           // perimenopause watch: 60+ days without a period (straw2007).
+  // Ask your doctor (card level): a lab outside its range AND a related trend Changing; or a cycle outside 24–38 on ≥2 of the
+  // last 3; or spread above the regular limit. A lab row on its own shows "Ask your doctor" when the value is outside its range.
+};
+
+/* ============ insights: answers (save_answer) ============ */
+const ANS_DAYS={pregnancy_possible:30,contraception_change:180,weight_exercise_change:90,breastfeeding:180,new_medication:90,
+  copper_iud:180,blood_thinners:90,tobacco_use:365,pregnancy_plans:365,amma_menopause_type:36500,hot_flash_log:36500};
+const ANS_KEYS=Object.keys(ANS_DAYS);
+const OPTS=["Yes","No","Not sure","Prefer not to say"];
+function save_answer(key,value,note){
+  if(!ANS_KEYS.includes(key))return null;
+  const o={v:String(value),at:new Date().toISOString()};if(note)o.note=String(note).slice(0,120);
+  S.answers[key]=o;save();render();return o}
+function isValid(key,now=Date.now()){const a=S.answers&&S.answers[key];return !!a&&ANS_DAYS[key]!=null&&now-Date.parse(a.at)<ANS_DAYS[key]*864e5}
+const ansV=k=>isValid(k)?S.answers[k].v:null;
+const SHORT={pregnancy_possible:"Chance of pregnancy",contraception_change:"Birth control change",weight_exercise_change:"Big weight or exercise change",
+  breastfeeding:"Breastfeeding or recent birth",new_medication:"New medicine",copper_iud:"Copper IUD in the last year",blood_thinners:"Blood thinners or aspirin",
+  tobacco_use:"Tobacco",pregnancy_plans:"Pregnancy plans",amma_menopause_type:"How her periods stopped",hot_flash_log:"Hot flashes or night sweats"};
+const Q_MED="Have you started any new medicine in the last 3 months? (Optional: what is it?)";
+const CHECKS={
+  cycle:[["pregnancy_possible","Is there any chance you could be pregnant?"],
+    ["contraception_change","In the last 6 months, have you started, stopped or switched birth control? This includes the pill, patch, ring, shot, implant or IUD."],
+    ["weight_exercise_change","In the last 3 months, has your weight or exercise changed a lot? For example, losing or gaining a lot, or training much harder."],
+    ["breastfeeding","Are you breastfeeding, or have you given birth in the past year?"],
+    ["new_medication",Q_MED]],
+  iron:[["copper_iud","In the last year, have you had a copper IUD (coil) put in?"],
+    ["blood_thinners","Do you take blood thinners or aspirin regularly?"],
+    ["new_medication",Q_MED]]};
+const EXPLAIN={
+  cycle:{contraception_change:"Starting, stopping or switching birth control can change how long your cycles are for a few months.",
+    weight_exercise_change:"A big change in weight or exercise can change when your body releases an egg, which can make cycles longer. Make sure you're eating enough for your activity, and mention it to your doctor.",
+    breastfeeding:"Breastfeeding and the months after a birth often make periods late or uneven.",
+    new_medication:"Some medicines can change your cycle. Your doctor or pharmacist can tell you if yours is one of them."},
+  iron:{copper_iud:"A copper IUD can make periods heavier, especially in the first year.",
+    blood_thinners:"Blood thinners and aspirin can make periods heavier.",
+    new_medication:"Some medicines can make periods heavier. Your doctor or pharmacist can tell you if yours is one of them."}};
+
+/* ============ insights: source library (LIT) ============ */
+/* `says` is our own one-line paraphrase. search_literature() only ever returns entries from this array. */
+const LIT=[
+ {id:"figo2018",label:"FIGO, Munro et al., Int J Gynaecol Obstet 2018",url:"https://doi.org/10.1002/ijgo.12666",says:"Typical cycles are 24–38 days; bleeding lasts up to 8 days.",tags:["cycle-length","typical","period-length"]},
+ {id:"statpearls_cycle",label:"StatPearls: Physiology, Menstrual Cycle",url:"https://www.ncbi.nlm.nih.gov/books/NBK500020/",says:"Cycles count as regular if shortest and longest differ by ≤7 days (ages 26–41) or ≤9 (18–25, 42–45).",tags:["regularity","spread"]},
+ {id:"acog_aub",label:"ACOG FAQ: Abnormal Uterine Bleeding",url:"https://www.acog.org/womens-health/faqs/abnormal-uterine-bleeding",says:"Lists bleeding patterns to discuss with a doctor and when to get emergency care.",tags:["red-flag","cycle-length"]},
+ {id:"acog_hmb",label:"ACOG FAQ: Heavy Menstrual Bleeding",url:"https://www.acog.org/womens-health/faqs/heavy-menstrual-bleeding",says:"Heavy periods can lead to iron-deficiency anemia; copper IUDs and blood thinners can increase flow.",tags:["heavy","iron","alternatives-heavy"]},
+ {id:"nhs_irregular",label:"NHS: Irregular periods",url:"https://www.nhs.uk/symptoms/irregular-periods/",says:"Common causes include pregnancy, hormonal contraception, big weight change, stress and too much exercise.",tags:["alternatives","contraception","medication"]},
+ {id:"nhs_missed",label:"NHS: Missed or late periods",url:"https://www.nhs.uk/symptoms/missed-or-late-periods/",says:"Pregnancy and breastfeeding are common reasons; see a GP after 3 missed periods in a row.",tags:["pregnancy","breastfeeding","red-flag"]},
+ {id:"nagma2015",label:"Nagma et al., J Clin Diagn Res 2015",url:"https://pmc.ncbi.nlm.nih.gov/articles/PMC4413117/",says:"Look for other causes before assuming stress explains period changes.",tags:["alternatives","stress"]},
+ {id:"nillni2018",label:"Nillni et al., Clinical Epidemiology 2018",url:"https://doi.org/10.2147/CLEP.S152131",says:"Higher perceived stress was linked with irregular cycles, but little with cycle length.",tags:["stress","signals"]},
+ {id:"oura2022",label:"Alzueta et al., Oura ring cycle study, 2022",url:"https://pmc.ncbi.nlm.nih.gov/articles/PMC9005074/",says:"Resting heart rate rises and HRV tends to dip in the second half of the cycle.",tags:["signals","wearable"]},
+ {id:"endo_fha2017",label:"Endocrine Society guideline: Functional Hypothalamic Amenorrhea, 2017",url:"https://academic.oup.com/jcem/article-abstract/102/5/1413/3077281",says:"Stress, weight loss and heavy exercise can switch off ovulation; other causes must be ruled out first.",tags:["weight","exercise"]},
+ {id:"straw2007",label:"Harlow et al., multi-study evaluation of STRAW criteria",url:"https://pubmed.ncbi.nlm.nih.gov/17453859/",says:"A repeated 7+ day jump between cycles marks the early transition; 60+ days without a period marks the late transition.",tags:["perimenopause","watch"]},
+ {id:"harlow_bleeding",label:"Review: menstrual bleeding changes across the menopausal transition (PMC)",url:"https://pmc.ncbi.nlm.nih.gov/articles/PMC3232023/",says:"The early transition (repeated 7+ day cycle jumps) begins on average 6–8 years before the last period.",tags:["perimenopause","timeline"]},
+ {id:"nia_menopause",label:"NIA: What Is Menopause?",url:"https://www.nia.nih.gov/health/menopause/what-menopause",says:"The transition usually starts between 45 and 55; average menopause in the US is 52.",tags:["perimenopause","timeline"]},
+ {id:"ims_india2016",label:"Ahuja, PAN India survey by the Indian Menopause Society, J Mid-Life Health 2016",url:"https://pmc.ncbi.nlm.nih.gov/articles/PMC5051232/",says:"Average age of natural menopause in India was about 46, lower than the ~51 seen in Western countries.",tags:["timeline","population"]},
+ {id:"owh_early",label:"Office on Women's Health: Early or premature menopause",url:"https://womenshealth.gov/menopause/early-or-premature-menopause",says:"Family history, smoking and autoimmune conditions like thyroid disease are known causes of early menopause.",tags:["early-menopause","smoking","thyroid"]},
+ {id:"cramer1995",label:"Cramer et al., Fertility and Sterility 1995",url:"https://pubmed.ncbi.nlm.nih.gov/7672145/",says:"Women with early menopause more often reported early menopause in a mother, sister or other relative.",tags:["family-history"]},
+ {id:"bentzen2013",label:"Human Reproduction study (press release)",url:"https://www.eurekalert.org/news-releases/629623",says:"Daughters of mothers with early menopause had faster drops in egg-reserve markers.",tags:["family-history","ovarian-reserve"]},
+ {id:"steiner2017",label:"Steiner et al., JAMA 2017",url:"https://doi.org/10.1001/jama.2017.14588",says:"Low AMH or high FSH did not predict lower chances of natural conception in women 30–44.",tags:["amh","fertility"]},
+ {id:"niams_bone",label:"NIAMS: Exercise for Your Bone Health",url:"https://www.niams.nih.gov/health-topics/exercise-your-bone-health",says:"Weight-bearing and strength exercise helps prevent bone loss; aim for muscle work twice a week.",tags:["bone","habits"]},
+ /* moved from the old SRC map */
+ {id:"smoke_aje2018",label:"American Journal of Epidemiology, 2018",url:"https://academic.oup.com/aje/article/187/4/696/4080179",says:"Smoking is linked with earlier natural menopause.",tags:["smoking","habits"]},
+ {id:"breast_cruk",label:"Cancer Research UK: Family history and inherited genes",url:"https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes",says:"A close relative with breast cancer, especially at a younger age, can raise a woman's chance of breast cancer.",tags:["breast","family-history-cancer"]},
+ {id:"pe_bmj2005",label:"BMJ study, via ScienceDaily (2005)",url:"https://www.sciencedaily.com/releases/2005/09/050918131619.htm",says:"Women whose mothers had preeclampsia were more likely to have it in their own pregnancies.",tags:["preeclampsia","pregnancy-history"]}];
+const litById=id=>LIT.find(e=>e.id===id)||null;
+/* best tag overlap wins; ties go to the earlier entry; never fetches, never invents */
+function search_literature(tags){tags=[].concat(tags||[]);let best=null,score=0;
+  for(const e of LIT){const n=e.tags.filter(t=>tags.includes(t)).length;if(n>score){score=n;best=e}}return best}
+/* every insight type → tags that must resolve to a source (checked at startup) */
+const SRC_TAGS={
+  "cycle:needs_answers":["alternatives","contraception"],"cycle:paused":["pregnancy"],
+  "cycle:explained:contraception_change":["alternatives","contraception"],"cycle:explained:weight_exercise_change":["weight","exercise"],
+  "cycle:explained:breastfeeding":["breastfeeding","pregnancy"],"cycle:explained:new_medication":["alternatives","medication"],
+  "cycle:signals":["stress","signals"],"iron":["heavy","iron"],
+  "numbers":["cycle-length","typical"],"spread":["regularity","spread"],"body":["signals","wearable"],
+  "family_history":["family-history"],"watch":["perimenopause","watch"],"timeline":["perimenopause","timeline"],"red_flag":["red-flag","cycle-length"]};
+function assertSources(){const miss=Object.keys(SRC_TAGS).filter(k=>!search_literature(SRC_TAGS[k]));if(miss.length)console.error("Insight types without a source:",miss);return miss}
+const srcLink=(e,pre="Source: ")=>e?`<a class="ix-src" data-source href="${e.url}" target="_blank" rel="noopener">${pre}${esc(e.label)} <span aria-hidden="true">↗</span><span class="sr"> (opens in a new tab)</span></a>`:"";
+const moreSrc=ids=>{const es=ids.map(litById).filter(Boolean);return es.length?`<details class="ix-more"><summary>More sources</summary><ul>${es.map(e=>`<li>${srcLink(e,"")}</li>`).join("")}</ul></details>`:""};
+
+/* ============ insights: copy safety ============ */
+const BANNED=[/\byou have\b/i,/\byou will\b/i,/\byou['’]re developing\b/i,/diagnos/i,/abnormal/i,/\bdefinitely\b/i,/\bat risk\b/i];
+const lintText=t=>BANNED.filter(re=>re.test(String(t||""))).map(re=>re.source);
+const DEV=/^(localhost|127\.0\.0\.1|)$/.test(location.hostname)||/[?&](dev|test)\b/.test(location.search);
+/* dev only: scan rendered text (and aria-labels) for banned phrases; source labels are skipped via [data-source] */
+function lintCopy(root=document.getElementById("app")){
+  const c=root.cloneNode(true);c.querySelectorAll("[data-source],script,style").forEach(n=>n.remove());
+  const txt=(c.textContent+" "+[...c.querySelectorAll("[aria-label]")].map(n=>n.getAttribute("aria-label")).join(" ")).replace(/\s+/g," ");
+  const hits=BANNED.map(re=>{const m=txt.match(new RegExp(".{0,30}(?:"+re.source+").{0,30}","i"));return m?m[0]:null}).filter(Boolean);
+  hits.forEach(h=>console.warn("lintCopy: banned phrase in Insights →",h));return hits}
+
+/* ============ insights: signals ============ */
 const mean=a=>a.reduce((s,x)=>s+x,0)/a.length,sd=a=>{const m=mean(a);return Math.sqrt(mean(a.map(x=>(x-m)**2)))};
+const fmt=x=>{const r=Math.round(x*10)/10;return Number.isInteger(r)?String(r):r.toFixed(1)};
 const lab=n=>S.labs.filter(l=>l.name===n).slice(-1)[0];
 function labState(l){if(l.lo!=null&&l.value<l.lo)return "flag";if(l.hi!=null&&l.value>l.hi)return "flag";if(l.lo!=null&&l.hi!=null&&l.value>l.hi-(l.hi-l.lo)*.12)return "watch";return "ok"}
-function sig(){const L=S.cycles.map(c=>c.len),H=S.cycles.map(c=>c.heavy),D=S.cycles.map(c=>c.days);
-  const s={cyc:{base:mean(L.slice(0,6)),sd:Math.max(1,sd(L.slice(0,6))),rec:mean(L.slice(-3)),var0:sd(L.slice(0,6)),var1:sd(L.slice(-6))},heavy:{base:mean(H.slice(0,6)),rec:mean(H.slice(-3))},days:{base:mean(D.slice(0,6)),rec:mean(D.slice(-3))}};
-  s.cyc.out=s.cyc.rec>s.cyc.base+2*s.cyc.sd;s.heavy.up=s.heavy.rec>=s.heavy.base+1;return s}
-function patterns(){
-  const s=sig(),o=[],hb=lab("Hemoglobin"),tsh=lab("TSH"),fib=fact("fibroids"),hv=fact("heavy_periods"),thy=fact("thyroid"),m=fact("menopause_age");
-  if(s.heavy.up&&hb&&labState(hb)==="flag")o.push({id:"iron",tone:"moss",alert:1,t:"Heavier periods,\nlower iron",who:["you","lab",(hv||fib)&&"amma"].filter(Boolean),
-    st:[[s.heavy.rec.toFixed(0)+" days","Heavy days now"],"was "+s.heavy.base.toFixed(0),[hb.value,"Hemoglobin"]],
-    ev:[["you",`Heavy days per period went from ${s.heavy.base.toFixed(1)} to ${s.heavy.rec.toFixed(1)}.`],["lab",`Hemoglobin ${hb.value} ${hb.unit}, below your lab's range of ${hb.lo} to ${hb.hi}.`],hv&&["amma",`${A()} had very heavy periods in her thirties.`],fib&&["amma",`${A()} had fibroids at ${fib.num}.`]].filter(Boolean),
-    so:"Heavy bleeding can lower iron over time, and fibroids run in some families. Worth one conversation with your doctor."});
-  if(s.cyc.out)o.push({id:"cycle",tone:"euca",t:"Cycles running\nlonger than normal",who:["you",tsh&&"lab",thy&&"amma"].filter(Boolean),
-    st:[[s.cyc.rec.toFixed(0)+" d","Last 3 cycles"],"+"+Math.round(s.cyc.rec-s.cyc.base)+" days",[Math.round(s.cyc.base)+" d","Your baseline"]],
-    ev:[["you",`Your baseline is about ${Math.round(s.cyc.base)} days; your last 3 cycles averaged ${s.cyc.rec.toFixed(1)}.`],tsh&&["lab",`TSH ${tsh.value}, near the top of your lab's range.`],thy&&["amma",`${A()} has a thyroid condition.`]].filter(Boolean),
-    so:`Longer cycles have many everyday causes. With ${A()}'s thyroid condition and your TSH near the top, a recheck is reasonable to ask about.`});
-  if(m)o.push({id:"meno",tone:"pista",t:"Your menopause\nmay come early too",who:["amma","you"],
-    st:[[m.num,`${A()}'s age`],"Typical ~51",["31","Your age now"]],
-    ev:[["amma",`${A()}'s periods stopped naturally at ${m.num}.`],["you","Your baseline, kept from now on, will show early changes against your own normal."]],
-    so:"In one study, daughters of mothers with menopause at 45 or younger showed faster drops in ovarian reserve markers. It doesn't predict your timing, but it's worth knowing in your thirties."});
-  return o}
-function habits(){const o=[];
-  o.push(["Stay tobacco-free","Smokers had about 1.9 times the risk of menopause before 45.","moss",["amma",`${A()}: 44`],SRC.smoke]);
-  o.push(["Strength train","Two or three sessions a week protect bone and muscle before menopause speeds bone loss.","pista",["paati","Hip fracture"]]);
-  o.push(["Eat for iron","Lentils, rajma, ragi and spinach, with lemon or amla. Keep tea away from meals.","mint",["you","Heavier periods"]]);
-  o.push(["Steady sugar","A 10-minute walk after meals. Menopause raises heart and sugar risk.","euca",["amma","Diabetes"]]);
-  o.push(["Protect sleep","Steady wake time and a cool room. Good sleep habits help later with night sweats.","pista",["amma","Night sweats"]]);
-  o.push(["Calcium and vitamin D","Curd, ragi, sesame, and some daylight. Ask about your low vitamin D.","moss",["lab","Vit D 18"]]);
-  return o}
-function steps(){const T=[],m=fact("menopause_age"),bc=fact("family_breast_cancer"),pe=fact("pregnancy_high_bp");
-  T.push(["t-iron","Ask why your periods are heavier","Bring this app's summary. Ask about an iron recheck and a pelvic ultrasound."]);
-  T.push(["t-tsh","Ask about a thyroid recheck",`Mention ${A()}'s thyroid condition.`]);
-  if(m)T.push(["t-amh","Ask about an AMH test before 35",`${A()}'s menopause came at ${m.num}.`,SRC.meno]);
-  if(pe)T.push(["t-pe","Tell your OB-GYN about Amma's BP","Daughters of women with preeclampsia had over twice the risk.",SRC.pe]);
-  if(bc)T.push(["t-breast","Plan breast screening","Paati was diagnosed at 47. Ask whether to start earlier.",SRC.breast]);
-  return T}
+const labLow=l=>!!l&&l.lo!=null&&l.value<l.lo;
+function sig(){
+  const C=S.cycles||[],n=C.length,N=RULES.baselineN,R=RULES.recentN;
+  if(n<N)return {ready:false,n,cyc:{base:NaN,rec:NaN},heavy:{base:NaN,rec:NaN}}; // cyc/heavy keep the chat context() working
+  const L=C.map(c=>c.len),D=C.map(c=>c.days),H=C.map(c=>c.heavy),age=+S.me.age||31;
+  const b=L.slice(0,N),bm=mean(b),bs=Math.max(sd(b),RULES.minSd);
+  const normal=[Math.floor(bm-RULES.sdMult*bs),Math.ceil(bm+RULES.sdMult*bs)],typ=RULES.typicalCycle;
+  const rec=L.slice(-R),out=x=>x<normal[0]||x>normal[1],outT=x=>x<typ[0]||x>typ[1];
+  const l6=L.slice(-RULES.spreadN),spread=Math.max(...l6)-Math.min(...l6),spreadBase=Math.max(...b)-Math.min(...b),reg=RULES.regularSpread(age);
+  const jumps=L.slice(1).map((x,i)=>Math.abs(x-L[i])),jump=Math.max(0,...jumps);
+  const bigJumps=jumps.slice(-RULES.watchWindow).filter(j=>j>=RULES.watchJump).length;
+  let changedAt=-1;for(let i=N;i<n;i++)if(out(L[i])){changedAt=i;break}
+  const band=(arr,d)=>{const bb=mean(arr.slice(0,N)),rr=mean(arr.slice(-R));return {base:bb,rec:rr,normal:[bb-d,bb+d],changing:Math.abs(rr-bb)>=d-1e-9}};
+  const days=band(D,RULES.periodDelta),heavy=band(H,RULES.heavyDelta);heavy.up=heavy.changing&&heavy.rec>heavy.base;
+  const recMean=mean(rec);
+  return {ready:true,n,months:C.map(c=>c.m),L,D,H,days,heavy,
+    cyc:{base:bm,sd:bs,normal,typ,rec:recMean,recent:rec,outN:rec.filter(out).length,outTyp:rec.filter(outT).length,changing:rec.filter(out).length>=RULES.changingOf,
+      dir:recMean>=bm?"longer":"shorter",spread,spreadBase,reg,regular:spread<=reg,jump,bigJumps,changedAt,longGap:rec.some(x=>x>=RULES.noPeriodDays),gap60:L.some(x=>x>=RULES.watchGap)}}}
+function bodySig(){const B=S.body,N=RULES.baselineN,R=RULES.recentN;if(!B||!Array.isArray(B.sleep)||B.sleep.length<N+R)return null;
+  const f=a=>({base:mean(a.slice(0,N)),rec:mean(a.slice(-R)),lo:Math.min(...a.slice(0,N)),hi:Math.max(...a.slice(0,N))});
+  const sl=f(B.sleep),hr=f(B.rhr),hv=f(B.hrv),sleepMin=(sl.rec-sl.base)*60,rhr=hr.rec-hr.base,hrvPct=(hv.rec-hv.base)/hv.base*100;
+  const moved=[sleepMin<=RULES.body.sleepMin,rhr>=RULES.body.rhr,hrvPct<=RULES.body.hrvPct],movedN=moved.filter(Boolean).length;
+  return {sl,hr,hv,sleepMin,rhr,hrvPct,moved,movedN,claim:movedN>=RULES.body.need}}
+const bodyWords=b=>({sleep:`about ${Math.round(Math.abs(b.sleepMin)/10)*10} min ${b.sleepMin<0?"less":"more"}`,rhr:`about ${Math.round(Math.abs(b.rhr))} bpm ${b.rhr>=0?"higher":"lower"}`,hrv:`about ${Math.round(Math.abs(b.hrvPct))}% ${b.hrvPct<0?"lower":"higher"}`});
+function verdicts(s){
+  const preg=ansV("pregnancy_possible")==="Yes",tsh=lab("TSH");
+  const cyc=s.cyc.longGap&&!preg?"care":(s.cyc.outTyp>=2||!s.cyc.regular||(tsh&&labState(tsh)==="flag"&&s.cyc.changing))?"doctor":s.cyc.changing?"changing":"steady";
+  const trend=s.days.changing||s.heavy.changing;
+  return {cyc,spread:s.cyc.regular?"steady":"doctor",days:s.days.changing?"changing":"steady",heavy:s.heavy.changing?"changing":"steady",
+    iron:trend?((labLow(lab("Hemoglobin"))||labLow(lab("Ferritin")))?"doctor":"changing"):"steady"}}
 
-/* ============ charts ============ */
-function lineChart(vals,lo,hi,labels,label){const W=360,H=160,l=26,r=8,t=10,b=22,w=W-l-r,h=H-t-b,mn=Math.floor(Math.min(...vals,lo)-2),mx=Math.ceil(Math.max(...vals,hi)+2);
-  const x=i=>l+i*(w/(vals.length-1)),y=v=>t+h-(v-mn)/(mx-mn)*h,pts=vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${label}">
-  ${[mn,Math.round((mn+mx)/2),mx].map(v=>`<text x="0" y="${y(v)+4}" font-size="10" fill="#55635A">${v}</text><line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="#DFE4DA"/>`).join("")}
-  <rect x="${l}" y="${y(hi)}" width="${w}" height="${Math.max(2,y(lo)-y(hi))}" rx="6" fill="#D5EADB"/>
-  <polyline points="${pts}" fill="none" stroke="#1D4A37" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-  ${vals.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===vals.length-1?5:3}" fill="${v>hi||v<lo?"#C46A2B":"#1D4A37"}"/>`).join("")}
-  ${labels.map((m,i)=>`<text x="${x(i)}" y="${H-5}" text-anchor="middle" font-size="10" fill="#55635A">${m[0]}</text>`).join("")}</svg>`}
-function bars(vals,base,labels){const W=360,H=120,l=8,r=8,t=8,b=20,w=W-l-r,h=H-t-b,mx=Math.max(5,...vals),bw=w/vals.length*.6,y=v=>t+h-v/mx*h;
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Heavy-flow days per period over 12 cycles">
-  ${vals.map((v,i)=>{const cx=l+(i+.5)*(w/vals.length),up=v>base+.5;return `<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${t+h-y(v)}" rx="${bw/2}" fill="${up?"#C46A2B":"#AFC8A0"}"/><text x="${cx}" y="${H-4}" text-anchor="middle" font-size="10" fill="#55635A">${labels[i][0]}</text>`}).join("")}
-  <line x1="${l}" x2="${W-r}" y1="${y(base)}" y2="${y(base)}" stroke="#15231B" stroke-dasharray="3 4"/></svg>`}
+/* ============ insights: card state machine ============ */
+/* needs_answers → paused (pregnancy yes/not sure) → explained (an alternative fits) → signals (ruled out) → doctor (on doctor list) */
+function cardState(id){
+  S.cards=S.cards||{};const c=S.cards[id]||(S.cards[id]={steps:{}}),qs=CHECKS[id].map(q=>q[0]);
+  let base=null,why=null,next=null;
+  if(qs.includes("pregnancy_possible")&&["Yes","Not sure"].includes(ansV("pregnancy_possible")))base="paused";
+  else{for(const k of qs){const a=ansV(k);if(a==null){base="needs_answers";next=k;break}if(a==="Yes"&&k!=="pregnancy_possible"){why=k;break}}
+    if(why)base=c.override?"signals":"explained";else if(!base)base="signals"}
+  const inDoc=(S.doctor||[]).some(d=>d.id===id+"_doc");
+  c.state=inDoc&&(base==="explained"||base==="signals")?"doctor":base;
+  return {base,state:c.state,why,next,c}}
+
+/* ============ visual components (pure; return markup strings) ============ */
+const svgi=(d,s=15)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const STI={steady:svgi('<path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19l7-7"/>'),
+  changing:svgi('<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/>'),
+  doctor:svgi('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>'),
+  care:svgi('<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17v.5"/>')};
+const STW={steady:"Steady",changing:"Changing",doctor:"Ask your doctor",care:"Get care soon"};
+/* e. status pill: icon + word, never color alone */
+const statusPill=k=>`<span class="ix-st ix-${k}">${STI[k]}${STW[k]}</span>`;
+
+/* a. range strip */
+function rangeStrip(o){
+  const W=340,H=46,p=12,x=v=>p+(Math.min(o.max,Math.max(o.min,v))-o.min)/(o.max-o.min)*(W-2*p),ty=22,th=12;
+  const nowR=o.round?Math.round(o.now):o.now,nowTxt=(o.approx?"~":"")+fmt(nowR);
+  const nx=x(o.now),anchor=nx>W-40?"end":nx<40?"start":"middle";
+  const rel=(r,lo,hi)=>o.now>hi?"above":o.now<lo?"below":"inside";
+  const parts=[`${o.label} ${o.approx?"about ":""}${fmt(nowR)} ${o.unit}`];
+  if(o.normal)parts.push(`${rel(0,o.normal[0],o.normal[1])} your normal of ${o.normText||o.normal.map(fmt).join(" to ")}`);
+  if(o.typical)parts.push(`${rel(0,o.typical[0],o.typical[1])==="inside"?"inside":"outside"} ${o.typAria||("the typical "+o.typical.join(" to "))}`);
+  const aria=parts.join(", ");
+  const bx=o.base!=null?x(o.base):0,dir=nx>bx?1:-1,cy=ty+th/2;
+  const arrow=o.base!=null&&Math.abs(bx-nx)>18?`<line x1="${bx+dir*7}" y1="${cy}" x2="${nx-dir*10}" y2="${cy}" stroke="#15231B" stroke-width="1.5"/><path d="M${nx-dir*15} ${cy-4.5} L${nx-dir*9} ${cy} L${nx-dir*15} ${cy+4.5}" fill="none" stroke="#15231B" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`:"";
+  return `<figure class="ix-strip"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">
+   <rect x="${p}" y="${ty}" width="${W-2*p}" height="${th}" rx="6" fill="#EEF1EA"/>
+   ${o.typical?`<rect x="${x(o.typical[0])}" y="${ty}" width="${Math.max(3,x(o.typical[1])-x(o.typical[0]))}" height="${th}" rx="6" fill="#D5EADB"/>`:""}
+   ${o.normal?`<rect x="${x(o.normal[0])}" y="${ty+2}" width="${Math.max(3,x(o.normal[1])-x(o.normal[0]))}" height="${th-4}" rx="4" fill="#8FB89E"/>`:""}
+   ${arrow}
+   ${o.base!=null?`<circle cx="${x(o.base)}" cy="${ty+th/2}" r="6" fill="#FFFFFF" stroke="#1D4A37" stroke-width="2.5"/>`:""}
+   <circle cx="${nx}" cy="${ty+th/2}" r="7" fill="#15231B" stroke="#FFFFFF" stroke-width="2"/>
+   <text x="${nx}" y="13" text-anchor="${anchor}" font-size="12" font-weight="700" fill="#15231B">now ${nowTxt}</text></svg>
+   <figcaption class="ix-leg">${o.typical?`<span><i class="sw-typ"></i>${esc(o.typLabel||`typical ${o.typical.join("–")}`)}</span>`:""}${o.normal?`<span><i class="sw-norm"></i>${esc(o.normLabel||`your normal ${o.normal.join("–")}`)}</span>`:""}${o.base!=null?`<span><i class="sw-ring"></i>${esc(o.baseLabel||`before ${fmt(o.base)}`)}</span>`:""}<span><i class="sw-dot"></i>now ${nowTxt}</span></figcaption>
+   ${o.sentence?`<p class="ix-sent">${esc(o.sentence)}</p>`:""}</figure>`}
+
+/* b. 12-month trend (cycle length) */
+function trendChart(vals,labels,o){
+  const W=360,H=200,l=34,r=10,t=30,b=24,w=W-l-r,h=H-t-b;
+  const lo=Math.min(o.typical[0],...vals)-1,hi=Math.max(o.typical[1],...vals)+1,x=i=>l+i*(w/(vals.length-1)),y=v=>t+h-(v-lo)/(hi-lo)*h;
+  const ticks=[];for(let v=Math.ceil(lo/4)*4;v<=hi;v+=4)ticks.push(v);
+  const out=v=>v<o.normal[0]||v>o.normal[1];
+  let ann="";if(o.changedAt>=0){const cx=x(o.changedAt),cy=y(vals[o.changedAt]),right=cx>W*.6;
+    ann=`<line x1="${cx}" y1="${cy-8}" x2="${cx}" y2="${t-8}" stroke="#55635A"/><text x="${right?cx+6:cx+4}" y="${t-12}" font-size="11" font-weight="600" fill="#15231B" text-anchor="${right?"end":"start"}">${esc(labels[o.changedAt])}: started getting ${o.dir}</text>`}
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria)}">
+   <text x="0" y="12" font-size="11" fill="#55635A">days</text>
+   ${ticks.map(v=>`<line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="#E6EAE2"/><text x="${l-6}" y="${y(v)+4}" font-size="10" fill="#55635A" text-anchor="end">${v}</text>`).join("")}
+   <rect x="${l}" y="${y(o.typical[1])}" width="${w}" height="${y(o.typical[0])-y(o.typical[1])}" fill="#EDF4E8"/>
+   <rect x="${l}" y="${y(o.normal[1])}" width="${w}" height="${y(o.normal[0])-y(o.normal[1])}" rx="4" fill="#CBE3D2"/>
+   ${ann}
+   <polyline points="${vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ")}" fill="none" stroke="#1D4A37" stroke-width="2.5" stroke-linejoin="round"/>
+   ${vals.map((v,i)=>{const cx=x(i).toFixed(1),cy=y(v).toFixed(1),last=i===vals.length-1,tip=`${labels[i]} · ${v} ${o.unit}${out(v)?" · outside your normal":""}`;
+     return `<g class="ix-pt" data-tip="${esc(tip)}"><circle cx="${cx}" cy="${cy}" r="14" fill="transparent"/><circle cx="${cx}" cy="${cy}" r="${last?5.5:4}" fill="${out(v)?"#FFFFFF":"#1D4A37"}" stroke="#1D4A37" stroke-width="2"/><title>${esc(tip)}</title></g>`}).join("")}
+   ${labels.map((m,i)=>`<text x="${x(i)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#55635A">${esc(m)}</text>`).join("")}</svg>`}
+
+/* b2. heavy-flow bars */
+function heavyBars(vals,base,labels){
+  const W=360,H=150,l=30,r=10,t=22,b=22,w=W-l-r,h=H-t-b,mx=Math.max(5,...vals),bw=w/vals.length*.56,y=v=>t+h-v/mx*h;
+  const up=v=>v>=base+RULES.heavyDelta;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(`Heavy-flow days per period over 12 months. Your normal is about ${Math.round(base)}; the last 3 periods averaged about ${Math.round(mean(vals.slice(-3)))}.`)}">
+   <text x="0" y="12" font-size="11" fill="#55635A">days</text>
+   ${Array.from({length:mx+1},(_,v)=>`<line x1="${l}" x2="${W-r}" y1="${y(v)}" y2="${y(v)}" stroke="#EEF1EA"/><text x="${l-6}" y="${y(v)+4}" font-size="10" fill="#55635A" text-anchor="end">${v}</text>`).join("")}
+   ${vals.map((v,i)=>{const cx=l+(i+.5)*(w/vals.length);return `<rect x="${cx-bw/2}" y="${y(v)}" width="${bw}" height="${t+h-y(v)}" rx="4" fill="${up(v)?"#1D4A37":"#AFC8A0"}"><title>${esc(labels[i])} · ${v} heavy days</title></rect><text x="${cx}" y="${H-6}" text-anchor="middle" font-size="10" fill="#55635A">${esc(labels[i])}</text>`}).join("")}
+   <line x1="${l}" x2="${W-r}" y1="${y(base)}" y2="${y(base)}" stroke="#15231B" stroke-dasharray="4 4"/>
+   <text x="${l+4}" y="${y(base)-5}" font-size="11" font-weight="600" fill="#15231B">your normal (~${Math.round(base)})</text></svg>`}
+
+/* c. body-signal small multiple */
+function spark(vals,labels,o){
+  const W=340,H=o.axis?92:72,l=30,r=10,t=10,b=o.axis?22:8,w=W-l-r,h=H-t-b;
+  const mn=Math.min(...vals,o.band[0]),mx=Math.max(...vals,o.band[1]),pd=(mx-mn)*.15||1,lo=mn-pd,hi=mx+pd;
+  const step=w/(vals.length-1),x=i=>l+i*step,y=v=>t+h-(v-lo)/(hi-lo)*h;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(o.aria)}">
+   ${o.from>=0?`<rect x="${x(o.from)-step/2}" y="${t-4}" width="${W-r-(x(o.from)-step/2)}" height="${h+8}" fill="#F1F2EC"/>`:""}
+   <rect x="${l}" y="${y(o.band[1])}" width="${w}" height="${Math.max(3,y(o.band[0])-y(o.band[1]))}" rx="3" fill="#CBE3D2"/>
+   ${[o.band[0],o.band[1]].map(v=>`<text x="${l-6}" y="${y(v)+4}" font-size="10" fill="#55635A" text-anchor="end">${v}</text>`).join("")}
+   <polyline points="${vals.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ")}" fill="none" stroke="#1D4A37" stroke-width="2.2" stroke-linejoin="round"/>
+   <circle cx="${x(vals.length-1)}" cy="${y(vals[vals.length-1])}" r="4" fill="#1D4A37"/>
+   ${o.axis?labels.map((m,i)=>`<text x="${x(i)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#55635A">${esc(m)}</text>`).join(""):""}</svg>`}
+
+/* d. life timeline (age 30 → 60) */
+function lifeTimeline(o){
+  const W=360,H=140,l=14,r=14,w=W-l-r,x=a=>l+(a-30)/30*w,ax=88;
+  const you=o.age,am=o.amma;
+  const aria=`Life timeline from age 30 to 60. You are ${you}.${am?` ${A()}'s menopause came at ${am}.`:""} Before 45 is called early. The transition usually starts between 45 and 55. Average menopause is about 46 in India and about 52 in the US. Start watching from about 36.`;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(aria)}">
+   <rect x="${x(45)}" y="38" width="${x(55)-x(45)}" height="${ax-38}" rx="6" fill="#D5EADB"/>
+   <text x="${x(50)}" y="56" font-size="10" text-anchor="middle" fill="#1B4733">transition usually</text><text x="${x(50)}" y="68" font-size="10" text-anchor="middle" fill="#1B4733">starts 45–55</text>
+   <rect x="${x(36)}" y="62" width="${x(44)-x(36)-2}" height="${ax-62}" rx="5" fill="#EEF6CF"/>
+   <text x="${(x(36)+x(44))/2}" y="79" font-size="9.5" text-anchor="middle" fill="#3B4711">start watching ~36</text>
+   <line x1="${x(45)}" x2="${x(45)}" y1="18" y2="${ax}" stroke="#15231B" stroke-width="1.2"/>
+   <text x="${x(45)+4}" y="14" font-size="10.5" fill="#15231B">before 45 = early</text>
+   ${am?`<line x1="${x(am)}" x2="${x(am)}" y1="18" y2="${ax}" stroke="#1D4A37" stroke-width="1.5" stroke-dasharray="3 3"/><text x="${x(am)-4}" y="14" font-size="10.5" text-anchor="end" font-weight="600" fill="#1D4A37">${esc(A())}'s menopause, ${am}</text>`:""}
+   <line x1="${l}" x2="${W-r}" y1="${ax}" y2="${ax}" stroke="#15231B" stroke-width="1.5"/>
+   ${[30,35,40,45,50,55,60].map(a=>`<line x1="${x(a)}" x2="${x(a)}" y1="${ax}" y2="${ax+4}" stroke="#15231B"/><text x="${x(a)}" y="${ax+16}" font-size="10" text-anchor="middle" fill="#55635A">${a}</text>`).join("")}
+   <circle cx="${x(you)}" cy="${ax}" r="6" fill="#D3EE7C" stroke="#15231B" stroke-width="1.5"/><text x="${x(you)-4}" y="${ax-12}" font-size="11" font-weight="700" fill="#15231B">You, ${you}</text>
+   <path d="M${x(46)} ${ax+22} l-4 6 h8z" fill="#55635A"/><text x="${x(46)+2}" y="${ax+40}" font-size="9.5" text-anchor="end" fill="#55635A">India avg ~46</text>
+   <path d="M${x(52)} ${ax+22} l-4 6 h8z" fill="#55635A"/><text x="${x(52)-2}" y="${ax+40}" font-size="9.5" fill="#55635A">US avg ~52</text></svg>`}
+
+function progressRing(n,of){const r=26,c=2*Math.PI*r,f=Math.min(1,n/of);
+  return `<svg width="68" height="68" viewBox="0 0 68 68" role="img" aria-label="${n} of ${of} cycles logged"><circle cx="34" cy="34" r="${r}" fill="none" stroke="#DFE4DA" stroke-width="7"/><circle cx="34" cy="34" r="${r}" fill="none" stroke="#1D4A37" stroke-width="7" stroke-linecap="round" stroke-dasharray="${c*f} ${c}" transform="rotate(-90 34 34)"/><text x="34" y="39" text-anchor="middle" font-size="15" font-weight="700" fill="#15231B">${n}/${of}</text></svg>`}
+
+/* ============ insight cards ============ */
+let DOCS={};           // doctor-list candidates on screen, rebuilt each render
+let AIR={},AIBUSY=null; // "Ask about this" replies (memory only)
+const cycleSteps={needs_answers:[["log","Log the start date of your next period"],["bring","Bring this card to your next visit"]],
+  paused:[["test","Take a home pregnancy test"],["log","Log the start date of your next period"]],
+  explained:[["log","Log the start date of your next period"],["bring","Bring this card to your next visit"]],
+  signals:[["wake","Keep a steady wake time for 2 weeks"],["wind","Try a 10-minute wind-down before bed"],["log","Log the start date of your next period"]]};
+function ansList(id){const qs=CHECKS[id].map(q=>q[0]).filter(k=>ansV(k)!=null);if(!qs.length)return "";
+  return `<ul class="ix-ans" aria-label="Your answers">${qs.map(k=>`<li><span><b>${esc(SHORT[k])}:</b> ${esc(ansV(k))}${S.answers[k].note?` (${esc(S.answers[k].note)})`:""}</span><button type="button" class="ix-link" data-clear="${k}" data-card="${id}">Change answer<span class="sr"> for ${esc(SHORT[k])}</span></button></li>`).join("")}</ul>`}
+function notRuledOut(id){const ks=CHECKS[id].map(q=>q[0]).filter(k=>["Not sure","Prefer not to say"].includes(ansV(k)));
+  return ks.length?`<p class="small">Not ruled out, because you weren't sure or chose not to say: ${esc(ks.map(k=>SHORT[k].toLowerCase()).join(", "))}. That's okay; we've kept going.</p>`:""}
+function questionBlock(id,key,qs){const i=qs.findIndex(q=>q[0]===key),q=qs[i][1];
+  return `<p class="ix-q" id="q-${id}">${esc(q)}</p>
+   <div class="ix-opts" role="group" aria-labelledby="q-${id}">${OPTS.map(o=>`<button type="button" class="ix-opt" data-ans="${key}" data-card="${id}" data-v="${o}">${o}</button>`).join("")}</div>
+   ${key==="new_medication"?`<label class="f" for="note-${id}">What is it? (optional, then tap Yes)<input type="text" id="note-${id}" autocomplete="off"></label>`:""}
+   <div class="ix-dots" aria-hidden="true">${qs.map((_,j)=>`<i class="${j<i?"done":j===i?"on":""}"></i>`).join("")}</div>`}
+function bodyPanel(b){
+  if(!b)return `<div class="ix-body"><p>No wearable data yet, so we can't compare body signals.</p></div>`;
+  if(!b.claim)return `<div class="ix-body"><p>Your body signals look like your normal, so they probably aren't part of this.</p></div>`;
+  const sm=Math.round(Math.abs(b.sleepMin)/10)*10;
+  return `<div class="ix-body" id="body-panel"><p class="ix-lbl">Body signals</p>
+   <p>Over the last 3 months you've slept about ${sm} minutes ${b.sleepMin<0?"less":"more"} a night, your resting heart rate is about ${Math.round(Math.abs(b.rhr))} beats per minute ${b.rhr>=0?"higher":"lower"}, and your HRV (heart rate variability, small changes in the time between heartbeats; higher usually means more rested) is about ${Math.round(Math.abs(b.hrvPct))}% ${b.hrvPct<0?"lower":"higher"} than your normal. Stress or short sleep <b>may be contributing</b>. Research links stress more with irregular cycles than with longer ones, so this is one possible piece, not the answer.</p>
+   <p class="small muted">${b.movedN} of 3 signals moved past our limits (sleep 30+ minutes less, resting heart rate 3+ beats higher, HRV 10%+ lower). We only mention stress when at least 2 do.</p>
+   <button type="button" class="ix-link" data-act="scrollbody">See the charts</button></div>`}
+
+function cycleCard(s,V){
+  const st=cardState("cycle"),qs=CHECKS.cycle,tsh=lab("TSH"),thy=fact("thyroid"),c=s.cyc;
+  const inTyp=c.outTyp<2;
+  const what=`<p>Your last 3 cycles averaged <b>${Math.round(c.rec)} days</b>. Your normal is ${c.normal.join("–")}. ${inTyp?`That's still inside the typical ${c.typ.join("–")}.`:`That's outside the typical ${c.typ.join("–")} too.`}</p>`;
+  const strip=rangeStrip({min:20,max:40,typical:c.typ,normal:c.normal,now:c.rec,base:c.base,unit:"days",label:"Cycle length",round:true});
+  let reasons="",tags=SRC_TAGS["cycle:"+st.base]||SRC_TAGS["cycle:needs_answers"],tag="";
+  if(st.base==="needs_answers"){const i=qs.findIndex(q=>q[0]===st.next);tag=`<span class="small muted">Check-in · ${i+1} of ${qs.length}</span>`;
+    reasons=(i===0?`<p class="small">Before looking at sleep or stress, a few quick questions can rule out common reasons. Tap "Not sure" or "Prefer not to say" any time.</p>`:"")+questionBlock("cycle",st.next,qs)+ansList("cycle")}
+  else if(st.base==="paused")reasons=`<div class="ix-note"><p>A home pregnancy test is the simplest first step. We'll hold off on other explanations until you know.</p></div><button type="button" class="btn sm ghost" data-clear="pregnancy_possible" data-card="cycle">Update my answer</button>`;
+  else if(st.base==="explained"){tags=SRC_TAGS["cycle:explained:"+st.why];
+    reasons=`<div class="ix-note"><p><b>This may explain the change.</b> ${esc(EXPLAIN.cycle[st.why])}</p></div><button type="button" class="ix-link" data-act="override" data-card="cycle">Doesn't seem like the reason?</button>${ansList("cycle")}`}
+  else reasons=`<p class="small">${st.why?"You said that reason doesn't seem to fit.":"The common reasons we asked about don't seem to fit."}</p>${notRuledOut("cycle")}${bodyPanel(bodySig())}${ansList("cycle")}`;
+  const doctor=tsh&&st.base!=="needs_answers"&&st.base!=="paused"?{id:"cycle_doc",title:"A thyroid check",
+    why:`Your TSH (thyroid-stimulating hormone) was ${tsh.value}${labState(tsh)==="watch"?", near the top of your lab's range":labState(tsh)==="flag"?", outside your lab's range":""}${thy?`, and ${A()} has a thyroid condition`:""}.`,
+    ask:"Ask whether a thyroid recheck makes sense, given your longer cycles."}:null;
+  return {id:"cycle",title:`Cycles getting ${c.dir}`,status:V.cyc,state:st.state,base:st.base,what,strip,reasons,ciTag:tag,tags,
+    whatText:`Your last 3 cycles averaged ${Math.round(c.rec)} days. Your normal is ${c.normal.join("–")}. ${inTyp?"That's still inside":"That's outside"} the typical ${c.typ.join("–")}.`,
+    steps:cycleSteps[st.base==="doctor"?"signals":st.base],doctor}}
+
+function ironCard(s,V){
+  const st=cardState("iron"),qs=CHECKS.iron,hb=lab("Hemoglobin"),fe=lab("Ferritin"),hv=fact("heavy_periods"),fib=fact("fibroids"),d=s.days,h=s.heavy;
+  const labsTxt=[labLow(hb)&&`Your hemoglobin (the part of blood that carries oxygen) was ${hb.value} ${hb.unit}, below your lab's range of ${hb.lo}–${hb.hi}.`,
+    labLow(fe)&&`Ferritin (your iron stores) was ${fe.value} ${fe.unit}, just below ${fe.lo}.`].filter(Boolean).join(" ");
+  const whatText=`Your last 3 periods lasted about ${Math.round(d.rec)} days, up from ${Math.round(d.base)}. Heavy-flow days went from about ${Math.round(h.base)} to about ${Math.round(h.rec)} a period. Typical periods last up to ${RULES.typicalPeriodMax} days; more than 7 days is one sign of heavy bleeding.`;
+  const what=`<p>${esc(whatText)}</p>${labsTxt?`<p>${esc(labsTxt)}</p>`:""}`;
+  const strip=rangeStrip({min:0,max:10,typical:[1,RULES.typicalPeriodMax],typLabel:"typical: up to 8",typAria:"the typical range of up to 8 days",normal:d.normal,normLabel:`your normal ~${Math.round(d.base)}`,normText:`about ${Math.round(d.base)} days`,now:d.rec,base:d.base,baseLabel:`before ${fmt(d.base)}`,unit:"days",label:"Period length",round:true,approx:false});
+  let reasons="",tag="";
+  if(st.base==="needs_answers"){const i=qs.findIndex(q=>q[0]===st.next);tag=`<span class="small muted">Check-in · ${i+1} of ${qs.length}</span>`;
+    reasons=(i===0?`<p class="small">Some common things can make periods heavier. A few quick questions first.</p>`:"")+questionBlock("iron",st.next,qs)+ansList("iron")}
+  else if(st.base==="explained")reasons=`<div class="ix-note"><p><b>This may explain the change.</b> ${esc(EXPLAIN.iron[st.why])}</p></div><button type="button" class="ix-link" data-act="override" data-card="iron">Doesn't seem like the reason?</button>${ansList("iron")}`;
+  else reasons=`<p class="small">${st.why?"You said that reason doesn't seem to fit.":"None of these common reasons seem to fit, so it's worth asking your doctor why."}</p>${notRuledOut("iron")}${ansList("iron")}`;
+  const fam=[hv&&`${A()} had very heavy periods in her thirties`,fib&&`had fibroids at ${fib.num}`].filter(Boolean);
+  const doctor=V.iron==="doctor"?{id:"iron_doc",title:"Heavier periods and lower iron",
+    why:`${labsTxt||"Your periods have become heavier and longer."}${fam.length?` ${fam.join(" and ")}.`:""}`,
+    ask:"Ask why your periods are heavier, and whether to recheck your iron."}:null;
+  return {id:"iron",title:V.iron==="doctor"?"Heavier periods, lower iron":"Heavier, longer periods",status:V.iron,state:st.state,base:st.base,what,strip,reasons,ciTag:tag,tags:SRC_TAGS.iron,whatText,
+    steps:[["pads","Note how often you change pads or tampons on your heaviest day"],["food","Add iron-rich foods like lentils, rajma, ragi or spinach, with lemon or amla"],["bring","Bring this card to your next visit"]],doctor}}
+
+function buildCards(s,V){const o=[];
+  if(V.iron!=="steady")o.push(ironCard(s,V));
+  if(V.cyc!=="steady")o.push(cycleCard(s,V));
+  const rank=c=>c.status==="care"?0:c.status==="doctor"?1:c.status==="changing"?(c.base==="needs_answers"?2:3):4;
+  return o.sort((a,b)=>rank(a)-rank(b))}
+
+function stepsHTML(cid,steps){S.cards[cid]=S.cards[cid]||{steps:{}};const c=S.cards[cid];c.steps=c.steps||{};
+  return `<ul class="ix-steps">${steps.map(([sid,t])=>{const on=!!c.steps[sid];return `<li><button type="button" class="ix-step" data-step="${cid}:${sid}" aria-pressed="${on}"><span class="ix-box" aria-hidden="true">${on?IC.check:""}</span><span class="${on?"ix-done":""}">${esc(t)}</span></button></li>`}).join("")}</ul>`}
+function doctorLine(d){DOCS[d.id]=d;const added=(S.doctor||[]).some(x=>x.id===d.id);
+  return `<div class="ix-doc"><p class="ix-lbl">Worth discussing with your doctor</p><p><b>${esc(d.title)}.</b> ${esc(d.why)}</p>
+   <button type="button" class="btn sm ${added?"ghost":""}" data-docadd="${d.id}" aria-pressed="${added}">${added?IC.check+"On your doctor list":"Add to doctor list"}</button></div>`}
+function askHTML(cd){
+  if(!SAMPLE)return `<p class="small muted">Open in Claude to ask questions.</p>`;
+  const r=AIR[cd.id],busy=AIBUSY===cd.id;
+  const reply=r?`<div class="ix-ai" aria-live="polite"><p>${esc(r.say)}</p>${r.steps.length?`<ul>${r.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:""}${r.source_id?srcLink(litById(r.source_id)):""}
+    ${r.ask?`<p class="ix-q" id="aiq-${cd.id}">${esc(r.ask.question)}</p><div class="ix-opts" role="group" aria-labelledby="aiq-${cd.id}">${r.ask.options.map(o=>`<button type="button" class="ix-opt" data-ans="${r.ask.key}" data-card="${cd.id}" data-v="${o}">${o}</button>`).join("")}</div>`:""}</div>`:"";
+  return `<div class="ix-askwrap">${reply}${S.ui.ask===cd.id?`<form class="row" data-askcard="${cd.id}" style="flex-wrap:nowrap"><label class="sr" for="aq-${cd.id}">Your question about this card</label><input type="text" id="aq-${cd.id}" placeholder="Ask about this card" style="flex:1;min-width:0"${busy?" disabled":""}><button class="btn sm" type="submit"${busy?" disabled":""}>${busy?"…":"Ask"}</button></form>`:`<button type="button" class="btn sm ghost" data-act="askopen" data-card="${cd.id}">Ask about this</button>`}</div>`}
+function cardHTML(cd){const src=search_literature(cd.tags);
+  return `<article class="card t-white ix-card" id="card-${cd.id}" aria-labelledby="h-${cd.id}">
+   <div class="head"><h3 id="h-${cd.id}">${esc(cd.title)}</h3>${statusPill(cd.status)}</div>
+   <section class="ix-sec ix-what"><p class="ix-lbl">What changed</p>${cd.what}${cd.strip}</section>
+   <section class="ix-sec"><div class="row between"><p class="ix-lbl">Possible reasons</p>${cd.ciTag}</div><div class="ix-ci" id="ci-${cd.id}" aria-live="polite" tabindex="-1">${cd.reasons}</div></section>
+   <section class="ix-sec"><p class="ix-lbl">Small steps</p>${stepsHTML(cd.id,cd.steps)}</section>
+   ${cd.doctor?doctorLine(cd.doctor):""}
+   ${srcLink(src)}
+   ${askHTML(cd)}</article>`}
+
+/* ============ red flags, doctor list ============ */
+const FLAGS=[["emerg","Soaking through a pad or tampon every hour for more than 2 hours, with dizziness, chest pain or shortness of breath"],
+  ["between","Bleeding between periods or after sex"],["nop","No period for 3 months, with a negative pregnancy test"]];
+function flagBanner(){const f=S.flags||{};if(!f.emerg&&!f.between&&!f.nop)return "";
+  const em=!!f.emerg;
+  return `<section class="card ix-banner" role="alert"><div class="head"><h3>${em?"Get emergency care now.":"See a doctor soon."}</h3>${statusPill("care")}</div>
+   <p>${em?"Heavy bleeding with dizziness, chest pain or shortness of breath needs care right away. Call your local emergency number or go to the nearest emergency department.":`You marked: ${esc(FLAGS.filter(([k])=>f[k]).map(x=>x[1].toLowerCase()).join("; "))}. Book a visit with a doctor in the next few days.`}</p>
+   <div class="row"><button type="button" class="btn sm light" data-act="clearflags">Clear these</button></div>${srcLink(litById("acog_aub"))}</section>`}
+function flagPanel(){const f=S.flags||{};
+  return `<section class="sheet" id="flagpanel"><div class="sheet-h"><h2>Something feels off?</h2><button type="button" class="ix-link" data-act="flags">Close</button></div>
+   <p class="small" style="padding:0 8px">Tap anything that's happening now. These matter more than any trend on this page.</p>
+   <div class="ix-flags">${FLAGS.map(([k,t])=>`<button type="button" class="ix-flag" data-flag="${k}" aria-pressed="${!!f[k]}"><span class="ix-box" aria-hidden="true">${f[k]?IC.check:""}</span><span>${esc(t)}</span></button>`).join("")}</div></section>`}
+function docSummary(s){const L=[],d=new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}),b=bodySig();
+  L.push(`Roots summary for my doctor (${d})`,`${S.me.name}, ${S.me.age}`,"");
+  if(s.ready){const c=s.cyc,m=s.months;
+    L.push(`Cycle log: ${s.n} cycles, ${m[0]}–${m[m.length-1]}. "My normal" = first ${RULES.baselineN} cycles (${m[0]}–${m[RULES.baselineN-1]}).`,
+      `- Cycle length: last 3 averaged ${fmt(c.rec)} days (${c.recent.join(", ")}). My normal ${c.normal.join("–")}. Typical ${c.typ.join("–")}.`,
+      `- Spread (shortest to longest, last ${RULES.spreadN}): ${c.spread} days.`,
+      `- Period length: about ${fmt(s.days.rec)} days, was ${fmt(s.days.base)}.`,
+      `- Heavy-flow days: about ${fmt(s.heavy.rec)} a period, was ${fmt(s.heavy.base)}.`)}
+  if(S.labs.length)L.push("","Labs:",...S.labs.map(l=>`- ${l.name} ${l.value} ${l.unit} (lab range ${l.lo}–${l.hi})`));
+  if(b){const w=bodyWords(b);L.push("",`Wearable, last 3 months vs first 6: sleep ${w.sleep}; resting heart rate ${w.rhr}; HRV ${w.hrv}.`)}
+  if(S.doctor.length)L.push("","What I'd like to ask:",...S.doctor.map((x,i)=>`${i+1}. ${x.title}. ${x.why} ${x.ask}`));
+  if(S.ui.docAns){const ks=ANS_KEYS.filter(k=>ansV(k)!=null&&k!=="hot_flash_log");if(ks.length)L.push("","My check-in answers:",...ks.map(k=>`- ${SHORT[k]}: ${ansV(k)}${S.answers[k].note?` (${S.answers[k].note})`:""}`))}
+  const fam=shared().filter(f=>f.chip);if(fam.length)L.push("",`Family history (shared by my mother, ${S.me.mother}):`,...fam.map(f=>`- ${f.rel==="mother"?"Her mother: ":""}${f.chip}`));
+  return L.join("\n")}
+function docPanel(s){
+  return `<section class="sheet" id="docpanel" aria-labelledby="doc-h"><div class="sheet-h"><h2 id="doc-h">Doctor list</h2><button type="button" class="ix-link" data-act="doclist">Close</button></div>
+   ${S.doctor.length?`<ol class="ix-doclist">${S.doctor.map(d=>`<li><b>${esc(d.title)}</b><span class="small">${esc(d.why)}</span><span class="small"><b>Ask:</b> ${esc(d.ask)}</span><button type="button" class="ix-link" data-docrm="${d.id}">Remove<span class="sr"> ${esc(d.title)}</span></button></li>`).join("")}</ol>`:`<p class="small muted" style="padding:0 8px">Nothing here yet. Tap "Add to doctor list" on any card.</p>`}
+   <label class="ix-inc"><input type="checkbox" data-act="docans"${S.ui.docAns?" checked":""}> Include my check-in answers in the summary</label>
+   <div class="row" style="padding:0 8px 8px"><button type="button" class="btn sm" data-act="copydoc">${IC.copy}Copy summary for my doctor</button></div>
+   ${S.ui.docText?`<label class="sr" for="docText">Summary for your doctor</label><textarea id="docText" readonly style="font-size:13px;min-height:220px">${esc(docSummary(s))}</textarea>`:""}</section>`}
+
+/* ============ screens ============ */
+function vInsights(){
+  if(!["cycle","prepare"].includes(S.ui.ins))S.ui.ins="cycle";
+  S.answers=S.answers||{};S.cards=S.cards||{};S.doctor=S.doctor||[];S.flags=S.flags||{};DOCS={};
+  const s=sig(),body=S.ui.ins==="prepare"?vPrepare(s):vCycle(s);
+  const chip=`<button type="button" class="ix-docchip" data-act="doclist" aria-expanded="${!!S.ui.doc}">Doctor list (${S.doctor.length})</button>`;
+  return hdr("Insights",S.ui.ins==="prepare"?"Looking ahead":"Your cycle, explained",chip)+
+   `<div class="top">${pills("ins",[["cycle","Your cycle"],["prepare","Prepare ahead"]])}</div>`+
+   flagBanner()+(S.ui.doc?docPanel(s):"")+
+   `<div class="row between" style="margin:-8px 0 -6px"><button type="button" class="ix-link" data-act="flags" aria-expanded="${!!S.ui.flags}">Something feels off?</button></div>`+
+   (S.ui.flags?flagPanel():"")+body+
+   `<section class="sheet"><div class="set"><span><b>Your check-in answers</b><br><span class="small muted">Pregnancy, birth control and medicine answers stay in this browser. They're never shown on the Family tab or to ${esc(A())}.</span></span><button class="btn sm ghost" type="button" data-act="clearans">Clear my check-in answers</button></div></section>`}
+
+function vCycle(s){
+  if(!s.ready)return `<section class="card t-white"><div class="row" style="flex-wrap:nowrap;gap:16px">${progressRing(s.n,RULES.baselineN)}<div><h3 style="font-size:20px">We're learning your normal: ${s.n} of ${RULES.baselineN} cycles logged</h3><p class="small muted">After ${RULES.baselineN} cycles we can show what's steady and what's changing for you. No verdicts until then.</p></div></div></section>`;
+  const V=verdicts(s),cards=buildCards(s,V),b=bodySig(),c=s.cyc,m=s.months;
+  const changed=[V.cyc,V.spread,V.days,V.heavy].filter(x=>x!=="steady").length,need=cards.filter(x=>x.base==="needs_answers");
+  const summary=`<section class="card t-forest ix-summary"><span class="ix-lbl" style="opacity:.85">This month</span>
+   <h3>${changed?`${changed} ${changed===1?"thing":"things"} changed from your normal.`:"Everything looks like your normal."}</h3>
+   <p>${need.length?`${need.length===1?"1 quick check-in":need.length+" quick check-ins"} will help explain why.`:cards.length?"Your check-ins are done. See what may explain the changes below.":"Nothing to do this month. Keep logging."}</p>
+   ${need.length?`<div><button type="button" class="btn lime" data-act="startci" data-card="${need[0].id}">Start check-in <span aria-hidden="true">→</span></button></div>`:""}</section>`;
+  const row=(name,val,v,strip,extra="")=>`<div class="ix-num"><div class="ix-numh"><b>${name}</b><span class="ix-val">${val}</span>${statusPill(v)}</div>${extra}${strip}</div>`;
+  const numbers=`<section class="sheet" aria-labelledby="num-h"><div class="sheet-h"><h2 id="num-h">Your numbers</h2><span class="tag">Last 3 vs first ${RULES.baselineN}</span></div>
+   ${row("Cycle length",`${Math.round(c.rec)} days`,V.cyc==="care"?"care":V.cyc,
+     rangeStrip({min:20,max:40,typical:c.typ,normal:c.normal,now:c.rec,base:c.base,unit:"days",label:"Cycle length",round:true,
+       sentence:c.outN>=RULES.changingOf?(c.outTyp>=2?"Outside your normal and outside the typical range.":"Outside your normal, but still inside the typical range."):"Inside your normal."}),
+     `<details class="ix-tip"><summary>About "typical 24–38"</summary><p class="small">This is the range used by FIGO, an international group of gynecologists. ACOG (the American College of Obstetricians and Gynecologists) uses 21–35.</p></details>`)}
+   ${row(`Spread <span class="ix-sub">shortest → longest, last ${RULES.spreadN}</span>`,`${c.spread} days`,V.spread,
+     rangeStrip({min:0,max:14,typical:[0,c.reg],typLabel:`regular: ${c.reg} or less at your age`,typAria:`the regular range of ${c.reg} days or less`,now:c.spread,base:c.spreadBase,baseLabel:`before ${c.spreadBase}`,unit:"days",label:"Spread",
+       sentence:c.regular?"Your cycles are still regular for your age.":"More spread than counts as regular for your age."}))}
+   ${row("Period length",`${Math.round(s.days.rec)} days`,V.days,
+     rangeStrip({min:0,max:10,typical:[1,RULES.typicalPeriodMax],typLabel:"typical: up to 8",typAria:"the typical range of up to 8 days",normal:s.days.normal,normLabel:`your normal ~${Math.round(s.days.base)}`,normText:`about ${Math.round(s.days.base)} days`,now:s.days.rec,base:s.days.base,unit:"days",label:"Period length",round:true,
+       sentence:s.days.changing?`About ${fmt(s.days.rec-s.days.base)} days longer than your normal.`:"Inside your normal."}))}
+   ${row("Heavy-flow days",`~${Math.round(s.heavy.rec)} a period`,V.heavy,
+     rangeStrip({min:0,max:6,normal:s.heavy.normal,normLabel:`your normal ~${Math.round(s.heavy.base)}`,normText:`about ${Math.round(s.heavy.base)}`,now:s.heavy.rec,base:s.heavy.base,unit:"a period",label:"Heavy-flow days",round:true,approx:true,
+       sentence:s.heavy.changing?`About ${fmt(s.heavy.rec-s.heavy.base)} more heavy days a period than your normal.`:"Inside your normal."}))}
+   <p class="small muted" style="padding:0 8px">"Your normal" comes from your first ${RULES.baselineN} cycles (${m[0]}–${m[RULES.baselineN-1]}). "Now" is your last 3. ${srcLink(search_literature(SRC_TAGS.numbers))}</p></section>`;
+  const cardsSec=cards.length?`<section class="ix-cards" aria-labelledby="why-h"><h2 id="why-h" class="ix-h2">What changed, and why</h2>${cards.map(cardHTML).join("")}</section>`:"";
+  const trend=`<section class="card t-white"><div class="row between"><h2>12-month view</h2><span class="tag">Cycle length</span></div>
+   ${trendChart(s.L,m,{typical:c.typ,normal:c.normal,unit:"days",changedAt:c.changedAt,dir:c.dir,aria:`Cycle length by month, ${m[0]} to ${m[m.length-1]}. Your normal is ${c.normal[0]} to ${c.normal[1]} days; typical is ${c.typ[0]} to ${c.typ[1]}. ${c.changedAt>=0?`Cycles started getting ${c.dir} in ${m[c.changedAt]}; the latest was ${s.L[s.n-1]} days.`:"All months are inside your normal."}`})}
+   <div class="legend"><span><i style="background:#EDF4E8;border:1px solid #D5DED0"></i>typical ${c.typ.join("–")}</span><span><i style="background:#CBE3D2"></i>your normal ${c.normal.join("–")}</span><span>● inside your normal</span><span>○ outside your normal</span></div>
+   <p class="small muted ix-read" aria-live="polite">Tap a point to see its month and length.</p></section>
+   <section class="card t-white"><div class="row between"><h2>Heavy-flow days</h2><span class="tag">Per period</span></div>${heavyBars(s.H,s.heavy.base,m)}
+   <div class="legend"><span><i style="background:#AFC8A0"></i>near your normal</span><span><i style="background:#1D4A37"></i>1+ day above your normal</span><span>- - your normal</span></div></section>`;
+  const from=c.changedAt>=0?c.changedAt:s.n-RULES.recentN;
+  const bodySec=b?(()=>{const w=bodyWords(b),B=S.body;return `<section class="card t-white" id="body-signals" aria-labelledby="body-h"><div class="row between" style="align-items:flex-start"><h2 id="body-h">Body signals</h2><details class="ix-tip ix-tipr"><summary aria-label="About these numbers">i</summary><p class="small">Resting heart rate is naturally a few beats higher in the second half of your cycle, so we compare whole-cycle averages. ${srcLink(search_literature(SRC_TAGS.body))}</p></details></div>
+     <p class="small muted">Monthly averages from your wearable. The shaded months (${m[from]}–${m[m.length-1]}) are when your cycles started changing. The green band is your normal.</p>
+     <div class="ix-spark"><div class="row between"><b class="small">Sleep, hours a night</b><span class="small">${w.sleep}</span></div>${spark(B.sleep,m,{band:[b.sl.lo,b.sl.hi],from,aria:`Sleep, hours a night. Your normal ${fmt(b.sl.lo)} to ${fmt(b.sl.hi)}; last 3 months averaged ${fmt(b.sl.rec)}, ${w.sleep} than your normal.`})}</div>
+     <div class="ix-spark"><div class="row between"><b class="small">Resting heart rate, beats per minute (bpm)</b><span class="small">${w.rhr}</span></div>${spark(B.rhr,m,{band:[b.hr.lo,b.hr.hi],from,aria:`Resting heart rate in beats per minute. Your normal ${b.hr.lo} to ${b.hr.hi}; last 3 months averaged ${fmt(b.hr.rec)}, ${w.rhr}.`})}</div>
+     <div class="ix-spark"><div class="row between"><b class="small">HRV (heart rate variability), milliseconds</b><span class="small">${w.hrv}</span></div>${spark(B.hrv,m,{band:[b.hv.lo,b.hv.hi],from,axis:true,aria:`Heart rate variability in milliseconds. Your normal ${b.hv.lo} to ${b.hv.hi}; last 3 months averaged ${fmt(b.hv.rec)}, ${w.hrv}.`})}</div></section>`})():"";
+  const LABI={Hemoglobin:["Hemoglobin","carries oxygen in your blood","heavy"],Ferritin:["Ferritin","your iron stores","heavy"],TSH:["TSH (thyroid-stimulating hormone)","shows how your thyroid is working","cyc"],"Vitamin D":["Vitamin D","helps your bones use calcium",null]};
+  const labsSec=S.labs.length?`<section class="sheet" aria-labelledby="labs-h"><div class="sheet-h"><h2 id="labs-h">Labs that touch your cycle</h2></div>
+   ${S.labs.slice(0,6).map(l=>{const I=LABI[l.name]||[l.name,"",null],st=labState(l),hasR=l.lo!=null&&l.hi!=null;
+     const v=st==="flag"?"doctor":"steady",span=hasR?l.hi-l.lo:Math.abs(l.value)||1,mn=Math.max(0,Math.min(l.lo??l.value,l.value)-span*.25),mx=Math.max(l.hi??l.value,l.value)+span*.25;
+     const words=!hasR?"No lab range on file.":st==="flag"?`${l.value<l.lo?"Below":"Above"} your lab's range of ${l.lo}–${l.hi}.`:st==="watch"?`Inside your lab's range of ${l.lo}–${l.hi}, near the top.`:`Inside your lab's range of ${l.lo}–${l.hi}.`;
+     return `<div class="ix-num"><div class="ix-numh"><b>${esc(I[0])}<span class="ix-sub">${esc(I[1])}</span></b><span class="ix-val">${l.value} <small>${esc(l.unit)}</small></span>${statusPill(v)}</div>
+      ${hasR?rangeStrip({min:mn,max:mx,typical:[l.lo,l.hi],typLabel:`lab range ${l.lo}–${l.hi}`,typAria:`your lab's range of ${l.lo} to ${l.hi}`,now:l.value,unit:l.unit,label:I[0],sentence:words}):`<p class="ix-sent">${words}</p>`}</div>`}).join("")}</section>`:"";
+  return summary+numbers+cardsSec+trend+bodySec+labsSec+`<p class="small muted">Roots shows patterns in your own data. It can't tell you what's causing a change; your doctor can help with that.</p>`}
+
+function vPrepare(s){
+  const m=fact("menopause_age"),natural=m&&/natural|on (her|its) own/i.test(m.value),typeAns=ansV("amma_menopause_type"),surgical=typeAns==="After surgery or treatment";
+  const age=+S.me.age||31,early=m&&m.num<45&&!surgical,fhSrc=search_literature(SRC_TAGS.family_history);
+  const fam=!m?`<section class="card t-white"><div class="head"><h3>Perimenopause: what to watch, and when</h3>${statusPill("steady")}</div><p>When ${esc(A())} shares when her periods stopped, this page can show what it means for you. Perimenopause is the years of change before periods stop for good.</p><a class="btn sm" href="#root">Invite ${esc(A())}</a></section>`
+   :`<section class="card t-white ix-card"><div class="head"><h3>Perimenopause: what to watch, and when</h3>${statusPill("steady")}</div>
+    <p class="small muted">Perimenopause is the years of change before periods stop for good. Nothing to act on today.</p>
+    ${surgical?`<p>${esc(A())}'s periods stopped after surgery or treatment, so it doesn't count as a family history of early menopause. Your own cycle data is the better guide.</p>`
+     :early?`<p>${esc(A())}'s periods stopped at ${m.num}. Doctors call menopause before 45 "early". When a mother has early menopause, her daughter's chance of an earlier menopause is higher. <b>Family history raises the chance; it does not decide what happens to you.</b> Smoking also matters, and you can control that.</p>`
+     :`<p>${esc(A())}'s periods stopped at ${m.num}. That's inside the usual range, so it doesn't point to an early menopause for you. <b>Family history raises or lowers the chance; it does not decide what happens to you.</b></p>`}
+    ${srcLink(fhSrc)}
+    <details class="ix-tip"><summary>How sure is this?</summary><p class="small">One study that asked women to remember family history; memories can be off.</p></details></section>`;
+  const timeline=`<section class="card t-white"><h2>Your life timeline</h2>${lifeTimeline({age,amma:m&&!surgical?m.num:null})}
+   <p class="small">Doctors compare against the definition (before 45), not one average. The average is about 46 in India and about 52 in the US, so a US-only comparison would make ${esc(A())}'s ${m?m.num:"age"} look further from normal than it is for your family. Nobody can say when your own change will start; this only shows when it's worth paying attention.</p>
+   ${srcLink(litById("nia_menopause"))}${moreSrc(["ims_india2016"])}</section>`;
+  const hf=ansV("hot_flash_log"),hfAt=hf&&new Date(S.answers.hot_flash_log.at).toLocaleDateString("en-US",{month:"short",day:"numeric"});
+  const W=(t,status,extra="")=>`<li class="ix-watch"><span class="ix-wt">${t}</span><span class="ix-ws">${status}</span>${extra}</li>`;
+  const NS=`<span class="ix-wchip">${svgi('<circle cx="12" cy="12" r="8"/>',13)}Not seen</span>`,SN=`<span class="ix-wchip on">${svgi('<circle cx="12" cy="12" r="8" fill="currentColor"/>',13)}Seen</span>`;
+  const watch=s.ready?`<section class="card t-white" aria-labelledby="watch-h"><h2 id="watch-h">Signals to watch</h2>
+   <ul class="ix-watchl">
+    ${W("A jump of 7+ days between back-to-back cycles that happens again within 10 cycles",s.cyc.bigJumps>=2?SN:NS,`<span class="small muted">${s.cyc.bigJumps>=2?"Seen":"Not seen"} (biggest jump: ${s.cyc.jump} days)</span>`)}
+    ${W("60+ days without a period",s.cyc.gap60?SN:NS)}
+    ${W("Periods getting heavier or longer",(s.days.changing||s.heavy.changing)?SN:NS,(s.days.changing||s.heavy.changing)?`<button type="button" class="ix-link" data-pill="ins" data-v="cycle">Seen, see Your cycle</button>`:"")}
+    ${W("Hot flashes or night sweats",hf?SN:`<span class="ix-wchip">Not logged</span>`,`<button type="button" class="btn sm ghost" data-act="hotflash">${hf?`Logged ${hfAt} · log again`:"Log it"}</button>`)}
+   </ul><p class="small">At ${age}, these usually have other causes. Tracking them now gives you a baseline for later.</p>${srcLink(search_literature(SRC_TAGS.watch))}</section>`:"";
+  const tob=ansV("tobacco_use"),vd=lab("Vitamin D"),vdLow=labLow(vd);
+  const stepper=[
+    [age>=30&&age<40?"Now (your 30s)":`Now (age ${age})`,["Strength training twice a week, plus weight-bearing movement like brisk walking or stairs, to protect your bones.",
+      tob==="Yes"?"Stopping tobacco is one of the few things known to affect menopause timing. Ask your doctor about help to quit.":"Stay tobacco-free. Smoking is linked with earlier menopause.",
+      `Calcium and vitamin D foods like curd, ragi and sesame${vdLow?", and ask your doctor about your low vitamin D":""}.`]],
+    ["By 35",[m?`Tell your doctor that ${A()}'s menopause came at ${m.num}.`:`Tell your doctor what you know about ${A()}'s menopause.`,"If you're thinking about pregnancy timing, talk about it then.",
+      "Tests like AMH (anti-Müllerian hormone) estimate egg count but did not predict natural fertility in women 30–44, so don't rely on one number."]],
+    ["From about 36",["Check the watch list above once a month.",`Why 36: the early transition starts on average 6–8 years before the last period. ${early?`If yours followed ${A()}'s timing (it may not), changes could start in your late 30s.`:""}`]],
+    ["Any age",["Tell a doctor if your periods become irregular or stop before 45."]]];
+  const prep=`<section class="card t-white" aria-labelledby="when-h"><h2 id="when-h">When to start preparing</h2>
+   <ol class="ix-stepper">${stepper.map(([t,items],i)=>`<li class="${i===0?"on":""}"><span class="ix-sn" aria-hidden="true">${i+1}</span><div><b>${esc(t)}</b><ul>${items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div></li>`).join("")}</ol>
+   ${srcLink(litById("harlow_bleeding"))}${moreSrc(["niams_bone","owh_early","steiner2017"])}</section>`;
+  const GAPS=[["tobacco_use","Do you smoke or use tobacco of any kind?",OPTS],
+    ["pregnancy_plans","Are you thinking about pregnancy in the next few years? You can skip this.",OPTS],
+    ...(m&&!natural?[["amma_menopause_type",`Did ${A()}'s periods stop on their own, or after surgery or treatment?`,["On their own","After surgery or treatment","Not sure","Prefer not to say"]]]:[])];
+  const g=GAPS.find(([k])=>ansV(k)==null),gi=g?GAPS.indexOf(g):GAPS.length;
+  const gap=`<section class="card t-white" aria-labelledby="gap-h"><div class="row between"><h2 id="gap-h">Fill a gap</h2><span class="small muted">${Math.min(gi+1,GAPS.length)} of ${GAPS.length}</span></div>
+   <div class="ix-ci" id="ci-gap" aria-live="polite" tabindex="-1">${g?`<p class="ix-q" id="q-gap">${esc(g[1])}</p><div class="ix-opts" role="group" aria-labelledby="q-gap">${g[2].map(o=>`<button type="button" class="ix-opt" data-ans="${g[0]}" data-card="gap" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>`:`<p>Thanks. Your answers keep this page accurate. They stay on this device.</p>`}
+   <ul class="ix-ans">${GAPS.filter(([k])=>ansV(k)!=null).map(([k])=>`<li><span><b>${esc(SHORT[k])}:</b> ${esc(ansV(k))}</span><button type="button" class="ix-link" data-clear="${k}" data-card="gap">Change answer<span class="sr"> for ${esc(SHORT[k])}</span></button></li>`).join("")}</ul></div></section>`;
+  const bc=fact("family_breast_cancer"),pe=fact("pregnancy_high_bp")||S.family.find(f=>f.who==="amma"&&/eclampsia/i.test(f.text));
+  const tell=[bc&&{d:{id:"breast_doc",title:`${A()}'s mother had breast cancer at ${bc.num}`,why:`Paati's breast cancer at ${bc.num} is family history your doctor will want to know.`,ask:"Ask when you should start breast screening."},src:"breast_cruk"},
+    pe&&{d:{id:"pe_doc",title:`${A()}'s high blood pressure in pregnancy`,why:`${A()} had high blood pressure in a pregnancy. This can run in families.`,ask:"Tell your pregnancy doctor (OB-GYN) before or early in a pregnancy."},src:"pe_bmj2005"},
+    early&&{d:{id:"meno_doc",title:`${A()}'s menopause at ${m.num}`,why:`Doctors call menopause before 45 early.`,ask:"Mention it by 35, especially if you're thinking about pregnancy timing."},src:"owh_early"}].filter(Boolean);
+  const tellSec=tell.length?`<section aria-labelledby="tell-h" class="ix-cards"><h2 id="tell-h" class="ix-h2">Also worth telling your doctor</h2>${tell.map(x=>`<article class="card t-white ix-card"><h3 style="font-size:19px">${esc(x.d.title)}</h3>${doctorLine(x.d)}${srcLink(litById(x.src))}</article>`).join("")}</section>`:"";
+  return fam+timeline+watch+prep+gap+tellSec+
+   `<h2 class="ix-h2">Habits for the years ahead</h2><div class="grid2">${habits().map(([t,d,tone,because,id])=>`<article class="habit t-${tone}"><h3>${esc(t)}</h3><p>${esc(d)}</p>${because?`<span class="mini">Why: ${esc(because)}</span>`:""}${id?srcLink(litById(id),""):""}</article>`).join("")}</div>`}
+function habits(){const m=fact("menopause_age"),dia=fact("diabetes"),ns=m&&/sweat/i.test(m.value),hip=fact("family_osteoporosis"),vd=lab("Vitamin D");
+  return [["Stay tobacco-free","Smoking is linked with earlier menopause.","moss",m?`${A()}'s menopause at ${m.num}`:"",'smoke_aje2018'],
+   ["Strength train","Muscle work twice a week, plus weight-bearing movement, helps protect bone.","pista",hip?`Paati's hip fracture at ${hip.num}`:"","niams_bone"],
+   ["Eat for iron","Lentils, rajma, ragi and spinach, with lemon or amla. Keep tea away from meals.","mint","your periods are heavier","acog_hmb"],
+   ["Steady sugar","A 10-minute walk after meals.","euca",dia?`${A()}'s type 2 diabetes`:"",null],
+   ["Protect sleep","Steady wake time and a cool room. Good sleep habits help later with night sweats.","pista",ns?`${A()}'s night sweats`:"",null],
+   ["Calcium and vitamin D","Curd, ragi, sesame, and some daylight.","moss",vd&&labLow(vd)?`your vitamin D was ${vd.value} ${vd.unit}`:"",null]]}
+
+/* ============ in-app AI ("Ask about this", artifact mode only) ============ */
+const AI_SYS=`You are the Roots insight guide: warm, careful, brief. You explain changes in the user's own data compared with HER baseline ("your normal").
+
+Rules:
+1. Before linking a longer or less regular cycle to stress, check common alternatives first, ONE question per reply, in this order: possible pregnancy; birth control started, stopped or switched; big weight or exercise change; breastfeeding or birth in the past year; new medicines. Skip any already in ANSWERS. If any answer is yes or not sure, say this may be the reason and stop there unless the user says it doesn't fit.
+2. Only when the alternatives are ruled out may you connect the change to sleep, resting heart rate or HRV, and only as "may be contributing". Never call stress the cause.
+3. Never diagnose. Never write "you have" or "you will". Name a condition only as "worth discussing with your doctor".
+4. Family history: say what to watch for and when to start preparing, and always say that family history raises the chance but does not decide the outcome.
+5. A reply about a change includes what changed (numbers and units), possible reasons, 2-3 small steps, and exactly one source_id from LIBRARY. Never cite anything outside LIBRARY.
+6. If you need missing information, ask for it with an "ask" object; the app saves the answer.
+7. Plain language, under 90 words, define any abbreviation the first time. No risk percentages unless LIBRARY gives them. No diet, weight-loss or medicine-dose advice.
+8. If the user mentions heavy bleeding with dizziness, chest pain, fainting or severe pain, tell them to get medical care now and say nothing else.
+
+Reply with JSON only:
+{"say": string, "steps": [string], "source_id": string|null,
+ "ask": null | {"key": string, "question": string, "options": ["Yes","No","Not sure","Prefer not to say"]}}`;
+const EMERG_TXT="Please get medical care now. Call your local emergency number or go to the nearest emergency department.";
+/* guardrails: parse JSON, drop unknown source_id, drop non-whitelisted ask.key, lint the copy (fall back to the card's own text) */
+function sanitizeAI(r,fallback){let o=r;if(typeof o==="string"){try{o=JSON.parse(o.replace(/^```(json)?|```$/g,"").trim())}catch(e){o=null}}
+  if(!o||typeof o!=="object")return {say:fallback,steps:[],source_id:null,ask:null,fallback:true};
+  let say=typeof o.say==="string"?o.say.trim():"",steps=Array.isArray(o.steps)?o.steps.filter(x=>typeof x==="string").map(x=>x.trim()).filter(Boolean).slice(0,3):[];
+  const source_id=LIT.some(e=>e.id===o.source_id)?o.source_id:null;
+  let ask=o.ask&&typeof o.ask==="object"&&ANS_KEYS.includes(o.ask.key)&&typeof o.ask.question==="string"?{key:o.ask.key,question:o.ask.question.trim(),options:OPTS}:null;
+  let fb=false;if(!say||lintText([say,...steps].join(" ")).length){say=fallback;steps=[];fb=true}
+  if(ask&&lintText(ask.question).length)ask=null;
+  return {say,steps,source_id,ask,fallback:fb}}
+async function askCard(id,q){
+  const s=sig(),V=verdicts(s),cd=buildCards(s,V).find(c=>c.id===id);if(!cd||!SAMPLE)return;
+  if(/(dizz|faint|chest pain|short(ness)? of breath|severe pain)/i.test(q)){AIR[id]={say:EMERG_TXT,steps:[],source_id:"acog_aub",ask:null};render();return}
+  AIBUSY=id;render();
+  const card={title:cd.title,status:STW[cd.status],what_changed:cd.whatText,state:cd.state,steps:cd.steps.map(x=>x[1]),worth_discussing:cd.doctor&&`${cd.doctor.title}. ${cd.doctor.why}`};
+  const answers=Object.fromEntries(ANS_KEYS.filter(k=>ansV(k)!=null).map(k=>[k,ansV(k)]));
+  const prompt=`${AI_SYS}\n\nCARD:\n${JSON.stringify(card)}\n\nANSWERS:\n${JSON.stringify(answers)}\n\nLIBRARY:\n${JSON.stringify(LIT.map(e=>({id:e.id,claim:e.says})))}\n\nUSER QUESTION:\n${q}`;
+  try{const r=await SAMPLE.json(prompt,{modelTier:"quick",cache:false});AIR[id]=sanitizeAI(r,cd.whatText)}
+  catch(e){AIR[id]={say:"I couldn't answer right now. Here's what this card shows: "+cd.whatText,steps:[],source_id:null,ask:null}}
+  AIBUSY=null;render()}
+
+/* used by the Family tab (unchanged); Insights uses LIT */
+const SRC={meno:["Human Reproduction study","https://www.news-medical.net/news/20121113/Like-mothers-menopause-like-daughters-fertility-decline.aspx"],
+ smoke:["Am. J. Epidemiology","https://academic.oup.com/aje/article/187/4/696/4080179"],
+ breast:["Cancer Research UK","https://www.cancerresearchuk.org/about-cancer/breast-cancer/risks-causes/family-history-and-inherited-genes"],
+ pe:["BMJ study, via ScienceDaily","https://www.sciencedaily.com/releases/2005/09/050918131619.htm"]};
 
 /* ============ icons ============ */
 const svg=(d,s=22)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -380,39 +961,6 @@ const FACE={you:["f-you"],amma:["f-amma","A"],paati:["f-paati","P"],lab:["f-lab"
 const face=k=>`<span class="face ${FACE[k][0]}" aria-hidden="true">${k==="you"?esc(S.me.name[0]):FACE[k][1]}</span>`;
 const hdr=(title,kicker,extra="")=>`<div class="top"><div style="flex:1;min-width:0"><p class="kicker">${kicker}</p><h1>${title}</h1></div>${extra}<a class="round" href="#settings" aria-label="Settings">${IC.gear}</a></div>`;
 const pills=(key,opts)=>`<div class="pills" role="group">${opts.map(([v,l])=>`<button class="pill" type="button" data-pill="${key}" data-v="${v}" aria-pressed="${S.ui[key]===v}">${l}</button>`).join("")}</div>`;
-
-/* ============ Insights ============ */
-function vInsights(){
-  const s=sig(),L=S.cycles.map(c=>c.len),H=S.cycles.map(c=>c.heavy),lbl=S.cycles.map(c=>c.m);
-  const head=hdr("Insights","Your reproductive baseline");
-  const tabs=`<div class="top">${pills("ins",[["trends","Trends"],["lifestyle","Lifestyle"]])}</div>`;
-  if(S.ui.ins==="lifestyle"){const T=steps();return head+tabs+`
-   <section class="card t-forest"><span class="small" style="opacity:.8">Toward an easier menopause</span>
-    <h3>${esc(A())}'s came at 44. The habits you build in your 30s shape how yours goes.</h3></section>
-   <div class="grid2">${habits().map(([t,d,tone,w,src])=>`<article class="habit t-${tone}"><div class="row between" style="flex-wrap:nowrap;align-items:flex-start"><h3>${esc(t)}</h3>${face(w[0])}</div><p>${esc(d)}</p><span class="mini">${esc(w[1])}</span>${src?`<a class="small" href="${src[1]}" target="_blank" rel="noopener" style="color:inherit">${esc(src[0])}</a>`:""}</article>`).join("")}</div>
-   <section class="sheet"><div class="sheet-h"><h2>Conversations to have</h2><span class="tag">${T.filter(t=>S.tasks[t[0]]).length} of ${T.length}</span></div>
-    <div>${T.map(([id,t,d,src])=>`<div class="tk ${S.tasks[id]?"done":""}"><button class="check" type="button" data-task="${id}" aria-pressed="${!!S.tasks[id]}" aria-label="Mark done: ${esc(t)}">${S.tasks[id]?IC.check:""}</button><div class="tx"><b>${esc(t)}</b><div class="small muted">${esc(d)}${src?` <a href="${src[1]}" target="_blank" rel="noopener" style="color:var(--forest)">${esc(src[0])}</a>`:""}</div></div></div>`).join("")}</div></section>`}
-  return head+tabs+`
-   <div class="base">
-    <div class="bv t-moss"><span>Cycle length</span><b>${Math.round(s.cyc.base)} <small>days</small></b><em>Now ${s.cyc.rec.toFixed(0)} days ↑</em></div>
-    <div class="bv t-mint"><span>Cycle variation</span><b>±${s.cyc.var0.toFixed(0)} <small>days</small></b><em>Now ±${s.cyc.var1.toFixed(0)} days ↑</em></div>
-    <div class="bv t-pista"><span>Period length</span><b>${s.days.base.toFixed(0)} <small>days</small></b><em>Now ${s.days.rec.toFixed(0)} days ↑</em></div>
-    <div class="bv t-euca"><span>Heavy-flow days</span><b>${s.heavy.base.toFixed(0)} <small>a period</small></b><em>Now ${s.heavy.rec.toFixed(0)} ↑</em></div>
-   </div>
-   <p class="small muted" style="margin-top:-6px">Baseline is your Dec to May average. "Now" is your last 3 cycles.</p>
-   <section class="card t-white"><div class="row between"><h2>Cycle length</h2><span class="tag">12 months</span></div>
-    ${lineChart(L,s.cyc.base-2*s.cyc.sd,s.cyc.base+2*s.cyc.sd,lbl,"Cycle length over 12 months against your baseline range")}
-    <div class="legend"><span><i style="background:#D5EADB"></i>Your baseline range</span><span><i style="background:#C46A2B"></i>Outside it</span></div></section>
-   <section class="card t-white"><div class="row between"><h2>Heavy-flow days</h2><span class="tag">Per period</span></div>${bars(H,s.heavy.base,lbl)}</section>
-   <section class="sheet"><div class="sheet-h"><h2>Patterns worth a conversation</h2></div>
-    ${patterns().map(c=>{const o=S.ui.open===c.id;return `<div class="card t-${c.tone} tap" role="button" tabindex="0" data-open="${c.id}" aria-expanded="${o}">
-     <div class="head"><h3 style="white-space:pre-line">${esc(c.t)}</h3><div class="faces">${c.who.map(face).join("")}</div></div>
-     ${c.alert?`<div><span class="chip alert">Talk to your doctor</span></div>`:""}
-     <div class="stats"><div><b>${esc(c.st[0][0])}</b><span>${esc(c.st[0][1])}</span></div><span class="chip">${esc(c.st[1])}</span><div class="r"><b>${esc(c.st[2][0])}</b><span>${esc(c.st[2][1])}</span></div></div>
-     ${o?`<div class="detail">${c.ev.map(([k,t])=>`<div class="ev">${face(k)}<span>${esc(t)}</span></div>`).join("")}<p>${esc(c.so)}</p></div>`:""}</div>`}).join("")}</section>
-   <section class="card t-white"><h2>Labs that touch your cycle</h2>
-    <div class="circles">${S.labs.slice(0,4).map(l=>`<div class="circ"><i class="c-${labState(l)}">${l.value}</i>${esc(l.short||l.name)}</div>`).join("")}</div>
-    <p class="small muted">Orange is outside your lab's range.</p></section>`}
 
 /* ============ Root ============ */
 const PERSONAS={
@@ -649,7 +1197,11 @@ function render(){const r=route();if(r!=="settings")S.ui.prev=r;
   document.getElementById("tabbar").innerHTML=`<a href="#insights"${r==="insights"?' aria-current="page"':""}>${IC.chart}Insights</a><a href="#root" class="rootbtn"${["root","interview","ask"].includes(r)?' aria-current="page"':""}>${IC.root}Root</a><a href="#family"${r==="family"?' aria-current="page"':""}>${IC.tree}Family</a>`;
   document.getElementById("app").innerHTML=r==="insights"?vInsights():r==="root"?vRoot():r==="interview"?vInterview():r==="ask"?vAsk():r==="family"?vFamily():vSettings();
   const rc=document.querySelector(".rootchat .chat");if(rc)rc.scrollTop=rc.scrollHeight;
-  if(r==="interview"||r==="ask")document.querySelector("#ivchat .msg:last-child, #chat .msg:last-child")?.scrollIntoView({block:"nearest"})}
+  if(r==="interview"||r==="ask")document.querySelector("#ivchat .msg:last-child, #chat .msg:last-child")?.scrollIntoView({block:"nearest"});
+  if(FOCUS){const f=[].concat(FOCUS);FOCUS=null;for(const sel of f){const el=document.querySelector(sel);if(el){el.focus({preventScroll:true});el.scrollIntoView({block:"nearest",behavior:RM()?"auto":"smooth"});break}}}
+  if(DEV&&r==="insights")lintCopy()}
+let FOCUS=null;const RM=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ciFocus=cid=>[`#ci-${cid} .ix-opt`,`#ci-${cid}`];
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
 document.addEventListener("click",async e=>{
   const t=e.target;let x;
@@ -661,6 +1213,14 @@ document.addEventListener("click",async e=>{
   if(x=t.closest("[data-person]")){S.ui.person=x.dataset.person;save();render();return}
   if(x=t.closest("[data-share]")){const f=S.facts.find(y=>y.id===x.dataset.share);if(f){f.share=x.dataset.v;save();render()}return}
   if(x=t.closest("[data-ask]")){if(!BUSY)ask(x.dataset.ask);return}
+  /* Insights */
+  if(x=t.closest("[data-ans]")){const cid=x.dataset.card,note=document.getElementById("note-"+cid)?.value.trim();FOCUS=cid?ciFocus(cid):null;save_answer(x.dataset.ans,x.dataset.v,x.dataset.v==="Yes"&&note?note:undefined);return}
+  if(x=t.closest("[data-clear]")){delete S.answers[x.dataset.clear];const c=S.cards[x.dataset.card];if(c)c.override=false;FOCUS=ciFocus(x.dataset.card);save();render();return}
+  if(x=t.closest("[data-step]")){const [cid,sid]=x.dataset.step.split(":"),c=S.cards[cid]||(S.cards[cid]={steps:{}});c.steps=c.steps||{};c.steps[sid]=!c.steps[sid];FOCUS=`[data-step="${cid}:${sid}"]`;save();render();return}
+  if(x=t.closest("[data-docadd]")){const id=x.dataset.docadd,d=DOCS[id];if(S.doctor.some(y=>y.id===id)){S.doctor=S.doctor.filter(y=>y.id!==id);toast("Removed from your doctor list.")}else if(d){S.doctor.push({id,title:d.title,why:d.why,ask:d.ask,source_id:d.source_id||null,added:new Date().toISOString()});toast("Added to your doctor list.")}FOCUS=`[data-docadd="${id}"]`;save();render();return}
+  if(x=t.closest("[data-docrm]")){S.doctor=S.doctor.filter(y=>y.id!==x.dataset.docrm);FOCUS="#docpanel h2";save();render();return}
+  if(x=t.closest("[data-flag]")){S.flags[x.dataset.flag]=!S.flags[x.dataset.flag];FOCUS=`[data-flag="${x.dataset.flag}"]`;save();render();return}
+  if(x=t.closest("[data-tip]")){const rd=x.closest("section")?.querySelector(".ix-read");if(rd)rd.textContent=x.dataset.tip;return}
   const b=t.closest("[data-act]");if(!b)return;const a=b.dataset.act;
   if(a==="beginiv")newInterview();
   if(a==="toggleen"){S.iv.showEn=!S.iv.showEn;save();render()}
@@ -674,6 +1234,17 @@ document.addEventListener("click",async e=>{
   if(a==="copyinvite"){const txt=INVITE[S.me.lang](S.me.name)+"\n\nhttps://"+inviteLink()+"?lang="+LCODE[S.me.lang];try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
   if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("That sample is already in your chat and tree.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997.`});S.chat.push({r:"me",t:"Attached: hospital discharge note, 1997 (sample)"},{r:"ai",t:`I read it. It's from ${A()}'s second pregnancy and says "preeclampsia", which confirms the high blood pressure she described. I've added it to ${A()} in your Family tree. It's worth telling your OB-GYN if you plan a pregnancy.`});save();if(location.hash!=="#ask"&&location.hash!=="#root")location.hash="root";render()}
   if(a==="reset"){S=DEF();save();location.hash="insights";render();toast("Sample data restored.")}
+  if(a==="clearans"){S.answers={};S.cards={};S.flags={};AIR={};save();render();toast("Your check-in answers are cleared.")}
+  if(a==="doclist"){S.ui.doc=!S.ui.doc;S.ui.docText=false;FOCUS=S.ui.doc?"#docpanel h2":".ix-docchip";save();render()}
+  if(a==="flags"){S.ui.flags=!S.ui.flags;FOCUS=S.ui.flags?"#flagpanel .ix-flag":'[data-act="flags"]';save();render()}
+  if(a==="clearflags"){S.flags={};save();render()}
+  if(a==="startci"){const el=document.getElementById("card-"+b.dataset.card);if(el){el.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"});(el.querySelector(".ix-opt")||el).focus({preventScroll:true})}}
+  if(a==="override"){const c=S.cards[b.dataset.card]||(S.cards[b.dataset.card]={steps:{}});c.override=true;FOCUS=ciFocus(b.dataset.card);save();render()}
+  if(a==="scrollbody")document.getElementById("body-signals")?.scrollIntoView({block:"start",behavior:RM()?"auto":"smooth"});
+  if(a==="hotflash")save_answer("hot_flash_log","Seen");
+  if(a==="docans"){S.ui.docAns=b.checked;save();render()}
+  if(a==="copydoc"){const txt=docSummary(sig());try{await navigator.clipboard.writeText(txt);toast("Summary copied. Paste it into a message or notes.")}catch(err){S.ui.docText=true;save();render();toast("Copy isn't available here. The summary is below to select.")}}
+  if(a==="askopen"){S.ui.ask=b.dataset.card;FOCUS="#aq-"+b.dataset.card;save();render()}
 });
 document.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&e.target.id==="chatQ"){e.preventDefault();e.target.form.requestSubmit();return}if((e.key==="Enter"||e.key===" ")&&e.target.matches("[data-open]")){e.preventDefault();e.target.click()}});
 document.addEventListener("change",e=>{if(e.target.id==="scanFile"&&e.target.files[0])scan(e.target.files[0])});
@@ -681,11 +1252,14 @@ document.addEventListener("submit",e=>{e.preventDefault();const id=e.target.id,v
   if(id==="answerForm"){if(!v("answer")){toast("Type her answer first, or tap Skip.");return}answer(v("answer"))}
   if(id==="chatForm"){const q=v("chatQ");if(!q){toast("Type a question first.");return}ask(q)}
   if(id==="famForm"){if(!v("mText")){toast("Describe the condition first.");return}if(S.ui.person==="me")S.conds.push(v("mText"));else S.family.push({id:nid(),who:S.ui.person,text:v("mText"),src:"you"});save();render();toast("Added to your tree.")}
+  if(e.target.dataset.askcard){const q=document.getElementById("aq-"+e.target.dataset.askcard)?.value.trim();if(!q){toast("Type a question first.");return}askCard(e.target.dataset.askcard,q);return}
   if(id==="setForm"){S.me.name=v("sName")||"Kavya";S.me.call=v("sCall")||"Amma";S.me.lang=v("sLang");save();render();toast("Saved.")}
 });
+assertSources();
 render();
 (async()=>{try{SAMPLE=window.claude?await window.claude.use("sample"):null}catch(e){SAMPLE=null}LIVE=!!SAMPLE;
   if(SAMPLE){try{IMAGES=!!(await SAMPLE.limits())?.images}catch(e){}}render()})();
+if(/[?&]test\b/.test(location.search)){const sc=document.createElement("script");sc.src="tests/insights-tests.js";document.body.appendChild(sc)}
 </script>
 
 </body>
