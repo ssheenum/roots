@@ -22,6 +22,20 @@ Built for the Code with Claude: Women in AI Hackathon (women's health track).
 
 Privacy is built in: the mother approves every note before it reaches her daughter, and sensitive topics start out private.
 
+## How Roots checks its data
+
+Insights are only as good as the data behind them, so Roots guards against the usual ways cycle data misleads:
+
+- **Enough data first.** Patterns need 6 baseline cycles and 3 recent ones. Until then, Roots says how many more it needs.
+- **One odd cycle is not a pattern.** At least 2 of the last 3 usable cycles must fall outside her baseline range.
+- **Missed logs.** A cycle of 45+ days (or 1.6× her normal) is more often a forgotten log than a real change, so Roots asks "Did you miss logging a period?" before using it.
+- **Ask before flagging.** When cycles run long, Roots first asks whether anything changed (birth control, IUD, pregnancy, illness, travel, new medication) and only adds the pattern once she confirms.
+- **Life events, with dates.** Cycles during hormonal birth control, a hormonal IUD, pregnancy or breastfeeding are set aside, and cycle patterns pause while these are ongoing. Illness and travel set aside that cycle. Medication or thyroid changes are kept but named as a possible reason. Life events stay on the device and are never shared with family.
+- **Show the evidence.** A "What Roots is using" panel lists which cycles were used or set aside and why, how old the lab results are, and what her mother chose to share. Set-aside cycles appear hollow in the charts.
+- **Uncertainty from the interview.** If her mother isn't sure of an age, the fact is marked approximate and Roots widens its estimates. Scanned lab reports keep their test date.
+- **Claude sees the limits too.** The chat context includes the data-quality summary, so answers mention when data is limited or set aside.
+- **Watching for the transition.** Because her mother's menopause came early, Roots plans to watch for the STRAW+10 early-transition sign (cycle length changing by 7+ days, more than once) from about age 40.
+
 ## Running it
 
 It's a single static file. Open `index.html` in a browser, or serve the folder:
