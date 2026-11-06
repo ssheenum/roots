@@ -7,7 +7,7 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;600&family=Noto+Sans+Devanagari:wght@400;600&display=swap">
 <style>
 /* Layout: a tree-themed phone app. You are the crown, your family are the roots. Three tabs (Insights, Root, Family) with Root as the raised centre button; settings behind a gear. Deliberately single light theme, garden greens with one earth tone for roots. */
 :root{
@@ -21,7 +21,7 @@
   --euca:#A9D0C3; --euca-ink:#123F33;
   --apricot:#F3CFA8; --apricot-ink:#6A3510;
   --soil:#ECE6D5; --root:#6B5B3A;
-  --font:"Instrument Sans","Noto Sans Tamil",system-ui,sans-serif;
+  --font:"Instrument Sans","Noto Sans Tamil","Noto Sans Devanagari",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
 html,body{background:var(--page)}
@@ -157,6 +157,15 @@ label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:60
 .ivchat{padding:0}
 .ivchat .msg{font-size:17px;line-height:1.45}
 .msg small{display:block;font-size:13px;opacity:.75;margin-top:6px;font-family:var(--font)}
+.rootchat .chat{max-height:300px;overflow-y:auto}
+.rootchat .msg.ai{background:var(--mint)}
+.lpill{border-color:rgba(255,255,255,.35);color:var(--on-forest);min-height:40px;padding:0 16px}
+.lpill[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
+.scanrow{display:flex;align-items:center;gap:12px;border-radius:20px;padding:12px 14px;border:0;text-align:left;cursor:pointer;font:inherit;width:100%}
+.scanrow .ico{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.75);display:grid;place-items:center;flex:none}
+.scanrow .tx{display:flex;flex-direction:column;min-width:0}
+.scanrow b{font-weight:600}
+.scanrow .s{font-size:12px;opacity:.85}
 /* tree */
 .tree{position:relative;border-radius:32px;overflow:hidden;background:linear-gradient(var(--app) 0 33%,var(--soil) 33% 100%);margin-inline:-6px}
 .tree svg{display:block;width:100%;height:auto}
@@ -403,25 +412,34 @@ const useTa=()=>S.me.lang==="Tamil";
 function inviteText(){return `${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in ${S.me.lang}, skip anything, and you choose what I see. — ${S.me.name}`}
 const inviteLink=()=>`getroots.app/i/${S.invite.code}`;
 const sub=(back,kicker,title)=>`<div class="top"><a class="round" href="#${back}" aria-label="Back">${IC.back}</a><div style="flex:1;min-width:0"><p class="kicker">${kicker}</p><h1 style="font-size:32px;line-height:1.05">${title}</h1></div></div>`;
+const INVITE={
+ Tamil:n=>`அம்மா, உங்க கதையைக் கேட்க ஆசைப்படறேன். நீங்க என்னைப் பார்த்துக்கிட்ட மாதிரி நான் என் உடம்பைப் பார்த்துக்கணும். தமிழ்லயே பேசலாம், எதை வேணும்னாலும் விட்டுடலாம். நான் எதைப் பார்க்கணும்னு நீங்கதான் முடிவு பண்ணுவீங்க. — ${n}`,
+ Hindi:n=>`अम्मा, मैं आपकी कहानी सुनना चाहती हूँ, ताकि अपनी सेहत का वैसे ही ख़याल रख सकूँ जैसे आपने मेरा रखा। आप हिंदी में बात कर सकती हैं, कुछ भी छोड़ सकती हैं, और आप ही तय करेंगी कि मैं क्या देखूँ। — ${n}`,
+ English:n=>`${A()}, I'd love to hear your story so I can take care of my health the way you took care of mine. You can talk in English, skip anything, and you choose what I see. — ${n}`};
+const LCODE={Tamil:"ta",Hindi:"hi",English:"en"};
 function vRoot(){
   const iv=S.iv,notes=shared().length,priv=S.facts.filter(f=>f.share==="private").length;
   const steps=[["Invited",S.invite.sent],["Talking",iv.started||iv.submitted],["Shared",iv.submitted]];
+  const recent=S.chat.slice(-4);
   return hdr("Root","Gather your family's story")+`
+   <section class="sheet rootchat" aria-labelledby="chath">
+    <div class="sheet-h"><h2 id="chath" style="font-size:24px">Chat</h2>${S.chat.length>4?`<a class="tag" href="#ask" style="text-decoration:none;color:var(--ink)">See all</a>`:""}</div>
+    <div class="chat" id="chat" aria-live="polite">${recent.length?recent.map(m=>`<div class="msg ${m.r}">${esc(m.t)}</div>`).join(""):`<div class="msg ai">Hi ${esc(S.me.name)}. Ask me anything about your cycle or your family's health. I'll compare it with your own normal and what ${esc(A())} shared.</div>`}</div>
+    ${recent.length?"":`<div class="sugg">${["Will my menopause be early?","What did Paati have?","Why are my periods heavier?"].map(q=>`<button type="button" data-ask="${esc(q)}">${esc(q)}</button>`).join("")}</div>`}
+    <form id="chatForm" class="row" style="padding:0 6px;flex-wrap:nowrap"><label class="sr" for="chatQ">Message</label><input type="text" id="chatQ" placeholder="Message" style="flex:1;min-width:0;background:var(--mint);border-color:transparent"><button class="round" type="submit" style="background:var(--forest);color:var(--on-forest)" aria-label="Send">${IC.send}</button></form>
+   </section>
    <section class="card t-forest">
-    <div class="head"><div><span class="small" style="opacity:.8">Start here</span><h3 style="font-size:30px">Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:52px;height:52px;border-radius:18px" aria-hidden="true">${IC.mic}</span></div>
+    <div class="head"><div><span class="small" style="opacity:.8">Start here</span><h3 style="font-size:28px">Invite ${esc(A())} to tell her story</h3></div><span class="mic" style="width:52px;height:52px;border-radius:18px" aria-hidden="true">${IC.mic}</span></div>
     <div class="track">${steps.map(([l,on],i)=>`<div class="${on?"on":""}"><i>${on?IC.check:i+1}</i><span>${l}</span></div>`).join("")}</div>
-    <div class="bubble">${esc(inviteText())}</div>
+    <div class="stack tight" style="display:flex;flex-direction:column;gap:8px"><span class="small" style="opacity:.85">Send it in her language</span>
+     <div class="pills" role="group" aria-label="Invite language">${[["Tamil","தமிழ்"],["Hindi","हिन्दी"],["English","English"]].map(([l,t])=>`<button class="pill lpill" type="button" data-lang="${l}" aria-pressed="${S.me.lang===l}">${t}</button>`).join("")}</div></div>
+    <div class="bubble" lang="${LCODE[S.me.lang]}">${esc(INVITE[S.me.lang](S.me.name))}</div>
     <div class="linkbox"><code>${esc(inviteLink())}</code><button class="btn sm lime" type="button" data-act="copyinvite">${IC.copy}Copy invite</button></div>
     <a class="btn lime" href="#interview">${IC.mic}${iv.started&&!iv.done?"Continue her interview":"Open her interview"}</a>
-    <p class="small" style="opacity:.85">${iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(iv.sharedOn)} and kept ${priv} private. She talked with ${esc(pname(iv.persona||"niece"))}.`:`She picks who she talks to and speaks in ${esc(S.me.lang)}. She approves every note.`}</p>
+    <p class="small" style="opacity:.85">${iv.submitted?`${esc(A())} shared ${notes} notes on ${esc(iv.sharedOn)} and kept ${priv} private. She talked with ${esc(pname(iv.persona||"niece"))}.`:`She'll open it in ${esc(S.me.lang)}, pick who she talks to, and approve every note.`}</p>
    </section>
-   <p class="kicker" style="font-size:14px;margin-bottom:-8px">More ways to add roots</p>
-   <div class="grid2">
-    ${IMAGES?`<label class="mtile t-pista" for="scanFile"><span class="ico">${IC.scan}</span><b>Scan a document</b><span class="s">Reports, old papers</span></label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr">`
-      :`<button class="mtile t-pista" type="button" data-act="samplescan"><span class="ico">${IC.scan}</span><b>Scan a document</b><span class="s">Try a sample paper</span></button>`}
-    <a class="mtile t-mint" href="#ask"><span class="ico">${IC.chat}</span><b>Ask about your roots</b><span class="s">${S.chat.length?`${S.chat.filter(m=>m.r==="me").length} questions so far`:"Chat with Claude"}</span></a>
-   </div>
-   ${IMAGES?`<button class="btn sm ghost" type="button" data-act="samplescan" style="align-self:flex-start">Or try a sample document</button>`:""}
+   ${IMAGES?`<label class="scanrow t-pista" for="scanFile"><span class="ico">${IC.scan}</span><span class="tx"><b>Scan a document</b><span class="s">Reports and old papers go straight into your tree</span></span></label><input type="file" id="scanFile" accept="image/jpeg,image/png,image/webp" class="sr"><button class="btn sm ghost" type="button" data-act="samplescan" style="align-self:flex-start">Or try a sample document</button>`
+     :`<button class="scanrow t-pista" type="button" data-act="samplescan"><span class="ico">${IC.scan}</span><span class="tx"><b>Scan a document</b><span class="s">Try a sample paper. It goes straight into your tree.</span></span></button>`}
    ${S.scans.length?`<section class="sheet" style="padding:8px"><div class="list">${S.scans.map(s=>`<div class="li"><span class="ic t-pista">${IC.scan}</span><div class="tx"><b>${esc(s.title)}</b><span>${esc(s.found)}</span></div></div>`).join("")}</div></section>`:""}`}
 function vAsk(){
   return sub("root","Your family's health, explained","Ask about your roots")+`
@@ -604,6 +622,7 @@ function render(){const r=route();if(r!=="settings")S.ui.prev=r;
   document.getElementById("tabbar").hidden=r==="interview"&&S.iv.started&&!S.iv.done;
   document.getElementById("tabbar").innerHTML=`<a href="#insights"${r==="insights"?' aria-current="page"':""}>${IC.chart}Insights</a><a href="#root" class="rootbtn"${["root","interview","ask"].includes(r)?' aria-current="page"':""}>${IC.root}Root</a><a href="#family"${r==="family"?' aria-current="page"':""}>${IC.tree}Family</a>`;
   document.getElementById("app").innerHTML=r==="insights"?vInsights():r==="root"?vRoot():r==="interview"?vInterview():r==="ask"?vAsk():r==="family"?vFamily():vSettings();
+  const rc=document.querySelector(".rootchat .chat");if(rc)rc.scrollTop=rc.scrollHeight;
   if(r==="interview"||r==="ask")document.querySelector("#ivchat .msg:last-child, #chat .msg:last-child")?.scrollIntoView({block:"nearest"})}
 window.addEventListener("hashchange",()=>{render();window.scrollTo(0,0)});
 document.addEventListener("click",async e=>{
@@ -625,7 +644,7 @@ document.addEventListener("click",async e=>{
   if(a==="stop")ctl?.abort();
   if(a==="mic")toast("Voice comes with the phone app. Type here, or use the sample answer.");
   if(a==="send"){Object.assign(S.iv,{submitted:true,started:false,done:true,sharedOn:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric"})});save();toast(`Sent to ${S.me.name}. Your tree is updated.`);location.hash="family"}
-  if(a==="copyinvite"){const txt=inviteText()+"\n\nhttps://"+inviteLink();try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
+  if(a==="copyinvite"){const txt=INVITE[S.me.lang](S.me.name)+"\n\nhttps://"+inviteLink()+"?lang="+LCODE[S.me.lang];try{await navigator.clipboard.writeText(txt);toast("Invite copied. Paste it into WhatsApp.")}catch(err){toast("Copy isn't available here. Select the message to copy it.")}}
   if(a==="samplescan"){if(S.scans.some(s=>s.sample)){toast("Sample already added.");return}S.family.push({id:nid(),who:"amma",text:"Preeclampsia, 1997",src:"scan"});S.scans.unshift({sample:1,title:"Hospital discharge note, 1997 (sample)",found:`Added to ${A()}: Preeclampsia, 1997. This confirms the high blood pressure she described.`});save();render();toast("Added to Amma in your tree.")}
   if(a==="reset"){S=DEF();save();location.hash="insights";render();toast("Sample data restored.")}
 });
