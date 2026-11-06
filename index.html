@@ -493,7 +493,31 @@ function vFamily(){
   const line=(a,b,w)=>{const p=PEOPLE[a],q=PEOPLE[b],my=(p.y+q.y)/2;return `<path d="M${p.x} ${p.y+30} C ${p.x} ${my}, ${q.x} ${my}, ${q.x} ${q.y-30}" fill="none" stroke="#6B5B3A" stroke-width="${w}" stroke-linecap="round"/>`};
   const story=sel==="amma"?shared().filter(f=>f.story):[];
   const adv=sel==="amma"&&fact("advice");
+  /* coverage: which relatives have any history yet */
+  const rels=Object.keys(PEOPLE).filter(k=>k!=="me"),known=rels.filter(k=>conditions(k).length),gaps=rels.filter(k=>!conditions(k).length);
+  /* what each relative's history means for you */
+  const means=sel==="me"?[]:famMeaning(sel,cs);
+  const isAppaSide=sel==="appa"||sel.startsWith("appa");
   return hdr("Family","Your roots, three generations")+`
+   <style>
+    .fx-cov{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:22px;background:var(--white)}
+    .fx-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}.fx-bar i{display:block;height:100%;background:var(--forest);border-radius:4px}
+    .fx-gap{border:1.5px dashed var(--root);background:transparent;color:var(--root);border-radius:999px;min-height:32px;padding:0 12px;font-size:12px;font-weight:600;cursor:pointer}
+    .fx-mean{display:flex;flex-direction:column;gap:10px;border-radius:18px;padding:14px;background:rgba(255,255,255,.12)}
+    .t-white .fx-mean,.t-pista .fx-mean{background:var(--app)}
+    .fx-mean li{display:flex;gap:10px;font-size:14px;line-height:1.4}
+    .fx-mean li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--lime);margin-top:6px}
+    .fx-mean ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+    .fx-mean a{color:inherit;opacity:.75;font-size:12px}
+    .fx-gen{display:block;font-size:11px;font-weight:600;color:var(--apricot-ink);margin-top:2px}
+    button.mini{border:0;cursor:pointer;text-align:left}
+    #famCard{scroll-margin-top:12px}
+   </style>
+   <div class="fx-cov">
+    <div class="row between"><b class="small">${known.length} of ${rels.length} relatives have history</b><span class="small muted">${Math.round(known.length/rels.length*100)}%</span></div>
+    <div class="fx-bar" aria-hidden="true"><i style="width:${known.length/rels.length*100}%"></i></div>
+    ${gaps.length?`<div class="row" style="gap:6px"><span class="small muted">Still missing</span>${gaps.map(k=>`<button type="button" class="fx-gap" data-person="${k}">${esc(PEOPLE[k].n())}</button>`).join("")}</div>`:`<span class="small muted">Every branch has a story. Nice work.</span>`}
+   </div>
    <div class="tree">
     <svg viewBox="0 0 360 540" aria-hidden="true">
      <circle cx="130" cy="70" r="46" fill="#AFC8A0" opacity=".55"/><circle cx="232" cy="64" r="50" fill="#AFC8A0" opacity=".5"/><circle cx="180" cy="40" r="44" fill="#D5EADB"/><circle cx="292" cy="104" r="34" fill="#D5EADB" opacity=".8"/>
@@ -501,23 +525,48 @@ function vFamily(){
      <path d="M0 176 Q 90 168 180 178 T 360 174" stroke="#B9AE8E" stroke-width="2" fill="none"/>
      <path d="M180 178 C 180 220, 100 230, 100 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
      <path d="M180 178 C 180 220, 262 230, 262 288" fill="none" stroke="#6B5B3A" stroke-width="10" stroke-linecap="round"/>
+     <text x="14" y="206" font-size="11" font-weight="600" fill="#6B5B3A" letter-spacing=".04em">${esc(A().toUpperCase())}'S SIDE</text>
+     <text x="346" y="206" font-size="11" font-weight="600" fill="#6B5B3A" text-anchor="end" letter-spacing=".04em">APPA'S SIDE</text>
      ${line("amma","paati",6)}${line("amma","thatha",6)}${line("appa","appapaati",6)}${line("appa","appathatha",6)}
      <path d="M46 500 q -8 18 -18 26 M150 500 q 6 16 14 24 M224 500 q -6 16 -14 24 M322 500 q 8 18 18 26" stroke="#6B5B3A" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>
     </svg>
     ${Object.entries(PEOPLE).map(([k,p])=>{const c=conditions(k),has=c.length||k==="me";const tone=k==="me"?"background:var(--lime);color:var(--lime-ink)":k==="amma"?"background:var(--forest);color:var(--on-forest)":has?"background:var(--moss);color:var(--moss-ink)":"";
       return `<button type="button" class="node ${p.lg?"lg":""} ${has?"":"empty"}" style="left:${p.x/360*100}%;top:${p.y/540*100}%" data-person="${k}" aria-pressed="${sel===k}" aria-label="${esc(p.n())}, ${c.length} conditions"><span class="dot" style="${tone}">${esc(p.i())}${c.length?`<span class="ct">${c.length}</span>`:""}</span><span class="nm">${esc(p.n())}</span></button>`}).join("")}
    </div>
-   <section class="card ${sel==="amma"?"t-forest":sel==="me"?"t-pista":"t-white"}">
+   <section id="famCard" class="card ${sel==="amma"?"t-forest":sel==="me"?"t-pista":"t-white"}">
     <div class="head"><div><span class="small" style="opacity:.8">${esc(P.r())}</span><h3>${esc(P.n())}</h3></div><span class="tag" style="background:rgba(255,255,255,.7);color:var(--ink)">${cs.length} on record</span></div>
-    ${cs.length?`<div class="chips">${cs.map(c=>`<span class="mini ${c.src==="you"||c.src==="scan"?"mine":""}">${esc(c.t)}${c.src==="scan"?" · scan":""}</span>`).join("")}</div>`:`<p class="small" style="opacity:.8">Nothing recorded yet. ${sel.startsWith("appa")?"Ask Appa for his family's story.":"Add what you know below."}</p>`}
+    ${cs.length?`<div class="chips">${cs.map(c=>`<span class="mini ${c.src==="you"||c.src==="scan"?"mine":""}">${esc(c.t)}${c.src==="scan"?" · scan":""}</span>`).join("")}</div>`:`<p class="small" style="opacity:.8">Nothing recorded yet. ${isAppaSide?"Ask Appa for his family's story, or scan an old report.":"Add what you know below, or scan an old report."}</p>
+      <div class="row"><a class="btn sm" href="#root">${isAppaSide?"Invite Appa":"Scan a report"}</a></div>`}
+    ${means.length?`<div class="fx-mean"><b class="small">What this means for you</b><ul>${means.map(m=>`<li><span>${esc(m.t)}${m.src?` <a href="${m.src[1]}" target="_blank" rel="noopener">${esc(m.src[0])}</a>`:""}</span></li>`).join("")}</ul></div>`:""}
+    ${sel==="me"?`<p class="small" style="opacity:.8">Tap anyone in your tree to see what their history means for you.</p>`:""}
     ${story.length?`<div class="detail" style="background:rgba(255,255,255,.1)"><b class="small">Her story</b>${story.map(f=>`<span class="small">${esc(f.value)}</span>`).join("")}</div>`:""}
     ${adv?`<p class="ta small" style="opacity:.9">"${esc(adv.quote)}"</p>`:""}
     <form id="famForm" class="row" style="flex-wrap:nowrap" novalidate><label class="sr" for="mText">Add a condition for ${esc(P.n())}</label><input type="text" id="mText" placeholder="Add a condition, e.g. Thyroid at 40" style="flex:1;min-width:0"><button class="btn sm ${sel==="amma"?"lime":""}" type="submit">Add</button></form>
    </section>
    <section class="sheet"><div class="sheet-h"><h2>Health across the family</h2><span class="tag">${Object.keys(PEOPLE).reduce((n,k)=>n+conditions(k).length,0)} conditions</span></div>
     <div class="matrix">${THEMES.map(([name,re,tone])=>{const who=Object.keys(PEOPLE).map(k=>({k,c:conditions(k).filter(c=>re.test(c.t))})).filter(x=>x.c.length);
-      return `<div class="mrow"><b>${name}</b><div class="who">${who.length?who.map(x=>`<span class="mini t-${tone}" title="${esc(x.c.map(c=>c.t).join(", "))}">${esc(PEOPLE[x.k].n())}: ${esc(x.c.map(c=>c.t).join(", "))}</span>`).join(""):`<span class="small muted">None recorded</span>`}</div></div>`}).join("")}</div>
-    <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview.</p></section>`}
+      const gens=new Set(who.map(x=>FAM_GEN[x.k])).size;
+      return `<div class="mrow"><div><b>${name}</b>${gens>1?`<span class="fx-gen">Across ${gens} generations</span>`:""}</div><div class="who">${who.length?who.map(x=>`<button type="button" class="mini t-${tone}" data-person="${x.k}" title="${esc(x.c.map(c=>c.t).join(", "))}">${esc(PEOPLE[x.k].n())}: ${esc(x.c.map(c=>c.t).join(", "))}</button>`).join(""):`<span class="small muted">None recorded</span>`}</div></div>`}).join("")}</div>
+    <p class="small muted" style="padding:0 8px">Green chips were added by you or from scans. The rest came from ${esc(A())}'s interview. Tap any chip to see that person.</p></section>`}
+
+/* ============ family page extras ============ */
+const FAM_GEN={me:0,sister:0,amma:1,appa:1,paati:2,thatha:2,appapaati:2,appathatha:2};
+const FAM_MEAN=[
+ [/pregnan|eclampsia/i,()=>"Daughters of women with high blood pressure in pregnancy had over twice the risk. Tell your OB-GYN before a pregnancy.",SRC.pe],
+ [/menopause/i,n=>`${n}'s menopause came earlier than the typical 51. Yours may come early too, so ask about an AMH test before 35.`,SRC.meno],
+ [/fibroid/i,()=>"Fibroids can run in families. With your periods getting heavier, it's worth mentioning to your doctor."],
+ [/heavy period/i,()=>"Your own periods are getting heavier too. Bring this up together with your iron levels."],
+ [/breast cancer/i,n=>`${n} was diagnosed young. Ask your doctor whether to start breast screening earlier.`,SRC.breast],
+ [/diabetes|sugar/i,()=>"Type 2 diabetes in the family raises your own risk. A short walk after meals helps keep sugar steady."],
+ [/thyroid/i,()=>"Thyroid conditions run in families. Ask about a thyroid recheck at your next visit."],
+ [/hip|fracture|bone|osteo/i,()=>"A family history of hip fracture is a risk factor for weak bones. Strength training in your 30s helps."],
+ [/\bbp\b|blood pressure|heart/i,()=>"High blood pressure in a parent raises your own risk. Get yours checked once a year."],
+ [/painful period|endometri/i,()=>"Painful periods can run in families, and so can endometriosis. Mention it if yours are painful too."],
+ [/pcos/i,()=>"PCOS often runs in families. Worth mentioning if your cycles become irregular."]];
+function famMeaning(who,cs){const n=PEOPLE[who].n(),o=[],seen=new Set();
+  cs.forEach(c=>{const m=FAM_MEAN.find(([re])=>re.test(c.t));if(!m)return;const t=m[1](n);if(seen.has(t))return;seen.add(t);o.push({t,src:m[2]})});
+  return o}
+document.addEventListener("click",e=>{if(location.hash==="#family"&&e.target.closest("[data-person]"))requestAnimationFrame(()=>{const c=document.getElementById("famCard");if(c)c.scrollIntoView({behavior:"smooth",block:"start"})})});
 
 /* ============ Settings ============ */
 function vSettings(){return `<div class="top"><a class="round" href="#${S.ui.prev||"insights"}" aria-label="Back">${IC.back}</a><div style="flex:1"><p class="kicker">Roots</p><h1>Settings</h1></div></div>
